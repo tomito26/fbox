@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,900;1,400;1,700;1,900&family=Luckiest+Guy&family=Poppins:ital,wght@0,600;0,700;0,900;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700;1,900&display=swap');
 *{
   margin: 0;
   padding: 0;
@@ -6,6 +7,7 @@
 body{
   background-color: #082032;
   color: #fff;
+  font-family: "Lato",sans-serif;
 }
 nav{
   display: flex;
@@ -16,11 +18,176 @@ nav{
 }
 nav .logo{
   display: flex;
+
+ 
 }
-nav .logo img{
+
+nav .logo .image{
   height: 40px;
   width: 40px;
+  margin-right:5px ;
+}
+
+nav .logo .image img{
+  height: 100%;
+  width: 100%;
   object-fit: cover;
   object-position: center;
+  margin-right: 10px;
+}
+nav .logo .text{
+  line-height: 40px;
+  font-size: 18px;
+  font-family: 'Lato',sans-serif;
+  font-weight: 900;
+
+}
+
+nav ul {
+  display: block;
+  list-style: none;
+}
+nav ul li{
+  display: inline-block;
+  line-height: 40px;
+  margin-left: 30px;
+}
+nav ul li a{
+  text-decoration: none;
+  color: #ccc;
+  font-weight: 400;
+  font-family: "Lato",sans-serif;
+  font-size: 16px;
+}
+.search-form{
+  position: relative;
+}
+.search-form .form-control{
+  height: 45px;
+  width: 300px;
+  padding: 0 10px 0 40px;
+  border-radius: 30px;
+  border: none;
+  outline: none;
+  background-color: rgba(238, 235, 221,0.2);
+  color: #ccc;
+}
+.search-form svg{
+  position: absolute;
+  top: 25%;
+  left: 10px;
+  color: #ccc;
+  cursor: pointer;
+}
+.search-form .form-control::placeholder{
+  font-size: 15px;
+  color: #ccc;
+}
+.register a{
+  display: flex;
+  color: #fff;
+  line-height: 40px;
+  text-decoration: none;
+  font-family: "Lato",sans-serif;
+  font-weight: 400;
+
+}
+.register a svg{
+  margin: 5px 10px 0 0;
+}
+
+.sectionForm{
+  height: calc(120vh - 90px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+.formInput{
+  background-color: #2C394B;
+  width: 500px;
+  padding: 30px;
+  border-radius: 10px;
+  margin: 30px 0;
+  box-shadow: 0 3px 4px rgba(79, 87, 129, 0.3);
+ 
+}
+.formInput h2{
+  font-size: 26px;
+  font-weight: 400;
+  text-transform: capitalize;
+  margin-left: 20px;
+  color: #9D9D9D;
+}
+.formInput .features{
+  margin:10px  20px;
+  color: #9D9D9D;
+}
+form{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.form-group{
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+.form-group label{
+  font-size: 17px;
+  font-family: "Lato",sans-serif;
+  font-weight: 400;
+  margin-bottom: 10px;
+  color: #9D9D9D;
+}
+.form-group .form-control{
+  height: 45px;
+  width: 400px;
+  border-radius: 40px;
+  outline: none;
+  border: none;
+  padding: 10px 10px 10px 20px;
+  font-size: 15px;
+  font-family: "Lato",sans-serif;
+  background-color: #ddd;
+}
+/* .form-group{
+  display: inline-block;
+  margin-top: 10px;
+} */
+.form-group .forgot a{
+  text-decoration: none;
+  color: #F0A500;
+  font-size: 14px;
+  font-family: "Lato",sans-serif;
+  float: right;
+  margin-top: 10px;
+  
+}
+.formCheck input{
+  margin-top: 20px;
+  float: left;
+}
+button{
+  margin-top: 30px;
+}
+.button .btn{
+  padding: 15px 180px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  background-color: #F0A500;
+  font-size: 15px;
+  cursor: pointer;
+}
+.form-link{
+  color: #9D9D9D;
+  margin-top: 20px;
+}
+.form-link a{
+  margin-left: 10px;
+  text-decoration: none;
+  color: #F0A500;
 }
 
