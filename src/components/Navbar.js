@@ -1,9 +1,19 @@
-import Img from '../logo.png'
+import { useEffect,useState } from 'react';
+import Img from '../logo.png';
 import SearchIcon from './SearchIcon';
-import ProfileIcon from './ProfileIcon'
-import { useUserAuth } from '../Context/AuthContext';
+import ProfileIcon from './ProfileIcon';
+import { useUserAuth } from '../Context/UserAuthContext';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { database,auth } from '../firebase-config';
 const Navbar = () =>{
-    const { user } = useUserAuth;
+    const[userDetail,setUserDetail] = useState({})
+    const { user } = useUserAuth();
+    
+    useEffect(()=>{
+        const unsub = onSnapshot(doc(database,"users",auth.currentUser.uid),(snap)=> setUserDetail(snap.data()));
+        return () => unsub()
+    },[])
+    
     console.log(user)
     return(
         <nav>
@@ -26,12 +36,14 @@ const Navbar = () =>{
                 <SearchIcon/>
             </div>
             <div className="register">
-                {user ? <p>{user.email}</p>:
-                <a href='#'>
-                    <ProfileIcon/>
-                    Login/Register
-                </a>
-}
+                {user ?
+                    <p>{userDetail?.username} <button></button></p>
+                    :
+                    <a href='#'>
+                        <ProfileIcon/>
+                        Login/Register
+                    </a>
+                }
             </div>
             
         </nav>
