@@ -1,7 +1,10 @@
 import Img from '../logo.png'
 import SearchIcon from './SearchIcon';
 import ProfileIcon from './ProfileIcon'
+import { useUserAuth } from '../Context/AuthContext';
 const Navbar = () =>{
+    const { user } = useUserAuth;
+    console.log(user)
     return(
         <nav>
             <div className="logo">
@@ -23,10 +26,12 @@ const Navbar = () =>{
                 <SearchIcon/>
             </div>
             <div className="register">
+                {user ? <p>{user.email}</p>:
                 <a href='#'>
                     <ProfileIcon/>
                     Login/Register
                 </a>
+}
             </div>
             
         </nav>

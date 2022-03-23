@@ -4,18 +4,21 @@ import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
+import { UserAuthContextProvider } from './Context/AuthContext';
 
 
 function App() {
   return (
-    <Router>
-      <Navbar/>
-      <Routes>
-        <Route path='/' element={<Login/>}/>
-        <Route path='/register' element={<Register/>}/>
-        <Route path='/home' element={<Home/>}/>
-      </Routes>
-    </Router>
+    <UserAuthContextProvider>
+      <Router>
+        <Navbar/>
+        <Routes>
+          <Route path='/' element={<Login/>}/>
+          <Route path='/register' element={<Register/>}/>
+          <Route path='/home' element={<Home/>}/>
+        </Routes>
+      </Router>
+    </UserAuthContextProvider>
   );
 }
 
