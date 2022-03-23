@@ -97,7 +97,7 @@ nav ul li a{
 }
 
 .sectionForm{
-  height: calc(120vh - 90px);
+  height: calc(110vh - 90px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -106,9 +106,9 @@ nav ul li a{
 .formInput{
   background-color: #2C394B;
   width: 500px;
-  padding: 30px;
+  padding: 20px;
   border-radius: 10px;
-  margin: 30px 0;
+  /* margin: 30px 0; */
   box-shadow: 0 3px 4px rgba(79, 87, 129, 0.3);
  
 }
@@ -116,11 +116,20 @@ nav ul li a{
   font-size: 26px;
   font-weight: 400;
   text-transform: capitalize;
-  margin-left: 20px;
+  margin-left: 30px;
   color: #9D9D9D;
 }
+.formInput .alert {
+  margin-left: 30px;
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: rgb(224, 197, 197);
+  color: rgb(228, 88, 88);
+  width: 400px;
+  border-radius: 5px;
+}
 .formInput .features{
-  margin:10px  20px;
+  margin:10px  30px;
   color: #9D9D9D;
 }
 form{
