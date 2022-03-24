@@ -52,12 +52,13 @@ nav ul li{
   line-height: 40px;
   margin-left: 30px;
 }
-nav ul li a{
+nav ul li .nav-link{
   text-decoration: none;
   color: #ccc;
   font-weight: 400;
   font-family: "Lato",sans-serif;
   font-size: 16px;
+  cursor: pointer;
 }
 
 .search-form{
@@ -97,7 +98,7 @@ nav ul li a{
 .register a svg{
   margin: 5px 10px 0 0;
 }
-.userDetails{
+.dropdown-menu{
   background-color: #FFC300;
   display: flex;
   align-items: center;
@@ -107,29 +108,46 @@ nav ul li a{
   color: #333;
   cursor: pointer;
   width: 120px;
+  position: relative;
  
 }
 
-.userDetails:hover{
+.dropdown-menu:hover{
   background-color: #F0A500;
 }
 
-.userDetails p{
+.dropdown-menu p{
   overflow: hidden;
   width: 90%;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.userDetails .details{
+.dropdown-menu .dropdown-btn{
   margin: 6px 5px 0 5px;
   font-size: 17px;
   background-color: transparent;
   border: none;
   cursor: pointer;
+}
+.menu{
+  position: absolute;
+  top: 50px;
+  width: 170px;
+  right: 9px;
+  background-color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  text-align: center;
+}
+.menu a {
+  color: rgb(49, 45, 45);
+  font-size: 15px;
   
- 
-
+}
+.menu .icon{
+  margin-top: 12px;
+  margin-right: 5px;
 }
 
 .sectionForm{

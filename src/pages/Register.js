@@ -37,7 +37,7 @@ const Register = () =>{
                 password:"",
                 error:null
            });
-           navigate("/home");
+           navigate("/");
 
        }catch(err){
            setUserData({...userData,error:err.message})
@@ -96,7 +96,7 @@ const Register = () =>{
                         <button className="btn" onClick={register}>Register</button>
                     </div>
                     <div className="form-link">
-                        <p>Already have an account?<NavLink to="/">Sign in</NavLink></p>
+                        <p>Already have an account?<NavLink to="/login">Sign in</NavLink></p>
                     </div>
                 </form>
             </div>

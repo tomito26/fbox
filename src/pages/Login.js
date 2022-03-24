@@ -28,7 +28,7 @@ const Login = () =>{
                 isOnline:true
             }
             updateDoc(docRef,payload);
-            navigate("/home");
+            navigate("/");
         }catch(err){
             setLoginData({...loginData,error:err.message})
         }
