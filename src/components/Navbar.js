@@ -3,18 +3,24 @@ import Img from '../logo.png';
 import SearchIcon from './SearchIcon';
 import ProfileIcon from './ProfileIcon';
 import { useUserAuth } from '../Context/UserAuthContext';
+import { FaCaretDown } from 'react-icons/fa'
 import { doc, onSnapshot } from 'firebase/firestore';
-import { database,auth } from '../firebase-config';
+import { database } from '../firebase-config';
+
 const Navbar = () =>{
-    const[userDetail,setUserDetail] = useState({})
-    const { user } = useUserAuth();
-    
+    const [profile,setProfile] = useState("")
+    const { user} = useUserAuth();
     useEffect(()=>{
-        const unsub = onSnapshot(doc(database,"users",auth.currentUser.uid),(snap)=> setUserDetail(snap.data()));
-        return () => unsub()
-    },[])
+        if(!user.uid){
+            console.log(user.uid)
+        }else{
+            const unsub = onSnapshot(doc(database,"users", user.uid),(snap)=>setProfile(snap.data()));
+            return ()=>unsub
+        }
+    },[])   
+   
     
-    console.log(user)
+    console.log(profile)
     return(
         <nav>
             <div className="logo">
@@ -36,13 +42,15 @@ const Navbar = () =>{
                 <SearchIcon/>
             </div>
             <div className="register">
-                {user ?
-                    <p>{userDetail?.username} <button></button></p>
-                    :
+                { !user ?
                     <a href='#'>
                         <ProfileIcon/>
                         Login/Register
                     </a>
+                    :
+                    <div className='userDetails'><p>{user.email}</p><button className='details'><FaCaretDown/></button></div>
+                   
+                    
                 }
             </div>
             
