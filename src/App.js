@@ -9,6 +9,8 @@ import PrivateLink from './components/PrivateLink';
 import Movies from './pages/Movies';
 import TvSeries from './pages/TvSeries';
 import TopImdb from './pages/TopImdb';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Profile from './pages/Profile';
 
 
 function App() {
@@ -23,6 +25,7 @@ function App() {
           <Route path='/movies' element={<PrivateLink><Movies/></PrivateLink>}/>
           <Route path="/tvSeries" element={<PrivateLink><TvSeries/></PrivateLink>}/>
           <Route path='topImdb' element={<PrivateLink><TopImdb/></PrivateLink>}/>
+          <Route path='/profile' element={<PrivateLink><Profile/></PrivateLink>}/>
         </Routes>
       </Router>
     </UserAuthContextProvider>

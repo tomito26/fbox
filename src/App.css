@@ -5,19 +5,21 @@
   box-sizing: border-box;
 }
 body{
-  background-color: #082032;
-  color: #fff;
-  font-family: "Lato",sans-serif;
+  background-color: #082032 !important;
+  color: #fff !important;
+  font-family: "Lato",sans-serif !important;
+  width: 100vw !important;
+  overflow-x: hidden !important;
 }
 nav{
-  display: flex;
-  justify-content: space-between;
-  background-color: #2C394B;
-  padding: 20px 30px;
+  display: flex !important;
+  justify-content: space-around !important;
+  background-color: #2C394B ;
+  padding: 10px 20px !important;
 
 }
 nav .logo{
-  display: flex;
+  display: flex !important;
 
  
 }
@@ -26,18 +28,19 @@ nav .logo .image{
   height: 30px;
   width: 30px;
   margin-right:5px ;
+  margin-top: 10px;
 }
 
 nav .logo .image img{
-  height: 100%;
+  height: 100% ! important;
   width: 100%;
   object-fit: cover;
   object-position: center;
   margin-right: 10px;
 }
 nav .logo .text{
-  line-height: 30px;
-  font-size: 18px;
+  line-height: 50px;
+  font-size: 20px;
   font-family: 'Lato',sans-serif;
   font-weight: 900;
 
@@ -48,91 +51,102 @@ nav ul {
   list-style: none;
 }
 nav ul li{
-  display: inline-block;
-  line-height: 30px;
-  margin-left: 30px;
+  display: inline-block !important;
+  line-height: 30px !important;
+  margin-left: 10px !important;
 }
 nav ul li .nav-link{
-  text-decoration: none;
-  color: #ccc;
+  text-decoration: none !important;
+  color: #ccc !important;
   font-weight: 400;
-  font-family: "Lato",sans-serif;
-  font-size: 16px;
-  cursor: pointer;
+  font-family: "Lato",sans-serif !important;
+  font-size: 16px !important;
+  cursor: pointer !important;
 }
 
 .search-form{
-  position: relative;
+  position: relative !important;
 }
 .search-form .form-control{
-  height: 45px;
-  width: 300px;
-  padding: 0 10px 0 40px;
-  border-radius: 30px;
-  border: none;
-  outline: none;
-  background-color: rgba(238, 235, 221,0.2);
-  color: #ccc;
-  margin-bottom: 5px;
+  height: 45px !important;
+  width: 300px !important;
+  padding: 0 10px 0 40px !important;
+  border-radius: 30px !important;
+  border: none !important;
+  outline: none !important;
+  background-color: rgba(238, 235, 221,0.2) !important;
+  color: #ccc !important;
+  margin-bottom: 5px !important;
 }
 .search-form svg{
-  position: absolute;
-  top: 25%;
-  left: 10px;
-  color: #ccc;
-  cursor: pointer;
+  position: absolute !important;
+  top: 20% !important;
+  left: 10px !important;
+  color: #ccc !important;
+  cursor: pointer !important;
 }
 .search-form .form-control::placeholder{
-  font-size: 15px;
-  color: #ccc;
+  font-size: 15px !important;
+  color: #ccc !important;
+}
+.register{
+  margin-left: 30px ;
 }
 
-.register a{
-  display: flex;
-  color: #fff;
-  line-height: 30px;
+.register a {
+  display: flex !important;
+  color: #fff !important;
+  line-height: 30px ;
   text-decoration: none;
   font-family: "Lato",sans-serif;
   font-weight: 400;
-
 }
 .register a svg{
   margin: 5px 10px 0 0;
 }
 .dropdown-menu{
-  background-color: #FFC300;
-  display: flex;
-  align-items: center;
-  height: 45px;
-  padding: 10px;
-  border-radius: 40px;
-  color: #333;
-  cursor: pointer;
-  width: 120px;
-  position: relative;
+  background-color: #FFC300 !important;
+  display: flex !important;
+  justify-content: center !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  height: 40px !important; 
+  padding: 10px !important;
+  border-radius: 100px !important;
+  color: #333 !important;
+  cursor: pointer !important;
+  min-width: 100px !important;
+  position: relative !important;
  
 }
 
 .dropdown-menu:hover{
-  background-color: #F0A500;
+  background-color: #F0A500 !important;
+}
+.dropdown-button{
+  display: flex !important;
+
 }
 
-.dropdown-menu p{
-  overflow: hidden;
-  width: 90%;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.dropdown-menu .dropdown-button p{
+  overflow: hidden !important;
+  width: 100% !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  margin-right: 5px !important;
+  margin-top: 13px;
+  
 }
 
 .dropdown-menu .dropdown-btn{
-  margin: 6px 5px 0 5px;
-  font-size: 17px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
+  /* margin:; */
+  font-size: 17px !important;
+  background-color: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
 }
 .menu{
-  position: absolute;
+  position: absolute ;
   top: 50px;
   width: 170px;
   right: 5px;
@@ -142,18 +156,18 @@ nav ul li .nav-link{
   
 }
 
-.menu a {
-  color: rgb(49, 45, 45);
-  font-size: 15px;
-  width: 100%;
-  padding: 5px 15px;
+.menu .menu-link {
+  color: rgb(49, 45, 45) !important;
+  font-size: 15px !important;
+  width: 100% !important;
+  padding: 5px 15px !important;
   
 }
 
 
-.menu .icon{
-  margin-top: 8px;
-  margin-right: 5px;
+.signOut-btn  .icon{
+  margin-bottom: 8px !important;
+  /* margin-right: 5px; */
 }
 .menu a:hover{
   background-color: #eee;
@@ -163,11 +177,12 @@ nav ul li .nav-link{
 .signOut-btn{
   background-color: transparent;
   border: none;
-  font-size: 17px;
-  padding: 5px  50px 0 0;
+  font-size: 15px;
+  padding: 8px  55px 8px 0;
   width: 100%;
-  color: #333;
+  color: rgb(49, 45, 45);
   margin-top: 5px;
+  cursor: pointer;
 
   
 }

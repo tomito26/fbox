@@ -4,16 +4,38 @@ import SearchIcon from './SearchIcon';
 import ProfileIcon from './ProfileIcon';
 import { useUserAuth } from '../Context/UserAuthContext';
 import { FaCaretDown, FaHeart, FaSignOutAlt, FaUserCircle } from 'react-icons/fa'
-import {  } from "react-icons/hi";
-import { doc, onSnapshot } from 'firebase/firestore';
-import { database } from '../firebase-config';
-import { NavLink } from 'react-router-dom';
+import { auth, database } from '../firebase-config';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { signOut } from 'firebase/auth';
+import { async } from '@firebase/util';
+import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import Loading from './Loading';
 
 const Navbar = () =>{
-    
+    const[isActive,setIsActive] = useState(false);
+    const[userData,setUserData] = useState({});
+    const[loading,setLoading] = useState(true);
     const { user} = useUserAuth();
-   
-   
+    const navigate = useNavigate()
+
+    useEffect(()=>{
+        if(user){
+            const unsub = onSnapshot(doc(database,"users",auth.currentUser?.uid),snap=>setUserData(snap.data()))
+            return () => unsub
+        }
+    },[])
+
+    const handleLogOut = async () =>{
+        const docRef = doc(database,"users",auth.currentUser.uid)
+        const payload = {
+            isOnline:false
+        }
+        await updateDoc(docRef,payload)
+        await signOut(auth)
+        navigate("/login")
+        
+
+    }
    
     
     return(
@@ -22,7 +44,7 @@ const Navbar = () =>{
                 <div className='image'>
                     <img src={Img} alt="fbox logo" />
                 </div>
-                <h3 className='text'>Fbox.to</h3>
+                <h3 className='text'>fbox.to</h3>
             </div>
             <ul>
                 <li><NavLink className="nav-link" to="/">Home</NavLink></li>
@@ -38,20 +60,26 @@ const Navbar = () =>{
             </div>
             <div className="register">
                 { !user ?
-                    <a href='#'>
+                    <NavLink  to='/login'>
                         <ProfileIcon/>
                         Login/Register
-                    </a>
+                    </NavLink>
                     :
                     <div className='dropdown-menu'>
-                        <p>{user.email}</p><button className='dropdown-btn'><FaCaretDown/></button>
-                        <div className='menu'>
-                            <div className='user-menu'>
-                                <a><FaUserCircle className='icon'/>Profile</a>
-                                <a><FaHeart className='icon'/>My WatchList</a>
-                            </div>
-                            <button className='signOut-btn'><FaSignOutAlt className='icon'/>SignOut</button>
+                        <div className='dropdown-button' onClick={e=>setIsActive(!isActive)}>
+                            <p>{userData.username}</p>
+                            <button className='dropdown-btn'><FaCaretDown/></button>
                         </div>
+                        { isActive &&
+                            <div className='menu'>
+                                <div className='user-menu'>
+                                    <NavLink className='menu-link' to="/profile"><FaUserCircle className='icon'/>Profile</NavLink>
+                                    <a href='#' className='menu-link'><FaHeart className='icon'/>My WatchList</a>
+                                </div>
+                                <button className='signOut-btn' onClick={handleLogOut}><FaSignOutAlt className='icon'/>SignOut</button>
+                            </div>
+                        
+                        }
                     </div>
                    
                     
