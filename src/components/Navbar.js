@@ -10,19 +10,12 @@ import { database } from '../firebase-config';
 import { NavLink } from 'react-router-dom';
 
 const Navbar = () =>{
-    const [profile,setProfile] = useState("")
+    
     const { user} = useUserAuth();
-    useEffect(()=>{
-        if(!user.uid){
-            console.log(user.uid)
-        }else{
-            const unsub = onSnapshot(doc(database,"users", user.uid),(snap)=>setProfile(snap.data()));
-            return ()=>unsub
-        }
-    },[])   
+   
+   
    
     
-    console.log(profile)
     return(
         <nav>
             <div className="logo">
@@ -32,7 +25,7 @@ const Navbar = () =>{
                 <h3 className='text'>Fbox.to</h3>
             </div>
             <ul>
-                <li><NavLink className="nav-link" to="/home">Home</NavLink></li>
+                <li><NavLink className="nav-link" to="/">Home</NavLink></li>
                 <li><span className='nav-link'>Genres</span></li>
                 <li><span className='nav-link'>Country</span></li>
                 <li><NavLink className="nav-link" to="/movies">Movies</NavLink></li>
@@ -53,9 +46,11 @@ const Navbar = () =>{
                     <div className='dropdown-menu'>
                         <p>{user.email}</p><button className='dropdown-btn'><FaCaretDown/></button>
                         <div className='menu'>
-                            <a><FaUserCircle className='icon'/>Profile</a>
-                            <a><FaHeart className='icon'/>My WatchList</a>
-                            <a><FaSignOutAlt className='icon'/>SignOut</a>
+                            <div className='user-menu'>
+                                <a><FaUserCircle className='icon'/>Profile</a>
+                                <a><FaHeart className='icon'/>My WatchList</a>
+                            </div>
+                            <button className='signOut-btn'><FaSignOutAlt className='icon'/>SignOut</button>
                         </div>
                     </div>
                    

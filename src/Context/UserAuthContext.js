@@ -8,12 +8,12 @@ const UserAuthContext = createContext({});
 
 export  const UserAuthContextProvider = ({ children }) =>{
     const [user,setUser] = useState("");
-    const [userDetails,setUserDetails] = useState("");
+ 
 
     useEffect(()=>{
         const unsub = onAuthStateChanged(auth,(currentUser)=> setUser(currentUser));
         return () => unsub();
-    },[user])
+    },[])
 
     console.log(user)
     return(
