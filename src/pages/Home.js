@@ -1,7 +1,10 @@
+import CarouselContainer from "../components/CarouselContainer";
+
+
 const Home = () =>{
     return(
         <div>
-            Home page
+            <CarouselContainer/>
         </div>
     );
 };

@@ -200,6 +200,23 @@ nav ul li .nav-link{
   margin-right: 5px;
 
 }
+/* //carousel  */
+.carousel-wrapper{
+  height: calc(100vh - 100px) !important;
+  width: 100% !important;
+}
+.wrapper img{
+  height: 87vh !important;
+  width: 100% !important;
+  object-fit: cover !important;
+
+}
+.ca-caption{
+  position: absolute !important;
+  left: 20px !important;
+  right: 70% !important;
+  bottom: 60px !important;
+}
 
 .sectionForm{
   height: calc(110vh - 90px);
