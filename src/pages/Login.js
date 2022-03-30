@@ -69,7 +69,7 @@ const Login = () =>{
                         <button className="btn" onClick={handleLogin}>Login</button>
                     </div>
                     <div className="form-link">
-                        <p>Don't have an Account?<NavLink to="/register">Register</NavLink></p>
+                        <p>Don't have an Account?<NavLink className="form-reg-link" to="/register">Register</NavLink></p>
                     </div>
                 </form>
             </div>

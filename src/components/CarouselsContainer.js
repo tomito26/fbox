@@ -23,7 +23,6 @@ const CarouselContainer = () =>{
         <Carousel className='carousel-wrapper' controls={false}>
             <Carousel.Item interval={3000} className="wrapper" >
                 <img
-                fluid={true}
                 className="d-block w-100 img-fluid"
                 src={`${baseUrl}/${carouselMovies[0]?.backdrop_path}`}
                 alt="First slide"
@@ -45,7 +44,6 @@ const CarouselContainer = () =>{
 
             <Carousel.Item interval={3000} className="wrapper" >
                 <img
-                fluid={true}
                 className="d-block w-100 img-fluid"
                 src={`${baseUrl}/${carouselMovies[1]?.backdrop_path}`}
                 alt="First slide"
