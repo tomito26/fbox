@@ -36,10 +36,11 @@ const Navbar = () =>{
         
 
     }
+    console.log(window.location.pathname)
    
     
     return(
-        <nav>
+        <nav className={window.location.pathname === "/" ? "navbar" : "nav"}>
             <div className="logo">
                 <div className='image'>
                     <img src={Img} alt="fbox logo" />
@@ -47,12 +48,12 @@ const Navbar = () =>{
                 <h3 className='text'>fbox.to</h3>
             </div>
             <ul>
-                <li><NavLink className="nav-link" to="/">Home</NavLink></li>
+                <li><NavLink style={({isActive})=>{ return {color: isActive ?  "#FFC300 " :"#ccc" } }}  className="nav-link" to="/">Home</NavLink></li>
                 <li><span className='nav-link'>Genres</span></li>
                 <li><span className='nav-link'>Country</span></li>
-                <li><NavLink className="nav-link" to="/movies">Movies</NavLink></li>
-                <li><NavLink className="nav-link" to="/tvSeries">TV-Series</NavLink></li>
-                <li><NavLink className="nav-link" to="/topImdb">Top IMDb</NavLink></li>
+                <li><NavLink style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="nav-link" to="/movies">Movies</NavLink></li>
+                <li><NavLink style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="nav-link" to="/tvSeries">TV-Series</NavLink></li>
+                <li><NavLink style={({isActive})=>{ return {color: isActive ?  "#FFC300 " :"#ccc" } }} className="nav-link" to="/topImdb">Top IMDb</NavLink></li>
             </ul>
             <div className="search-form">
                 <input type="text" name="searchItem" className='form-control' placeholder='Enter your keywords...'/>

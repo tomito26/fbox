@@ -2,6 +2,7 @@ import { async } from "@firebase/util";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, updateDoc } from "firebase/firestore";
 import { useState } from "react";
+import { Alert } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
 import { auth, database } from "../firebase-config";
 
@@ -39,10 +40,7 @@ const Login = () =>{
         <section className="sectionForm">
             <div className="formInput">
                 <h2>Sign In</h2>
-                {error ? <div className="alert">
-                            <p>{loginData.error}</p>
-                        </div>
-                    :null}
+                {error ? <Alert variant="danger">{loginData.error}</Alert> : null}
                 <form onSubmit={handleLogin}>
                     <div className="form-group">
                         <label htmlFor="email">Your Account</label>

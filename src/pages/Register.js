@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { setDoc, Timestamp,doc } from "firebase/firestore"
 import { auth,database } from "../firebase-config"
+import { Alert } from "react-bootstrap";
 const Register = () =>{
 
     const[userData,setUserData] = useState({
@@ -52,11 +53,7 @@ const Register = () =>{
             <div className="formInput">
                 <h2>Create Account</h2>
                 <p className="features">Create an account to enjoy features</p>
-                { error ? 
-                    <div className="alert">
-                        <p>{error}</p>
-                    </div>
-                 :null
+                { error ? <Alert variant="danger">{error}</Alert> :null
                 }
                 <form onSubmit={register}>
                     <div className="form-group">
