@@ -12,10 +12,7 @@ body{
   overflow-x: hidden !important;
   position: relative;
 }
-nav{
 
-  
-}
 .nav{
   display: flex !important;
   justify-content: space-around !important;
