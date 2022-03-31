@@ -5,7 +5,7 @@
   box-sizing: border-box;
 }
 body{
-  background-color: #082032 !important;
+  background-color: #041C32 !important;
   color: #fff !important;
   font-family: "Lato",sans-serif !important;
   width: 100vw !important;
@@ -15,7 +15,7 @@ body{
 
 .nav{
   display: flex !important;
-  justify-content: space-around !important;
+  justify-content: space-between !important;
   background-color: #2C394B ;
   padding: 10px 20px  !important;
   
@@ -23,12 +23,12 @@ body{
 
 .navbar{
   display: flex !important;
-  justify-content: space-around !important;
+  justify-content: space-between !important;
   /* background-color: #2C394B ; */
   padding: 7px 20px  !important;
   position: absolute !important;
   top: 5px;
-  left: 20px;
+  left: 0;
   z-index: 1;
 
 }
@@ -427,7 +427,7 @@ form{
   background-color: #F0A500;
 }
 .form-link{
-  color: #9D9D9D;
+  color: rgb(128, 125, 125);
   margin-top: 20px;
 }
 .form-link a{
@@ -439,3 +439,99 @@ form{
   color: #F0A500;
 }
 
+/* about page  */
+.about{
+  margin-left: 20px;
+  margin-top: 40px;
+}
+.about h2{
+  font-size: 25px !important;
+  color: rgb(128, 125, 125);
+
+}
+.about p{
+  color: rgb(128, 125, 125);
+  font-size: 15px;
+  word-spacing: 1px;
+}
+.share-socials{
+  text-align: center;
+  margin-bottom: 20px;
+}
+.facebook,
+.twitter,
+.email,
+.pinterest,
+.whatsapp,.telegram{
+  padding: 3px 12px;
+  font-size: 13px;
+  border: none;
+  outline: none;
+  margin-right: 5px;
+  cursor: pointer;
+  text-align: center;
+  color: #fff;
+}
+.social-icon{
+  margin-bottom: 3px;
+}
+.facebook{
+  background-color: #4267B2;
+}
+.twitter{
+  background-color: #00acee;
+}
+.email{
+  background-color: 	#9D9D9D;
+}
+.pinterest{
+  background-color: #E60023;
+}
+.whatsapp{
+  background-color: #25D366;
+}
+.telegram{
+  background-color:  #229ED9;
+}
+
+/* recommend movies section  */
+.recommend-movies{
+  margin-top: 30px;
+  padding: 0 20px;
+}
+.recommend-menu h3{
+  display: inline-block !important;
+  color: rgb(128, 125, 125)!important;
+  font-weight: 300 !important;
+  
+ 
+  /* border-bottom: 1px solid rgb(182, 180, 180); */
+}
+.recommend-menu h3 span{
+  display: inline-block;
+  width: 80%;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgb(128, 125, 125);
+  font-size: 30px !important;
+}
+.recommend-menu ul{
+  display: inline-block !important;
+}
+.recommend-menu ul li{
+  display: inline-block;
+  list-style: none;
+}
+.recommend-menu ul li .recommend-navLink{
+  background-color: rgb(44, 43, 43);
+  padding: 5px 12px;
+  color: rgb(128, 125, 125);
+  text-align: center;
+  margin-left: 10px;
+  font-size: 13px;
+  text-decoration: none;
+  border-radius: 3px;
+}
+.recommend-navLink .movie-icon{
+  margin-bottom: 4px;
+  margin-right: 3px;
+}

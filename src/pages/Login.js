@@ -1,4 +1,3 @@
-import { async } from "@firebase/util";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, updateDoc } from "firebase/firestore";
 import { useState } from "react";
@@ -28,7 +27,7 @@ const Login = () =>{
             const payload = {
                 isOnline:true
             }
-            updateDoc(docRef,payload);
+            await updateDoc(docRef,payload);
             navigate("/");
         }catch(err){
             setLoginData({...loginData,error:err.message})

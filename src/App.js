@@ -11,6 +11,9 @@ import TvSeries from './pages/TvSeries';
 import TopImdb from './pages/TopImdb';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Profile from './pages/Profile';
+import TvShows from './components/TvShows';
+import RecommendedMovies from './components/RecommendedMovies';
+import Trendings from './components/Trendings';
 
 
 function App() {
@@ -21,7 +24,11 @@ function App() {
         <Routes>
           <Route path='/login' element={<Login/>}/>
           <Route path='/register' element={<Register/>}/>
-          <Route path='/' element={<PrivateLink><Home/></PrivateLink>}/>
+          <Route path='/' element={<PrivateLink><Home/></PrivateLink>}>
+            <Route path='/' element={<RecommendedMovies/>}/>
+            <Route path='tvshows' element={<TvShows/>}/>
+            <Route path='trendings' element={<Trendings/>}/>
+          </Route>
           <Route path='/movies' element={<PrivateLink><Movies/></PrivateLink>}/>
           <Route path="/tvSeries" element={<PrivateLink><TvSeries/></PrivateLink>}/>
           <Route path='topImdb' element={<PrivateLink><TopImdb/></PrivateLink>}/>
