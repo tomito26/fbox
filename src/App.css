@@ -562,13 +562,19 @@ form{
 }
 .movie-footer{
   color: rgb(128, 125, 125);
+  display: flex;
+  justify-content: space-between;
+
   
   
 }
 .movie-footer .year {
   font-size: 13px !important;
-  margin-right: 112px;
+  /* margin-right: 112px; */
 }
+/* .series-year{
+  margin-right: 140px;
+} */
 
 .movie-tag{
   border: 1px solid rgb(128, 125, 125);

@@ -1,9 +1,9 @@
 const RecommendedMovie = ({ movie }) =>{
-    console.log(movie)
+    // console.log(movie)
     const baseUrl = "https://image.tmdb.org/t/p/original/"
     const releaseYear = movie.release_date.split("-");
     const year = releaseYear[0];
-    console.log(movie.title.length)
+    // console.log(movie.title.length)
     return(
         <div className="movie-card">
             <div className="movie-img">
