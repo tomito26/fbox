@@ -535,3 +535,46 @@ form{
   margin-bottom: 4px;
   margin-right: 3px;
 }
+.movie-wrapper{
+  margin-top: 30px;
+  margin-right: 20px;
+  display: grid;
+  grid-template-columns: repeat(6,1fr);
+  grid-column-gap: 1em;
+  grid-row-gap: 2em;
+}
+.movie-wrapper .movie-img{
+  width: 100%;
+  height: 300px;
+}
+.movie-wrapper .movie-img img{
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+
+}
+.movie-info .movie-title{
+  font-size: 16px;
+  padding-bottom: 0;
+  margin-bottom: 3px;
+  margin-top: 5px;
+}
+.movie-footer{
+  color: rgb(128, 125, 125);
+  
+  
+}
+.movie-footer .year {
+  font-size: 13px !important;
+  margin-right: 112px;
+}
+
+.movie-tag{
+  border: 1px solid rgb(128, 125, 125);
+  padding: 0 4px;
+  border-radius: 4px;
+  font-size: 13px;
+  text-align: center;
+  text-transform: capitalize;
+}
