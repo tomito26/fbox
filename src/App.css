@@ -22,13 +22,14 @@ body{
 }
 
 .navbar{
+  width: 100%;
   display: flex !important;
   justify-content: space-between !important;
-  /* background-color: #2C394B ; */
-  padding: 7px 20px  !important;
+  padding: 7px 30px  !important;
   position: absolute !important;
   top: 5px;
   left: 0;
+  right: 20px !important;
   z-index: 1;
 
 }
@@ -141,7 +142,7 @@ nav ul li .nav-link:hover{
   cursor: pointer !important;
   min-width: 100px !important;
   position: relative !important;
-  margin-left: 30px !important;
+  /* margin-left: 30px !important; */
 }
 
 .dropdown-menu:hover{
@@ -241,7 +242,7 @@ nav ul li .nav-link:hover{
 }
 .ca-caption{
   position: absolute !important;
-  left: 20px !important;
+  left: 30px !important;
   right: 50% !important;
   bottom: 80px !important;
   text-align: left !important;
@@ -441,7 +442,7 @@ form{
 
 /* about page  */
 .about{
-  margin-left: 20px;
+  margin-left: 30px;
   margin-top: 40px;
 }
 .about h2{
@@ -497,7 +498,7 @@ form{
 /* recommend movies section  */
 .recommend-movies{
   margin-top: 30px;
-  padding: 0 20px;
+  padding: 0 30px;
 }
 .recommend-menu h3{
   display: inline-block !important;

@@ -40,7 +40,7 @@ const Navbar = () =>{
    
     
     return(
-        <nav className={window.location.pathname === "/" ? "navbar" : "nav"}>
+        <nav className={window.location.pathname === "/" || window.location.pathname === "/trendings" ||  window.location.pathname === "/tvshows" ? "navbar" : "nav"}>
             <div className="logo">
                 <div className='image'>
                     <img src={Img} alt="fbox logo" />

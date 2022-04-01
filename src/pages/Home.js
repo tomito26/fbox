@@ -11,7 +11,7 @@ const Home = () =>{
             <About/>
             <div className="recommend-movies">
                 <div className="recommend-menu">
-                    <h3><span>Recommend</span></h3>
+                    <h3><span>Recommended</span></h3>
                     <ul>
                         <li><NavLink style={({isActive})=>{ return{backgroundColor: isActive ? "#FFC300" : "rgb(44, 43, 43)",color: isActive ? "#333" :"rgb(128, 125, 125)" }}} className="recommend-navLink" to="/"><FaPlayCircle className="movie-icon"/> Movies</NavLink></li>
                         <li><NavLink style={({isActive})=>{ return{backgroundColor: isActive ? "#FFC300" : "rgb(44, 43, 43)",color: isActive ? "#333" :"rgb(128, 125, 125)" }}}  className="recommend-navLink" to="tvshows"><FaListUl className="movie-icon"/>TV Shows</NavLink></li>

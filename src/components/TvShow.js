@@ -8,7 +8,7 @@ const TvShow  = ({ tvShow }) =>{
                 <img src={`${baseUrl}/${tvShow.poster_path}`} alt={tvShow.name} />
             </div>
             <div className="movie-info">
-                <p className="movie-title">{tvShow.name > 23 ? `${tvShow.name.slice(0,22)}...` : tvShow.name}</p>
+                <p className="movie-title">{tvShow.name.length > 25 ? `${tvShow.name.substring(0,23)}...` : tvShow.name}</p>
                 <p className="movie-footer "><span className="year">{year}</span><span className="movie-tag series-tag">Tv</span></p>
             </div>
 
