@@ -15,7 +15,7 @@ const CarouselContainer = () =>{
         const data = await rest.json();
         setCarouselMovies(data.results.slice(0,11));
     };
-    console.log(carouselMovies)
+    // console.log(carouselMovies)
 
     const baseUrl = "https://image.tmdb.org/t/p/original/"
     

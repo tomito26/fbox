@@ -36,7 +36,7 @@ const Navbar = () =>{
         
 
     }
-    console.log(window.location.pathname)
+  
    
     
     return(
