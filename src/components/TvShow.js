@@ -6,6 +6,7 @@ const TvShow  = ({ tvShow }) =>{
         <div className="movie-card">
             <div className="movie-img">
                 <img src={`${baseUrl}/${tvShow.poster_path}`} alt={tvShow.name} />
+                <p className='movie-hd-tag'>HD</p>
             </div>
             <div className="movie-info">
                 <p className="movie-title">{tvShow.name.length > 25 ? `${tvShow.name.substring(0,23)}...` : tvShow.name}</p>

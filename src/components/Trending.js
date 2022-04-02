@@ -8,6 +8,7 @@ const Trending = ({ trending })=>{
         <div className="movie-card">
             <div className="movie-img">
                 <img src={`${baseUrl}/${trending.poster_path}`} alt={trending.name} />
+                <p className='movie-hd-tag'>HD</p>
             </div>
             <div className="movie-info">
                 <p className="movie-title">
