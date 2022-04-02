@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Trending from './Trending'
 
 const Trendings = () =>{
     const[trendings,setTrendings] = useState([]);
@@ -14,7 +15,7 @@ const Trendings = () =>{
     
     return(
         <div className="movie-wrapper">
-
+            {trendings.map(trending => <Trending key={trending.id} trending={trending}/>)}
         </div>
     );
 };
