@@ -3,6 +3,7 @@ import CarouselsContainer from "../components/CarouselsContainer";
 import About from "./About";
 import { NavLink, Outlet,Link } from 'react-router-dom';
 import LatestMovies from "../components/LatestMovies";
+import LatestTvSeries from "../components/LatestTvSeries";
 
 
 const Home = () =>{
@@ -34,6 +35,20 @@ const Home = () =>{
                     
                 </div>
                 <LatestMovies/>
+            </div>
+            <div className="latest-movies">
+                <div className="latest-menu">
+                    <h3><span>Latest Series</span></h3>
+                    
+                        <p className="link">
+                            <Link to="/latest-tv-series" className="latest-movies-link">
+                                <span>View all</span>
+                                <FaChevronCircleRight className="view-all-link"/>
+                            </Link>
+                        </p>
+                    
+                </div>
+                <LatestTvSeries/>
             </div>
         </div>
     );

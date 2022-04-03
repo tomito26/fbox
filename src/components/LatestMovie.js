@@ -8,7 +8,7 @@ const LatestMovie = ({ movie }) => {
 
     const releaseYear = !movie.release_date ? "" : movie.release_date.split("-");
     const year = releaseYear[0];
-    console.log(movie)
+    
     return(
         <div className="movie-card" onMouseOver={e =>setIsHovering(movie.id)} onMouseOut={()=>setIsHovering(-1)}>
             <Link className='movie-link' to={`/${movie.id}`}>
