@@ -39,7 +39,7 @@ const Trending = ({ trending })=>{
                             <span>{movieReleaseDate}</span>
                             <span className='overview-tag'>HD</span>
                         </p>
-                        <p class="movie-overview-details">{trending.overview.length  > 120 ? `${trending.overview.substring(0,120)}...` : trending.overview }</p>
+                        <p className="movie-overview-details">{trending.overview.length  > 120 ? `${trending.overview.substring(0,120)}...` : trending.overview }</p>
                         <div className="overview-button">
                             <button className="watch-now-btn"><span className="watchnow-icon"><FaPlay className='watch-now-icon'/></span> Watch Now</button>
                             <p className="watchlist-icon"><FaRegHeart/></p>

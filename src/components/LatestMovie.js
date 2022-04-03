@@ -1,8 +1,18 @@
 import { FaPlay, FaRegHeart, FaStar } from 'react-icons/fa'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 const LatestMovie = ({ movie }) => {
     const[isHovering,setIsHovering] = useState(-1);
+    const[movieDetail,setMovieDetail] = useState({});
+
+    useEffect(()=>{
+        const getMovieDetail = async () =>{
+            const rest = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
+            const data = await rest.json();
+            setMovieDetail(data)
+        }
+        getMovieDetail()
+    },[])
 
     const baseUrl = "https://image.tmdb.org/t/p/original/";
 
@@ -21,7 +31,7 @@ const LatestMovie = ({ movie }) => {
                 </div>
                 <div className="movie-info">
                     <p className="movie-title">{movie.title.length > 22 ? `${movie.title.substring(0,21)}...` : movie.title  }</p>
-                    <p className="movie-footer"><span className="year">{year}</span> <span className="movie-tag">movie</span></p> 
+                    <p className="movie-footer"><span className="year">{`${year} . ${movieDetail.runtime}min`}</span> <span className="movie-tag">movie</span></p> 
                 </div>
             </Link>
             <div className={ isHovering > 0 ? "movie-overview" : "no-hover"}>

@@ -13,7 +13,7 @@ const LatestTvSeries = () =>{
         const data = await rest.json();
         setLatestTvSeries(data.results)
     }
-    console.log(latestTvSeries)
+   
     return(
         <div className="movie-wrapper">
             {latestTvSeries.map(tvSeries => <LatestTvSerie key={tvSeries.id} tvSeries={tvSeries}/>)}
