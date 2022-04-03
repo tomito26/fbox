@@ -1,7 +1,8 @@
-import { FaChartLine, FaHamburger, FaListUl, FaPlayCircle } from "react-icons/fa";
+import { FaChartLine, FaChevronCircleRight,FaListUl, FaPlayCircle } from "react-icons/fa";
 import CarouselsContainer from "../components/CarouselsContainer";
 import About from "./About";
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet,Link } from 'react-router-dom';
+import LatestMovies from "../components/LatestMovies";
 
 
 const Home = () =>{
@@ -19,6 +20,20 @@ const Home = () =>{
                     </ul>
                 </div>
                 <Outlet/>
+            </div>
+            <div className="latest-movies">
+                <div className="latest-menu">
+                    <h3><span>Latest Movies</span></h3>
+                    
+                        <p className="link">
+                            <Link to="/latest-movies" className="latest-movies-link">
+                                <span>View all</span>
+                                <FaChevronCircleRight className="view-all-link"/>
+                            </Link>
+                        </p>
+                    
+                </div>
+                <LatestMovies/>
             </div>
         </div>
     );

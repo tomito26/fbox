@@ -32,7 +32,7 @@ const TvShow  = ({ tvShow }) =>{
                             <span>{year}</span>
                             <span className='overview-tag'>HD</span>
                         </p>
-                        <p class="movie-overview-details">{tvShow.overview.length  > 150 ? `${tvShow.overview.substring(0,150)}...` : tvShow.overview }</p>
+                        <p class="movie-overview-details">{tvShow.overview.length  > 120 ? `${tvShow.overview.substring(0,120)}...` : tvShow.overview }</p>
                         <div className="overview-button">
                             <button className="watch-now-btn"><span className="watchnow-icon"><FaPlay className='watch-now-icon'/></span> Watch Now</button>
                             <p className="watchlist-icon"><FaRegHeart/></p>

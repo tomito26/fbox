@@ -541,7 +541,7 @@ form{
   margin-right: 3px;
 }
 .movie-wrapper{
-  margin-top: 30px;
+  margin-top: 20px;
   margin-right: 20px;
   display: grid;
   grid-template-columns: repeat(6,1fr);
@@ -750,3 +750,33 @@ form{
   color: rgb(128, 125, 125);
 }
 
+/* Latest movies section */
+.latest-movies{
+  margin-top: 30px;
+  padding: 0 30px;
+}
+.latest-menu{
+  display: flex;
+  justify-content: space-between;
+
+}
+.latest-menu h3 span{
+  display: inline-block;
+  /* width: 97%; */
+  padding-bottom: 3px;
+  border-bottom: 1px solid rgb(128, 125, 125);
+  font-size: 30px !important;
+  font-weight: 300 !important;
+  color: rgb(128, 125, 125)!important;
+}
+.latest-menu .latest-movies-link{
+  text-decoration: none;
+  color: #FFC300;
+  font-size: 14px;
+
+}
+.view-all-link{
+  margin-right: 15px;
+  margin-left: 5px;
+  margin-bottom: 3px;
+}

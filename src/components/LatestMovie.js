@@ -1,17 +1,17 @@
 import { FaPlay, FaRegHeart, FaStar } from 'react-icons/fa'
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-const RecommendedMovie = ({ movie }) =>{
+const LatestMovie = ({ movie }) => {
     const[isHovering,setIsHovering] = useState(-1);
 
     const baseUrl = "https://image.tmdb.org/t/p/original/";
 
-    const releaseYear = movie.release_date.split("-");
+    const releaseYear = !movie.release_date ? "" : movie.release_date.split("-");
     const year = releaseYear[0];
-   
+    console.log(movie)
     return(
         <div className="movie-card" onMouseOver={e =>setIsHovering(movie.id)} onMouseOut={()=>setIsHovering(-1)}>
-             <Link className='movie-link' to={`/${movie.id}`}>
+            <Link className='movie-link' to={`/${movie.id}`}>
                 <div className="movie-img">
                     <img 
                         src={`${baseUrl}/${movie.poster_path}`} 
@@ -47,4 +47,5 @@ const RecommendedMovie = ({ movie }) =>{
         </div>
     );
 };
-export default RecommendedMovie; 
+
+export default LatestMovie;
