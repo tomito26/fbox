@@ -67,8 +67,8 @@ const LatestMovie = ({ movie }) => {
                         </p>
                         <div className="overview-button">
                             <button className="watch-now-btn">
-                                <span className="watchnow-icon">
-                                    <FaPlay className='watch-now-icon'/>
+                                <span>
+                                    <FaPlay className='watchnow-icon'/>
                                 </span> 
                                 Watch Now
                             </button>

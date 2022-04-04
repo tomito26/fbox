@@ -66,7 +66,12 @@ const RecommendedMovie = ({ movie }) =>{
                             {!movieDetails.genres ? "" : movieDetails.genres.map(genre=><span key={genre.id} className="genre-item" style={{marginRight:"1px",color:"#ddd"}}>{`${genre.name},`}</span>)}
                         </p>
                         <div className="overview-button">
-                            <button className="watch-now-btn"><span className="watchnow-icon"><FaPlay className='watch-now-icon'/></span> Watch Now</button>
+                            <button className="watch-now-btn">
+                                <span>
+                                    <FaPlay className='watchnow-icon'/>
+                                </span> 
+                                Watch Now
+                            </button>
                             <p className="watchlist-icon"><FaRegHeart/></p>
                         </div>
                     </div>

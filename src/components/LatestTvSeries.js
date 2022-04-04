@@ -9,7 +9,7 @@ const LatestTvSeries = () =>{
     },[]);
 
     const getLatestTvSeries = async () =>{
-        const rest = await fetch(`https://api.themoviedb.org/3/tv/airing_today?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=1`);
+        const rest = await fetch(`https://api.themoviedb.org/3/tv/on_the_air?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=1`);
         const data = await rest.json();
         setLatestTvSeries(data.results)
     }
