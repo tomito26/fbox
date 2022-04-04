@@ -1,8 +1,18 @@
-import { FaPlay, FaRegHeart, FaStar } from 'react-icons/fa'
-import { useState } from 'react';
+import { FaCircle, FaPlay, FaRegHeart, FaStar } from 'react-icons/fa'
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 const RecommendedMovie = ({ movie }) =>{
     const[isHovering,setIsHovering] = useState(-1);
+    const[movieDetails,setMovieDetails] = useState({})
+
+    useEffect(()=>{
+        const getMovieDetails = async ()=>{
+            const rest = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
+            const data = await rest.json();
+            setMovieDetails(data);
+        } 
+        getMovieDetails()
+    },[])
 
     const baseUrl = "https://image.tmdb.org/t/p/original/";
 
@@ -20,8 +30,17 @@ const RecommendedMovie = ({ movie }) =>{
                     <p className='movie-hd-tag'>HD</p>
                 </div>
                 <div className="movie-info">
-                    <p className="movie-title">{movie.title.length > 22 ? `${movie.title.substring(0,21)}...` : movie.title  }</p>
-                    <p className="movie-footer"><span className="year">{year}</span> <span className="movie-tag">movie</span></p> 
+                    <p className="movie-title">
+                        {movie.title.length > 22 ? `${movie.title.substring(0,21)}...` : movie.title  }
+                    </p>
+                    <div className="movie-footer">
+                        <p className="year">
+                            <span>{year}</span>
+                            <span className="dot"><FaCircle className='dot-circle'/></span>
+                            <span>{`${movieDetails.runtime} min`}</span>
+                        </p>
+                        <p className="movie-tag">movie</p>
+                    </div> 
                 </div>
             </Link>
             <div className={ isHovering > 0 ? "movie-overview" : "no-hover"}>
@@ -34,9 +53,18 @@ const RecommendedMovie = ({ movie }) =>{
                         <p className="movie-overview-info">
                             <span className='movie-rating'><FaStar className='rate-icon'/>{movie.vote_average}</span>
                             <span>{year}</span>
+                            <span>{`${movieDetails.runtime} min`}</span>
                             <span className='overview-tag'>HD</span>
                         </p>
                         <p className="movie-overview-details">{movie.overview.length  > 120 ? `${movie.overview.substring(0,120)}...` : movie.overview }</p>
+                        <p className="country">
+                            <span>Country:</span>
+                           {!movieDetails.production_countries ? "" : movieDetails.production_countries.map((country,index)=><span className="country-item" key={index} style={{marginRight:"3px",color:"#ddd"}}>{`${country.name},`}</span>)}
+                        </p>
+                        <p className="genre">
+                            <span>Genre:</span>
+                            {!movieDetails.genres ? "" : movieDetails.genres.map(genre=><span key={genre.id} className="genre-item" style={{marginRight:"1px",color:"#ddd"}}>{`${genre.name},`}</span>)}
+                        </p>
                         <div className="overview-button">
                             <button className="watch-now-btn"><span className="watchnow-icon"><FaPlay className='watch-now-icon'/></span> Watch Now</button>
                             <p className="watchlist-icon"><FaRegHeart/></p>

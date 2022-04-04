@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaPlay,FaStar,FaRegHeart } from "react-icons/fa";
+import { FaPlay,FaStar,FaRegHeart, FaCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const LatestTvSerie = ({ tvSeries }) =>{
@@ -28,7 +28,14 @@ const LatestTvSerie = ({ tvSeries }) =>{
                 </div>
                 <div className="movie-info">
                     <p className="movie-title">{tvSeries.name.length  > 25 ? `${tvSeries.name.substring(0,23)}...` : tvSeries.name}</p>
-                    <p className="movie-footer "><span className="year">{`SS ${tvDetails.number_of_seasons} . EP ${!tvDetails.last_episode_to_air ? "" :tvDetails.last_episode_to_air.episode_number}`}</span><span className="movie-tag series-tag">Tv</span></p>
+                    <div className="movie-footer">
+                        <p className="year">
+                            <span>{`SS ${tvDetails.number_of_seasons}`}</span>
+                            <span className="dot"><FaCircle className="dot-circle"/></span>
+                            <span>{ `EP ${!tvDetails.last_episode_to_air ? "" : tvDetails.last_episode_to_air.episode_number}`}</span>
+                        </p>
+                        <p className="movie-tag">Tv</p>
+                    </div>
                 </div>
             </Link>
             <div className={ isHovering > 0 ? "movie-overview" : "no-hover"}>
@@ -39,11 +46,20 @@ const LatestTvSerie = ({ tvSeries }) =>{
                     <div className="movie-overview-wrapper">
                         <h3>{tvSeries.name}</h3>
                         <p className="movie-overview-info">
-                            <span className='movie-rating'><FaStar className='rate-icon'/>{tvSeries.vote_average}</span>
+                            <span className='movie-rating'><FaStar className='rate-icon'/>{tvDetails.vote_average}</span>
                             <span>{year}</span>
+                            <span>na min</span>
                             <span className='overview-tag'>HD</span>
                         </p>
                         <p className="movie-overview-details">{tvSeries.overview.length  > 120 ? `${tvSeries.overview.substring(0,120)}...` : tvSeries.overview }</p>
+                        <p className="country">
+                            <span>Country:</span>
+                           {!tvDetails.production_countries ? "" : tvDetails.production_countries.map((country,index)=><span className="country-item" key={index} style={{marginRight:"3px",color:"#ddd"}}>{`${country.name},`}</span>)}
+                        </p>
+                        <p className="genre">
+                            <span>Genre:</span>
+                            {!tvDetails.genres ? "" : tvDetails.genres.map(genre=><span key={genre.id} className="genre-item" style={{marginRight:"3px",color:"#ddd"}}>{`${genre.name},`}</span>)}
+                        </p>
                         <div className="overview-button">
                             <button className="watch-now-btn"><span className="watchnow-icon"><FaPlay className='watch-now-icon'/></span> Watch Now</button>
                             <p className="watchlist-icon"><FaRegHeart/></p>

@@ -596,24 +596,39 @@ form{
 
 .movie-footer{
   color: rgb(128, 125, 125);
-  display: flex;
-  justify-content: space-between; 
+  /* display: flex; */
+  
+  
   
 }
 .movie-footer .year {
   font-size: 13px !important;
   text-decoration: none;
+  float: left;
+  /* display: inline-block; */
   /* margin-right: 112px; */
 }
-/* .series-year{
-  margin-right: 140px;
-} */
+.movie-footer .year span:nth-child(2){
+  margin-left: 8px;
+}
+.movie-footer .year span:last-child{
+  margin-left: 8px;
+}
+.movie-footer .year .dot{
+ font-size: 4px;
+ 
+}
 
+.movie-footer .year .dot .dot-circle{
+  margin-bottom: 6px;
+}
 .movie-tag{
+  float: right;
   border: 1px solid rgb(128, 125, 125);
   padding: 0 4px;
+  margin-bottom: 5px;
   border-radius: 4px;
-  font-size: 13px;
+  font-size: 12px;
   text-align: center;
   text-transform: capitalize;
   text-decoration: none;
@@ -685,13 +700,16 @@ form{
   margin-left: 0;
 } 
 .movie-overview-wrapper h3{
-  font-size: 18px !important;
+  font-size: 16px !important;
   color: #fff;
 }
 .movie-overview-info{
   display: flex;
   justify-content: space-between;
   color:  rgb(128, 125, 125);
+  font-size: 14px;
+  padding: 0;
+  margin-bottom: 5px;
 }
 .movie-overview-info .movie-rating{
   color: #fff;
@@ -704,9 +722,9 @@ form{
 }
 .movie-overview-info .overview-tag{
   background-color: #FFC300;
-  height: 20px;
+  height: 15px;
   width: 40px;
-  font-size: 13px !important;
+  font-size: 12px !important;
   padding: 0;
   display: flex;
   justify-content: center;
@@ -718,9 +736,34 @@ form{
   position: relative;
   width: 100%;
 }
+
+.country{
+  margin: 0;
+}
+.country span:first-child{
+  margin-right: 5px;
+}
+.genre{
+  margin-bottom: 10px;
+  /* padding-right: 10px; */
+    
+}
+.genre span:first-child{
+  margin-right: 5px;
+}
+.genre .genre-item,.country .country-item{
+  font-size: 11px;
+  word-spacing: 3px;
+  /* padding: 5px; */
+}
+.genre,.country{
+  font-size: 13px;
+  color: rgb(128, 125, 125);
+}
 .overview-button{
   display: flex;
   justify-content: space-between;
+  margin-bottom: 0;
 }
 .watch-now-btn{
   /* padding: 0 20px; */
@@ -748,6 +791,8 @@ form{
 }
 .movie-overview-details{
   color: rgb(128, 125, 125);
+  font-size: 14px;
+  margin-top: 5px;
 }
 
 /* Latest movies section */

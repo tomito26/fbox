@@ -1,4 +1,4 @@
-import { FaPlay, FaRegHeart, FaStar } from 'react-icons/fa'
+import { FaCircle, FaPlay, FaRegHeart, FaStar } from 'react-icons/fa'
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 const LatestMovie = ({ movie }) => {
@@ -28,10 +28,17 @@ const LatestMovie = ({ movie }) => {
                         alt={movie.overview} 
                     />
                     <p className='movie-hd-tag'>HD</p>
-                </div>
-                <div className="movie-info">
-                    <p className="movie-title">{movie.title.length > 22 ? `${movie.title.substring(0,21)}...` : movie.title  }</p>
-                    <p className="movie-footer"><span className="year">{`${year} . ${movieDetail.runtime}min`}</span> <span className="movie-tag">movie</span></p> 
+                    <div className="movie-info">
+                    <p className="movie-title">{movie.title.length  > 25 ? `${movie.title.substring(0,23)}...` : movie.name}</p>
+                        <div className="movie-footer">
+                            <p className="year">
+                                <span>{year}</span>
+                                <span className="dot"><FaCircle className="dot-circle"/></span>
+                                <span>{ `${movieDetail.runtime} min`}</span>
+                            </p>
+                            <p className="movie-tag">Movie</p>
+                        </div>
+                    </div>
                 </div>
             </Link>
             <div className={ isHovering > 0 ? "movie-overview" : "no-hover"}>
@@ -42,14 +49,32 @@ const LatestMovie = ({ movie }) => {
                     <div className="movie-overview-wrapper">
                         <h3>{movie.title}</h3>
                         <p className="movie-overview-info">
-                            <span className='movie-rating'><FaStar className='rate-icon'/>{movie.vote_average}</span>
+                            <span className='movie-rating'><FaStar className='rate-icon'/>{movieDetail.vote_average}</span>
                             <span>{year}</span>
+                            <span>{`${movieDetail.runtime} min`}</span>
                             <span className='overview-tag'>HD</span>
                         </p>
                         <p className="movie-overview-details">{movie.overview.length  > 120 ? `${movie.overview.substring(0,120)}...` : movie.overview }</p>
+                        <p className="country">
+                            <span>Country:</span>
+                           {!movieDetail.production_countries ? "" 
+                                : 
+                                movieDetail.production_countries.map((country,index)=><span className="country-item" key={index} style={{marginRight:"3px",color:"#ddd"}}>{`${country.name},`}</span>)}
+                        </p>
+                        <p className="genre">
+                            <span>Genre:</span>
+                            {!movieDetail.genres ? "" : movieDetail.genres.map(genre=><span key={genre.id} className="genre-item" style={{marginRight:"3px",color:"#ddd"}}>{`${genre.name},`}</span>)}
+                        </p>
                         <div className="overview-button">
-                            <button className="watch-now-btn"><span className="watchnow-icon"><FaPlay className='watch-now-icon'/></span> Watch Now</button>
-                            <p className="watchlist-icon"><FaRegHeart/></p>
+                            <button className="watch-now-btn">
+                                <span className="watchnow-icon">
+                                    <FaPlay className='watch-now-icon'/>
+                                </span> 
+                                Watch Now
+                            </button>
+                            <p className="watchlist-icon">
+                                <FaRegHeart/>
+                            </p>
                         </div>
                     </div>
                 </div>
