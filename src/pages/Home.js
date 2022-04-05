@@ -4,6 +4,7 @@ import About from "./About";
 import { NavLink, Outlet,Link } from 'react-router-dom';
 import LatestMovies from "../components/LatestMovies";
 import LatestTvSeries from "../components/LatestTvSeries";
+import RequestedMovieShows from "../components/RequesteMovieShows";
 
 
 const Home = () =>{
@@ -38,17 +39,32 @@ const Home = () =>{
             </div>
             <div className="latest-movies">
                 <div className="latest-menu">
-                    <h3><span>Latest Series</span></h3>
-                    
-                        <p className="link">
-                            <Link to="/latest-tv-series" className="latest-movies-link">
-                                <span>View all</span>
-                                <FaChevronCircleRight className="view-all-link"/>
-                            </Link>
-                        </p>
+                    <h3>
+                        <span>Latest Series</span>
+                    </h3>
+                    <p className="link">
+                        <Link to="/latest-tv-series" className="latest-movies-link">
+                            <span>View all</span>
+                            <FaChevronCircleRight className="view-all-link"/>
+                        </Link>
+                    </p>
                     
                 </div>
                 <LatestTvSeries/>
+            </div>
+            <div className="latest-movies">
+                <div className="latest-menu">
+                    <h3>
+                        <span>Requested</span>
+                    </h3>
+                    <p className="link">
+                        <Link to="/latest-tv-series" className="latest-movies-link">
+                            <span>View all</span>
+                            <FaChevronCircleRight className="view-all-link"/>
+                        </Link>
+                    </p>
+                </div>
+                <RequestedMovieShows/>
             </div>
         </div>
     );
