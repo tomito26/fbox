@@ -14,12 +14,12 @@ const MovieShow = ({movieShow}) =>{
         };  
         getMovieShowDetails();
     },[]);
-    console.log(movieShow)
+    // console.log(movieShow)
 
     const baseUrl = "https://image.tmdb.org/t/p/original/";
     const seriesReleaseDate =movieShow.first_air_date;
-    console.log(`${seriesReleaseDate} ~ series`)
-    console.log(`${movieShow.release_date} ~ movies`)
+    // console.log(`${seriesReleaseDate} ~ series`)
+    // console.log(`${movieShow.release_date} ~ movies`)
     const movieReleaseDate =  !movieShow.release_date ? seriesReleaseDate.split("-")[0] : movieShow.release_date.split("-")[0];
 
     return(

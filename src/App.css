@@ -702,6 +702,7 @@ form{
 .movie-overview-wrapper h3{
   font-size: 16px !important;
   color: #fff;
+  margin-bottom: 5px;
 }
 .movie-overview-info{
   display: flex;
@@ -753,7 +754,8 @@ form{
 }
 .genre .genre-item,.country .country-item{
   font-size: 11px;
-  word-spacing: 3px;
+  word-spacing: 2px;
+  word-wrap: break-word;
   /* padding: 5px; */
 }
 .genre,.country{
@@ -763,11 +765,13 @@ form{
 .overview-button{
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 .watch-now-btn{
   /* padding: 0 20px; */
   margin: 0;
+  padding: 0;
   height: 40px;
   width: 180px;
   border: none;
@@ -789,11 +793,13 @@ form{
   margin-top:5px;
   color: #f4f4f4;
   border-radius: 7px;
+  cursor: pointer;
 }
 .movie-overview-details{
   color: rgb(128, 125, 125);
   font-size: 14px;
-  margin-top: 5px;
+  margin-top: 4px;
+  margin-bottom: 4px;
 }
 
 /* Latest movies section */
@@ -849,7 +855,7 @@ footer p{
 } */
 .footer-links {
   display: grid;
-  grid-template-columns: 2fr 2fr 2fr;
+  grid-template-columns: 3fr 3fr 3fr;
   grid-column-gap: 3em;
 }
 .footer h3{
@@ -877,4 +883,51 @@ footer p{
 .footer-info  p{
   color: rgba(167,167,160,0.527);
   font-size: 14px;
+}
+/* //movie page  */
+.movie-items-wrapper{
+  margin-top: 50px;
+  padding: 30px;
+  width: calc(100vw - 60px);
+}
+.movie-item-details{
+  width: 70%;
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  grid-column-gap: 2em;
+}
+.movie-poster{
+  height: 400px;
+  width: 300px;
+}
+.movie-poster img{
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+.movie-item-info h3{
+  color: #ccc;
+}
+.movie-details-header p{
+  display: inline-block;
+  margin-left: 40px; 
+}
+.movie-details-header p:first-child{
+  margin-left: 0;
+  padding: 0 9px;
+  font-size: 12px;
+  background-color: #FFC300;
+  color: #000;
+  border-radius: 30px;
+}
+.movie-details-header:nth-child(2){
+  color: rgb(128, 125, 125);
+}
+.start-icon{
+  display: inline-block;
+  margin-bottom: 10px !important;
+  margin-right: 5px;
+}
+.movie-details-overview{
+  color: rgb(128, 125, 125);
 }
