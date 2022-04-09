@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { useParams } from "react-router-dom"
+import SimilarMovies from "./SimilarMovies";
 
 const Movie = () => {
     const[videos,setVideos] = useState([]);
     const[movieDetails,setMovieDetails] = useState({});
+    const[casts,setCasts] = useState([]);
+    const[directors,setDirectors] = useState([]);
+    const[similarMovies,setSimilarMovies] = useState([]);
     const { movieId } = useParams();
 
     useEffect(()=>{
@@ -16,16 +20,37 @@ const Movie = () => {
             // console.log(officialTrailer)
             setVideos(officialTrailer[0])
         };
+
         const getMovieDetails = async () =>{
             const rest = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
             const data = await rest.json();
             setMovieDetails(data);
+        };
+
+        const getCredits = async () =>{
+            const rest = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
+            const data = await rest.json();
+            setCasts(data.cast);
+            
+            const crewDirecting = data.crew.filter(directors => directors.known_for_department === "Directing");
+            setDirectors(crewDirecting) 
+        };
+        const getSimilarMovies = async () => {
+            const rest = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/similar?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=1`);
+            const data = await rest.json();
+            
+            setSimilarMovies(data.results.slice(0,9))
         }
+
+        getCredits();
         getVideos();
         getMovieDetails();
+        getSimilarMovies();
     },[]);
+
     const baseUrl = "https://image.tmdb.org/t/p/original/";
-    console.log(movieDetails)
+    
+    console.log(similarMovies)
     return(
         <div className="movie-video-container">
             <div style={{padding:"30px",height:"1200px",height:"600px"}}>
@@ -48,7 +73,7 @@ const Movie = () => {
             <div className="movie-items-wrapper">
                 <div className="movie-item-details">
                     <div className="movie-poster">
-                        <img src={`${baseUrl}/${movieDetails.poster_path}`} alt="" />
+                        <img src={`${baseUrl}/${movieDetails.poster_path}`} alt={movieDetails.name} />
                     </div>
                     <div className="movie-item-info">
                         <h3>{movieDetails.title}</h3>
@@ -67,22 +92,36 @@ const Movie = () => {
                                 }
                             </p>
                             <p  style={{fontSize:"14px"}}>
-                                <span className="movie-sub-header" style={{marginRight:"60px"}}>Genre:</span>
+                                <span className="movie-sub-header" style={{marginRight:"65px"}}>Genre:</span>
                                 {!movieDetails.genres ? "" : movieDetails.genres.map((genres,index)=><span key={index} style={{marginRight:"4px",color:"#ccc"}}>{`${genres.name},`}</span>)}
                             </p>
                             <p  style={{fontSize:"14px"}}>
-                                <span className="movie-sub-header" style={{marginRight:"50px"}}>Release:</span>
+                                <span className="movie-sub-header" style={{marginRight:"55px"}}>Release:</span>
                                 {movieDetails.release_date}
                             </p>
                             <p style={{fontSize:"14px"}}>
-                                <span className="movie-sub-header" style={{marginRight:"50px"}}>Director:</span>
+                                <span className="movie-sub-header" style={{marginRight:"54px"}}>Director:</span>
+                                {directors.map((director,index)=><span key={index} style={{marginRight:"4px"}}>{`${director.name},`}</span>)}
                             </p>
                             <p  style={{fontSize:"14px"}}>
-                                <span className="movie-sub-header" style={{marginRight:"27px"}}>Production:</span>
+                                <span className="movie-sub-header" style={{marginRight:"40px"}}>Production:</span>
                                 {!movieDetails.production_companies ? "" : movieDetails.production_companies.map((company,index)=><span key={index} style={{marginRight:"4px",color:"#ccc"}}>{`${company.name},`}</span>)}
+                            </p>
+                            <p  style={{fontSize:"14px"}}>
+                                <span className="movie-sub-header" style={{marginRight:"80px"}}>Cast:</span>
+                                {!casts ? "" : casts.map((cast,index)=><span key={index} style={{marginRight:"4px",color:"#ccc"}}>{`${cast.name},`}</span>)}
                             </p>
                             <p style={{fontSize:"14px"}}><span className="movie-sub-header" style={{marginRight:"20px"}}>Tags:</span></p>
                         </div>
+                    </div>
+                </div>
+                <div className="similar-movies-wrapper">
+                    <div className="similar-movies">
+                        {similarMovies.map(similarMovie => 
+                            <SimilarMovies 
+                                similarMovie={similarMovie}
+                            />)
+                        }
                     </div>
                 </div>
             </div>
