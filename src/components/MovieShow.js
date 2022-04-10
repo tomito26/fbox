@@ -61,14 +61,26 @@ const MovieShow = ({movieShow}) =>{
                         <p className="movie-overview-details">
                             {movieShow.overview.length  > 120 ? `${movieShow.overview.substring(0,120)}...` : movieShow.overview }
                         </p>
-                        <p className="country">
-                            <span>Country:</span>
-                        {!movieShowDetails.production_countries ? "" : movieShowDetails.production_countries.map((country,index)=><span className="country-item" key={index} style={{marginRight:"3px",color:"#ddd"}}>{`${country.name},`}</span>)}
-                        </p>
-                        <p className="genre">
-                            <span>Genre:</span>
-                            {!movieShowDetails.genres ? "" : movieShowDetails.genres.map(genre=><span key={genre.id} className="genre-item" style={{marginRight:"3px",color:"#ddd"}}>{`${genre.name},`}</span>)}
-                        </p>
+                        <div className="country">
+                            <h4>Country:</h4>
+                            <p>
+                                {!movieShowDetails.production_countries ? "" : movieShowDetails.production_countries.map((country,index)=>
+                                    <span className="country-item" key={index} style={{marginRight:"3px",color:"#ddd"}}>
+                                        {`${country.name},`}
+                                    </span>)
+                                }
+                            </p> 
+                        </div>
+                        <div className="genre">
+                            <h4>Genre:</h4>
+                            <p>
+                                {!movieShowDetails.genres ? "" : movieShowDetails.genres.map(genre=>
+                                    <span key={genre.id} className="genre-item" style={{marginRight:"3px",color:"#ddd"}}>
+                                        {`${genre.name},`}
+                                    </span>)
+                                }
+                            </p>
+                        </div>
                         <div className="overview-button">
                             <button className="watch-now-btn">
                                 <span>

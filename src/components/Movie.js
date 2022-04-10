@@ -83,39 +83,87 @@ const Movie = () => {
                             <p>{`${movieDetails.runtime} min`}</p>
                         </div>
                         <div className="movie-details-overview">
-                            <p style={{fontSize:"16px"}}>{movieDetails.overview}</p>
-                            <p  style={{fontSize:"14px"}}>
-                                <span className="movie-sub-header" style={{marginRight:"50px"}}>Country:</span>
-                                {!movieDetails.production_countries ? "" : 
-                                    movieDetails.production_countries.map((country,index) => 
-                                    <span key={index} style={{marginRight:"4px",color:"#ccc"}}>{`${country.name},`}</span>)
-                                }
+                            <p style={{fontSize:"16px"}}>
+                                {!movieDetails.overview ? "" : movieDetails.overview.length > 200 ? `${movieDetails.overview.substring(0,180)}...${<button>hello</button>}` : movieDetails.overview }
                             </p>
-                            <p  style={{fontSize:"14px"}}>
-                                <span className="movie-sub-header" style={{marginRight:"65px"}}>Genre:</span>
-                                {!movieDetails.genres ? "" : movieDetails.genres.map((genres,index)=><span key={index} style={{marginRight:"4px",color:"#ccc"}}>{`${genres.name},`}</span>)}
-                            </p>
-                            <p  style={{fontSize:"14px"}}>
-                                <span className="movie-sub-header" style={{marginRight:"55px"}}>Release:</span>
-                                {movieDetails.release_date}
-                            </p>
-                            <p style={{fontSize:"14px"}}>
-                                <span className="movie-sub-header" style={{marginRight:"54px"}}>Director:</span>
-                                {directors.map((director,index)=><span key={index} style={{marginRight:"4px"}}>{`${director.name},`}</span>)}
-                            </p>
-                            <p  style={{fontSize:"14px"}}>
-                                <span className="movie-sub-header" style={{marginRight:"40px"}}>Production:</span>
-                                {!movieDetails.production_companies ? "" : movieDetails.production_companies.map((company,index)=><span key={index} style={{marginRight:"4px",color:"#ccc"}}>{`${company.name},`}</span>)}
-                            </p>
-                            <p  style={{fontSize:"14px"}}>
-                                <span className="movie-sub-header" style={{marginRight:"80px"}}>Cast:</span>
-                                {!casts ? "" : casts.map((cast,index)=><span key={index} style={{marginRight:"4px",color:"#ccc"}}>{`${cast.name},`}</span>)}
-                            </p>
-                            <p style={{fontSize:"14px"}}><span className="movie-sub-header" style={{marginRight:"20px"}}>Tags:</span></p>
+                            <div className="movie-category" style={{fontSize:"14px"}}>
+                                <h4 className="movie-sub-header" style={{marginRight:"53px"}}>Country:</h4>
+                                <p>
+                                    {!movieDetails.production_countries ? "" : 
+                                        movieDetails.production_countries.map((country,index) => 
+                                        <span key={index} style={{marginRight:"4px",color:"#ccc"}}>
+                                            {`${country.name},`}
+                                        </span>)
+                                    }
+                                </p>
+                            </div>
+                            <div className="movie-category"  style={{fontSize:"14px"}}>
+                                <h4 className="movie-sub-header" style={{marginRight:"68px"}}>Genre:</h4>
+                                <p>
+                                    {!movieDetails.genres ? "" : movieDetails.genres.map((genres,index)=>
+                                        <span key={index} style={{marginRight:"4px",color:"#ccc"}}>
+                                            {`${genres.name},`}
+                                        </span>)
+                                    }
+                                </p>
+                            </div>
+                            <div className="movie-category" style={{fontSize:"14px"}}>
+                                <h4 className="movie-sub-header" style={{marginRight:"57px"}}>
+                                    Release:
+                                </h4>
+                                <p>{movieDetails.release_date}</p>
+                            </div>
+                            <div className="movie-category" style={{fontSize:"14px"}}>
+                                <h4 className="movie-sub-header" style={{marginRight:"54px"}}>
+                                    Director:
+                                </h4>
+                                <p>
+                                    {directors.map((director,index)=>
+                                        <span key={index} style={{marginRight:"4px"}}>
+                                            {`${director.name},`}
+                                        </span>)
+                                    }
+                                </p>
+                            </div>
+                            <div className="movie-category" style={{fontSize:"14px"}}>
+                                <h4 className="movie-sub-header" style={{marginRight:"36px"}}>
+                                    Production:
+                                </h4>
+                                <p>
+                                    {!movieDetails.production_companies ? "" : movieDetails.production_companies.map((company,index)=>
+                                        <span key={index} style={{marginRight:"4px",color:"#ccc"}}>
+                                            {`${company.name},`}
+                                        </span>)
+                                    }
+                                </p>
+                            </div>
+                            <div className="movie-category" style={{fontSize:"14px"}}>
+                                <h4 className="movie-sub-header" style={{marginRight:"80px"}}>
+                                    Cast:
+                                </h4>
+                                <p>
+                                    {!casts ? "" : casts.length > 10 ? casts.slice(0,10).map((cast,index)=>
+                                        <span key={index} style={{marginRight:"4px",color:"#ccc"}}>
+                                            {`${cast.name},`}
+                                        </span>) : 
+                                        casts.map((cast,index)=>
+                                        <span key={index} style={{marginRight:"4px",color:"#ccc"}}>
+                                            {`${cast.name},`}
+                                        </span>)
+                                    }
+                                </p>
+                            </div>
+                            <div className="movie-category" style={{fontSize:"14px"}}>
+                                <h4 className="movie-sub-header" style={{marginRight:"20px"}}>
+                                    Tags:
+                                </h4>
+                                
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div className="similar-movies-wrapper">
+                    <h3><span>You may also like</span></h3>
                     <div className="similar-movies">
                         {similarMovies.map(similarMovie => 
                             <SimilarMovies 

@@ -55,16 +55,28 @@ const LatestMovie = ({ movie }) => {
                             <span className='overview-tag'>HD</span>
                         </p>
                         <p className="movie-overview-details">{movie.overview.length  > 120 ? `${movie.overview.substring(0,120)}...` : movie.overview }</p>
-                        <p className="country">
-                            <span>Country:</span>
-                           {!movieDetail.production_countries ? "" 
-                                : 
-                                movieDetail.production_countries.map((country,index)=><span className="country-item" key={index} style={{marginRight:"3px",color:"#ddd"}}>{`${country.name},`}</span>)}
-                        </p>
-                        <p className="genre">
-                            <span>Genre:</span>
-                            {!movieDetail.genres ? "" : movieDetail.genres.map(genre=><span key={genre.id} className="genre-item" style={{marginRight:"3px",color:"#ddd"}}>{`${genre.name},`}</span>)}
-                        </p>
+                        <div className="country">
+                            <h4>Country:</h4>
+                           <p>
+                                {!movieDetail.production_countries ? "" 
+                                    : 
+                                    movieDetail.production_countries.map((country,index)=>
+                                    <span className="country-item" key={index} style={{marginRight:"3px",color:"#ddd"}}>
+                                        {`${country.name},`}
+                                    </span>)
+                                }
+                            </p>    
+                        </div>
+                        <div className="genre">
+                            <h4>Genre:</h4>
+                            <p>
+                                {!movieDetail.genres ? "" : movieDetail.genres.map(genre=>
+                                    <span key={genre.id} className="genre-item" style={{marginRight:"3px",color:"#ddd"}}>
+                                        {`${genre.name},`}
+                                    </span>)
+                                }
+                            </p>
+                        </div>
                         <div className="overview-button">
                             <button className="watch-now-btn">
                                 <span>
