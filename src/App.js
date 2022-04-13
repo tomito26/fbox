@@ -16,6 +16,7 @@ import RecommendedMovies from './components/RecommendedMovies';
 import Trendings from './components/Trendings';
 import Footer from './components/Footer';
 import Movie from './components/Movie';
+import TvShowVideos from './components/TvshowVideos';
 
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
           <Route path='topImdb' element={<PrivateLink><TopImdb/></PrivateLink>}/>
           <Route path='/profile' element={<PrivateLink><Profile/></PrivateLink>}/>
           <Route path='/:movieId' element={<PrivateLink><Movie/></PrivateLink>}/>
+          <Route path='/tvshows/:tvshowId' element={<PrivateLink><TvShowVideos/></PrivateLink>}/>
         </Routes>
         <Footer/>
       </Router>

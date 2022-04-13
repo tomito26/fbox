@@ -888,6 +888,9 @@ footer p{
   font-size: 14px;
 }
 /* //movie page  */
+.video-wrapper{
+  width: 100%;
+}
 .movie-items-wrapper{
   margin-top: 50px;
   padding: 30px;

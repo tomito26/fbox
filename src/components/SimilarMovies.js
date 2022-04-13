@@ -16,7 +16,7 @@ const SimilarMovies = ({ similarMovie }) =>{
     const baseUrl = "https://image.tmdb.org/t/p/original/";
     const releaseDate = similarMovie.release_date;
     const year = releaseDate.split("-");
-    console.log(year)
+   
     return(
         <div className="similar-movie-container" onMouseOver={e =>setIsHovering(similarMovieDetail.id)} onMouseOut={()=>setIsHovering(-1)}>
             <Link className="similar-movie-link" to={`/${similarMovie.id}`}>

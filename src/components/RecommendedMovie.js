@@ -21,7 +21,7 @@ const RecommendedMovie = ({ movie }) =>{
    
     return(
         <div className="movie-card" onMouseOver={e =>setIsHovering(movie.id)} onMouseOut={()=>setIsHovering(-1)}>
-             <Link className='movie-link' to={`/${movie.id}`}>
+             <Link className='movie-link' to={`${movie.id}`}>
                 <div className="movie-img">
                     <img 
                         src={`${baseUrl}/${movie.poster_path}`} 

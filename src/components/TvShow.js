@@ -21,7 +21,7 @@ const TvShow  = ({ tvShow }) =>{
  
     return(
         <div className="movie-card" onMouseOver={e =>setIsHovering(tvShow.id)} onMouseOut={()=>setIsHovering(-1)}>
-            <Link className="movie-link" to={`/tvshow/${tvShow.id}`}>
+            <Link className="movie-link" to={`${tvShow.id}`}>
                 <div className="movie-img">
                     <img src={`${baseUrl}/${tvShow.poster_path}`} alt={tvShow.name} />
                     <p className='movie-hd-tag'>HD</p>

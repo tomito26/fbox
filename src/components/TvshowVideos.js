@@ -1,65 +1,55 @@
+import { async } from "@firebase/util";
 import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
-import { useParams } from "react-router-dom"
-import SimilarMovies from "./SimilarMovies";
+import { useParams } from "react-router-dom";
 
-const Movie = () => {
-    const[videos,setVideos] = useState([]);
-    const[movieDetails,setMovieDetails] = useState({});
-    const[casts,setCasts] = useState([]);
-    const[directors,setDirectors] = useState([]);
-    const[similarMovies,setSimilarMovies] = useState([]);
-    const { movieId } = useParams();
+const TvShowVideos = () =>{
+    const [video,setVideo] = useState({});
+    const[tvShowDetails,setTvShowDetails] = useState({});
+    const[casts,setCasts] = useState([])
+    const[directors,setDirectors]= useState([]);
+    const { tvshowId } = useParams();
 
     useEffect(()=>{
-        const getVideos = async() =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&append_to_response=videos`);
-            const data = await rest.json()
-            // console.log(data.results)
-            const officialTrailer = data.results.filter(trailer=>trailer.type === "Trailer");
-            // console.log(officialTrailer)
-            setVideos(officialTrailer[0])
-        };
-
-        const getMovieDetails = async () =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
+        const getTvShowVideos = async()=>{
+            const rest = await fetch(`https://api.themoviedb.org/3/tv/${tvshowId}/videos?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&append_to_response=videos`);
             const data = await rest.json();
-            setMovieDetails(data);
-        };
-
-        const getCredits = async () =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
-            const data = await rest.json();
-            setCasts(data.cast);
+            // console.log(data)
+            const trailer = data.results.filter(video => video.type === "Trailer" || video.name === "Official Trailer");
+            // console.log(trailer)
+            setVideo(trailer);
             
-            const crewDirecting = data.crew.filter(directors => directors.known_for_department === "Directing");
-            setDirectors(crewDirecting) 
-        };
-        const getSimilarMovies = async () => {
-            const rest = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/similar?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=1`);
-            const data = await rest.json();
-            
-            setSimilarMovies(data.results.slice(0,9))
         }
 
-        getCredits();
-        getVideos();
-        getMovieDetails();
-        getSimilarMovies();
+        const getTvShowDetails = async () =>{
+            const rest = await fetch(`https://api.themoviedb.org/3/tv/${tvshowId}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
+            const data = await rest.json();
+            setTvShowDetails(data)
+        }
+        const getCredits = async () =>{
+            const rest = await fetch(`https://api.themoviedb.org/3/tv/${tvshowId}/credits?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
+            const data = await rest.json();
+            setCasts(data.cast);
+            const crew = data.crew.filter(crew => crew.known_for_department === "Directing")
+            setDirectors(crew) 
+        
+        }
+        getCredits()
+        getTvShowVideos();
+        getTvShowDetails();
     },[]);
-
     const baseUrl = "https://image.tmdb.org/t/p/original/";
-    
 
+    // console.log(video)
     return(
         <div className="movie-video-container">
-            <div className="video-wrapper" style={{backgroundImage: `linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url(${baseUrl}/${movieDetails.backdrop_path})`,height:"680px",width:"100%", backgroundPosition:"center",backgroundSize:"cover",margin:"40px 0"}}>
+            <div className="video-wrapper" style={{backgroundImage: `linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url(${baseUrl}/${!tvShowDetails ? "" :tvShowDetails.backdrop_path})`,height:"680px",width:"100%", backgroundPosition:"center",backgroundSize:"cover",margin:"40px 0"}}>
                 <div style={{padding:"0 10px 0 40px",width:"1400px",height:"680px"}}>
                     <iframe 
                         style={{padding:"0",margin:"0",backgroundColor:"#000"}}
                         width="1200" 
                         height="680"
-                        src={videos ? `https://www.youtube.com/embed/${videos.key}` : ""} 
+                        src={video ? `https://www.youtube.com/embed/${!video[0] ? "" : video[0].key}` : ""} 
                         title="YouTube video player" 
                         frameBorder="0" 
                         allow="accelerometer; 
@@ -75,24 +65,29 @@ const Movie = () => {
             <div className="movie-items-wrapper">
                 <div className="movie-item-details">
                     <div className="movie-poster">
-                        <img src={`${baseUrl}/${movieDetails.poster_path}`} alt={movieDetails.name} />
+                        <img src={`${baseUrl}/${tvShowDetails.poster_path}`} alt={tvShowDetails.name} />
                     </div>
                     <div className="movie-item-info">
-                        <h3>{movieDetails.title}</h3>
+                        <h3>{tvShowDetails.name}</h3>
                         <div className="movie-details-header">
                             <p>HD</p>
-                            <p><FaStar className="star-icon" style={{marginBottom:"3px",fontSize:"13px"}}/> <span>{movieDetails.vote_average}</span></p>
-                            <p>{`${movieDetails.runtime} min`}</p>
+                            <p><FaStar className="star-icon" style={{marginBottom:"3px",fontSize:"13px"}}/> <span>{tvShowDetails.vote_average}</span></p>
+                            <p>{`na min`}</p>
                         </div>
                         <div className="movie-details-overview">
                             <p style={{fontSize:"16px"}}>
-                                {!movieDetails.overview ? "" : movieDetails.overview.length > 200 ? `${movieDetails.overview.substring(0,180)}...${<button>hello</button>}` : movieDetails.overview }
+                                {
+                                    !tvShowDetails.overview ? "" : 
+                                    tvShowDetails.overview.length > 200 ? 
+                                    `${tvShowDetails.overview.substring(0,180)}...${<button>hello</button>}`
+                                    : tvShowDetails.overview 
+                                }
                             </p>
                             <div className="movie-category" style={{fontSize:"14px"}}>
                                 <h4 className="movie-sub-header" style={{marginRight:"53px"}}>Country:</h4>
                                 <p>
-                                    {!movieDetails.production_countries ? "" : 
-                                        movieDetails.production_countries.map((country,index) => 
+                                    {!tvShowDetails.production_countries ? "" : 
+                                        tvShowDetails.production_countries.map((country,index) => 
                                         <span key={index} style={{marginRight:"4px",color:"#ccc"}}>
                                             {`${country.name},`}
                                         </span>)
@@ -102,7 +97,7 @@ const Movie = () => {
                             <div className="movie-category"  style={{fontSize:"14px"}}>
                                 <h4 className="movie-sub-header" style={{marginRight:"68px"}}>Genre:</h4>
                                 <p>
-                                    {!movieDetails.genres ? "" : movieDetails.genres.map((genres,index)=>
+                                    {!tvShowDetails.genres ? "" : tvShowDetails.genres.map((genres,index)=>
                                         <span key={index} style={{marginRight:"4px",color:"#ccc"}}>
                                             {`${genres.name},`}
                                         </span>)
@@ -113,7 +108,7 @@ const Movie = () => {
                                 <h4 className="movie-sub-header" style={{marginRight:"57px"}}>
                                     Release:
                                 </h4>
-                                <p>{movieDetails.release_date}</p>
+                                <p>{tvShowDetails.first_air_date}</p>
                             </div>
                             <div className="movie-category" style={{fontSize:"14px"}}>
                                 <h4 className="movie-sub-header" style={{marginRight:"54px"}}>
@@ -132,7 +127,7 @@ const Movie = () => {
                                     Production:
                                 </h4>
                                 <p>
-                                    {!movieDetails.production_companies ? "" : movieDetails.production_companies.map((company,index)=>
+                                    {!tvShowDetails.production_companies ? "" : tvShowDetails.production_companies.map((company,index)=>
                                         <span key={index} style={{marginRight:"4px",color:"#ccc"}}>
                                             {`${company.name},`}
                                         </span>)
@@ -159,26 +154,13 @@ const Movie = () => {
                                 <h4 className="movie-sub-header" style={{marginRight:"20px"}}>
                                     Tags:
                                 </h4>
-                                
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="similar-movies-wrapper">
-                    <h3><span>You may also like</span></h3>
-                    <div className="similar-movies">
-                        {similarMovies.map(similarMovie => 
-                            <SimilarMovies 
-                                key={similarMovie.id}
-                                similarMovie={similarMovie}
-                            />)
-                        }
-                    </div>
-                </div>
-            </div>
+            </div>    
         </div>
+    );
+};
 
-    )
-}
-
-export default Movie
+export default TvShowVideos;
