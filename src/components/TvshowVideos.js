@@ -2,12 +2,14 @@ import { async } from "@firebase/util";
 import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { useParams } from "react-router-dom";
+import SimilarTvShow from "./SimilarTvShow";
 
 const TvShowVideos = () =>{
     const [video,setVideo] = useState({});
     const[tvShowDetails,setTvShowDetails] = useState({});
     const[casts,setCasts] = useState([])
     const[directors,setDirectors]= useState([]);
+    const[similarTvShows,setSimilarTvShows]=useState([]);
     const { tvshowId } = useParams();
 
     useEffect(()=>{
@@ -34,9 +36,17 @@ const TvShowVideos = () =>{
             setDirectors(crew) 
         
         }
-        getCredits()
+       const getSimilarTvShows = async () =>{
+            const rest = await fetch(`https://api.themoviedb.org/3/tv/${tvshowId}/similar?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=1`);
+            const data = await rest.json();
+
+            setSimilarTvShows(data.results.slice(0,9));
+        }   
+
         getTvShowVideos();
         getTvShowDetails();
+        getCredits()
+        getSimilarTvShows()
     },[]);
     const baseUrl = "https://image.tmdb.org/t/p/original/";
 
@@ -156,6 +166,17 @@ const TvShowVideos = () =>{
                                 </h4>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div className="similar-movies-wrapper">
+                    <h3><span>You may also like</span></h3>
+                    <div className="similar-movies">
+                        {similarTvShows.map(similarTvShow => 
+                            <SimilarTvShow 
+                                key={similarTvShow.id}
+                                similarTvShow={similarTvShow}
+                            />)
+                        }
                     </div>
                 </div>
             </div>    

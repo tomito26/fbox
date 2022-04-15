@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link,Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FaCircle,FaPlay, FaRegHeart, FaStar } from "react-icons/fa";
 
 const SimilarMovies = ({ similarMovie }) =>{
