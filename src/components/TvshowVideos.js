@@ -1,4 +1,3 @@
-import { async } from "@firebase/util";
 import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { useParams } from "react-router-dom";
@@ -6,6 +5,7 @@ import SimilarTvShow from "./SimilarTvShow";
 
 const TvShowVideos = () =>{
     const [video,setVideo] = useState({});
+    const[videoLinks,setVideoLinks] = useState([]);
     const[tvShowDetails,setTvShowDetails] = useState({});
     const[casts,setCasts] = useState([])
     const[directors,setDirectors]= useState([]);
@@ -16,7 +16,7 @@ const TvShowVideos = () =>{
         const getTvShowVideos = async()=>{
             const rest = await fetch(`https://api.themoviedb.org/3/tv/${tvshowId}/videos?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&append_to_response=videos`);
             const data = await rest.json();
-            // console.log(data)
+            console.log(data)
             const trailer = data.results.filter(video => video.type === "Trailer" || video.name === "Official Trailer");
             // console.log(trailer)
             setVideo(trailer);
@@ -36,7 +36,7 @@ const TvShowVideos = () =>{
             setDirectors(crew) 
         
         }
-       const getSimilarTvShows = async () =>{
+        const getSimilarTvShows = async () =>{
             const rest = await fetch(`https://api.themoviedb.org/3/tv/${tvshowId}/similar?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=1`);
             const data = await rest.json();
 
@@ -53,12 +53,12 @@ const TvShowVideos = () =>{
     // console.log(video)
     return(
         <div className="movie-video-container">
-            <div className="video-wrapper" style={{backgroundImage: `linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url(${baseUrl}/${!tvShowDetails ? "" :tvShowDetails.backdrop_path})`,height:"680px",width:"100%", backgroundPosition:"center",backgroundSize:"cover",margin:"40px 0"}}>
-                <div style={{padding:"0 10px 0 40px",width:"1400px",height:"680px"}}>
+            <div className="video-wrapper" style={{backgroundImage: `linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url(${baseUrl}/${!tvShowDetails ? "" :tvShowDetails.backdrop_path})`,height:"600px",width:"100%", backgroundPosition:"center",backgroundSize:"cover",margin:"40px 0"}}>
+                <div style={{padding:"0 10px 0 40px",width:"1400px",height:"600px"}}>
                     <iframe 
                         style={{padding:"0",margin:"0",backgroundColor:"#000"}}
                         width="1200" 
-                        height="680"
+                        height="600"
                         src={video ? `https://www.youtube.com/embed/${!video[0] ? "" : video[0].key}` : ""} 
                         title="YouTube video player" 
                         frameBorder="0" 

@@ -32,6 +32,7 @@ const Navbar = () =>{
         }
         await updateDoc(docRef,payload)
         await signOut(auth)
+        setIsActive(false)
         navigate("/login")
         
 
@@ -74,8 +75,8 @@ const Navbar = () =>{
                         { isActive &&
                             <div className='menu'>
                                 <div className='user-menu'>
-                                    <NavLink className='menu-link' to="/profile"><FaUserCircle className='icon'/>Profile</NavLink>
-                                    <a href='#' className='menu-link'><FaHeart className='icon'/>My WatchList</a>
+                                    <NavLink className='menu-link' to="/profile" onClick={()=>setIsActive(false)}><FaUserCircle className='icon'/>Profile</NavLink>
+                                    <a href='#' className='menu-link' onClick={()=>setIsActive(false)}><FaHeart className='icon'/>My WatchList</a>
                                 </div>
                                 <button className='signOut-btn' onClick={handleLogOut}><FaSignOutAlt className='icon'/>SignOut</button>
                             </div>

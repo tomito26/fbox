@@ -53,12 +53,12 @@ const Movie = () => {
 
     return(
         <div className="movie-video-container">
-            <div className="video-wrapper" style={{backgroundImage: `linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url(${baseUrl}/${movieDetails.backdrop_path})`,height:"680px",width:"100%", backgroundPosition:"center",backgroundSize:"cover",margin:"40px 0"}}>
-                <div style={{padding:"0 10px 0 40px",width:"1400px",height:"680px"}}>
+            <div className="video-wrapper" style={{backgroundImage: `linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url(${baseUrl}/${movieDetails.backdrop_path})`,height:"600px",width:"100%", backgroundPosition:"center",backgroundSize:"cover",margin:"40px 0"}}>
+                <div style={{padding:"0 10px 0 40px",width:"1400px",height:"600px"}}>
                     <iframe 
                         style={{padding:"0",margin:"0",backgroundColor:"#000"}}
                         width="1200" 
-                        height="680"
+                        height="600"
                         src={videos ? `https://www.youtube.com/embed/${videos.key}` : ""} 
                         title="YouTube video player" 
                         frameBorder="0" 
@@ -86,7 +86,8 @@ const Movie = () => {
                         </div>
                         <div className="movie-details-overview">
                             <p style={{fontSize:"16px"}}>
-                                {!movieDetails.overview ? "" : movieDetails.overview.length > 200 ? `${movieDetails.overview.substring(0,180)}...${<button>hello</button>}` : movieDetails.overview }
+                                {!movieDetails.overview ? "" : movieDetails.overview.length > 200 ? `${movieDetails.overview.substring(0,180)}...` : movieDetails.overview }
+                                
                             </p>
                             <div className="movie-category" style={{fontSize:"14px"}}>
                                 <h4 className="movie-sub-header" style={{marginRight:"53px"}}>Country:</h4>

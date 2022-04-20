@@ -16,7 +16,7 @@ const SimilarTvShow = ({ similarTvShow }) =>{
     },[])
 
     const baseUrl = "https://image.tmdb.org/t/p/original/";
-    console.log(similarTvShowDetails)
+    
     return(
         <div className="similar-movie-container" onMouseOver={e =>setIsHovering(similarTvShowDetails.id)} onMouseOut={()=>setIsHovering(-1)}>
             <Link className="similar-movie-link" to={`/${similarTvShow.id}`}>
