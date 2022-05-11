@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaStar } from "react-icons/fa";
+import { FaExclamationCircle, FaStar } from "react-icons/fa";
 import { useParams } from "react-router-dom"
 import SimilarMovies from "./SimilarMovies";
 
@@ -15,10 +15,11 @@ const Movie = () => {
         const getVideos = async() =>{
             const rest = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&append_to_response=videos`);
             const data = await rest.json()
-            // console.log(data.results)
-            const officialTrailer = data.results.filter(trailer=>trailer.type === "Trailer");
+            console.log(data)
+            const officialTrailer = data.results.filter(trailer=>trailer.type === "Trailer"  || trailer.site === "YouTube");
+            console.log(officialTrailer[0])
+            setVideos(officialTrailer[officialTrailer.length - 1])
             // console.log(officialTrailer)
-            setVideos(officialTrailer[0])
         };
 
         const getMovieDetails = async () =>{
@@ -54,7 +55,7 @@ const Movie = () => {
     return(
         <div className="movie-video-container">
             <div className="video-wrapper" style={{backgroundImage: `linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url(${baseUrl}/${movieDetails.backdrop_path})`,height:"600px",width:"100%", backgroundPosition:"center",backgroundSize:"cover",margin:"40px 0"}}>
-                <div style={{padding:"0 10px 0 40px",width:"1400px",height:"600px"}}>
+                <div style={{padding:"0 10px 0 40px",width:"1400px",height:"600px",position:"relative"}}>
                     <iframe 
                         style={{padding:"0",margin:"0",backgroundColor:"#000"}}
                         width="1200" 
@@ -70,6 +71,10 @@ const Movie = () => {
                         picture-in-picture" 
                         allowFullScreen>
                     </iframe>
+                    {!videos &&
+                    <div className="error-message">
+                        <FaExclamationCircle style={{marginRight:"5px",marginBottom:"3px",fontSize:"30px"}}/>This video is unavailable
+                    </div>}
                 </div>
             </div>
             <div className="movie-items-wrapper">

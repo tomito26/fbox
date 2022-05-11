@@ -9,7 +9,7 @@ const TvShows =  () =>{
     },[]);
 
     const getTvShows = async () =>{
-        const rest = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=1`);
+        const rest = await fetch(`https://api.themoviedb.org/3/tv/top_rated?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=1`);
         const data = await rest.json();
         setTvShows(data.results)
     }

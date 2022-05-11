@@ -24,7 +24,7 @@ const Trending = ({ trending })=>{
    
     return(
         <div className="movie-card" onMouseOver={e =>setIsHovering(trending.id)} onMouseOut={()=>setIsHovering(-1)}>
-            <Link className="movie-link" to={`/trending/${trending.id}`}>
+            <Link className="movie-link" to={trending.media_type === "movie" ? `/movie/${trending.id}` : `/tvshows/${trending.id}`}>
                 <div className="movie-img">
                     <img src={`${baseUrl}/${trending.poster_path}`} alt={trending.name} />
                     <p className='movie-hd-tag'>HD</p>

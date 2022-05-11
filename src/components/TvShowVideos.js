@@ -1,25 +1,32 @@
 import { useEffect, useState } from "react";
-import { FaStar } from "react-icons/fa";
-import { useParams } from "react-router-dom";
+import { FaListUl, FaStar,FaExclamationCircle } from "react-icons/fa";
+import { Outlet, useParams } from "react-router-dom";
+import SeasonMenu from "./SeasonMenu";
 import SimilarTvShow from "./SimilarTvShow";
 
 const TvShowVideos = () =>{
     const [video,setVideo] = useState({});
-    const[videoLinks,setVideoLinks] = useState([]);
     const[tvShowDetails,setTvShowDetails] = useState({});
-    const[casts,setCasts] = useState([])
+    const[casts,setCasts] = useState([]);
+    const[isClicked,setIsClicked] = useState(false);
     const[directors,setDirectors]= useState([]);
     const[similarTvShows,setSimilarTvShows]=useState([]);
     const { tvshowId } = useParams();
+    const[selectedSeason,setSelectedSeason] = useState({
+        seasonNumber:"",
+        monthReleased:"",
+        dateReleased:"",
+        yearReleased:"",
+    });
 
     useEffect(()=>{
         const getTvShowVideos = async()=>{
             const rest = await fetch(`https://api.themoviedb.org/3/tv/${tvshowId}/videos?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&append_to_response=videos`);
             const data = await rest.json();
             console.log(data)
-            const trailer = data.results.filter(video => video.type === "Trailer" || video.name === "Official Trailer");
-            // console.log(trailer)
-            setVideo(trailer);
+            const trailer = data.results.filter(video => video.type === "Trailer" || video.name === "Official Trailer" || video.site === "YouTube");
+            console.log(trailer)
+            setVideo(trailer[trailer.length - 1]);
             
         }
 
@@ -42,24 +49,30 @@ const TvShowVideos = () =>{
 
             setSimilarTvShows(data.results.slice(0,9));
         }   
-
+        
         getTvShowVideos();
         getTvShowDetails();
         getCredits()
         getSimilarTvShows()
     },[]);
     const baseUrl = "https://image.tmdb.org/t/p/original/";
+    // console.log(tvShowDetails)
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    const air_date = new Date(!tvShowDetails.seasons ? ""  : tvShowDetails.seasons[0].air_date)
+    const month = months[air_date.getMonth()];
+    const date = air_date.getDate()
+    const year = air_date.getFullYear()
+    // console.log(year)
 
-    // console.log(video)
     return(
         <div className="movie-video-container">
             <div className="video-wrapper" style={{backgroundImage: `linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url(${baseUrl}/${!tvShowDetails ? "" :tvShowDetails.backdrop_path})`,height:"600px",width:"100%", backgroundPosition:"center",backgroundSize:"cover",margin:"40px 0"}}>
-                <div style={{padding:"0 10px 0 40px",width:"1400px",height:"600px"}}>
+                <div style={{padding:"0 10px 0 40px",width:"1400px",height:"600px",position:"relative"}}>
                     <iframe 
                         style={{padding:"0",margin:"0",backgroundColor:"#000"}}
                         width="1200" 
                         height="600"
-                        src={video ? `https://www.youtube.com/embed/${!video[0] ? "" : video[0].key}` : ""} 
+                        src={video ? `https://www.youtube.com/embed/${!video ? "" : video.key}` : ""} 
                         title="YouTube video player" 
                         frameBorder="0" 
                         allow="accelerometer; 
@@ -70,7 +83,28 @@ const TvShowVideos = () =>{
                         picture-in-picture" 
                         allowFullScreen>
                     </iframe>
+                    {!video &&
+                    <div className="error-message">
+                        <FaExclamationCircle style={{marginRight:"5px",marginBottom:"3px",fontSize:"30px"}}/>This video is unavailable
+                    </div>}
                 </div>
+            </div>
+            <div className="video-links">
+                <div className="season-menu">
+                   <p onClick={()=>setIsClicked(true)} className={isClicked ? "isActive" : ""}>
+                        <FaListUl className="burger"/> 
+                        <span className="season-item">
+                            {selectedSeason.seasonNumber === "" ? "Season 1" :`Season ${selectedSeason.seasonNumber}`}  -
+                        </span>
+                        <span className="season-date">
+                            {selectedSeason.monthReleased === "" && selectedSeason.dateReleased === "" && selectedSeason.yearReleased === "" ? `${month} ${date},${year}` : `${selectedSeason.monthReleased} ${selectedSeason.dateReleased},${selectedSeason.yearReleased}`}
+                        </span>
+                    </p>
+                   {isClicked && <div className="seasonDropdownMenu">
+                       {!tvShowDetails.seasons ? "" : tvShowDetails.seasons.map((season,index ) =><SeasonMenu key={season.id} index={index} season={season} setIsClicked={setIsClicked} setSelectedSeason={setSelectedSeason} tvshowId={tvshowId}/> )}
+                   </div>}
+                </div> 
+                <Outlet/>
             </div>
             <div className="movie-items-wrapper">
                 <div className="movie-item-details">
