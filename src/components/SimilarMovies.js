@@ -19,7 +19,7 @@ const SimilarMovies = ({ similarMovie }) =>{
    
     return(
         <div className="similar-movie-container" onMouseOver={e =>setIsHovering(similarMovieDetail.id)} onMouseOut={()=>setIsHovering(-1)}>
-            <Link className="similar-movie-link" to={`/${similarMovie.id}`}>
+            <Link className="similar-movie-link" to={`/movie/${similarMovie.id}`}>
                 <div className="similar-movie-poster">
                     <img 
                         src={`${baseUrl}/${similarMovie.poster_path}`} 
@@ -44,9 +44,9 @@ const SimilarMovies = ({ similarMovie }) =>{
                 </div>
             </Link>
             <div className={isHovering > 0 ?  `similar-movie-overview` : "no-hover"}>
-                <div className="similar-movie-play">
+                <Link to={`/movie/${similarMovie.id}`} className="similar-movie-play">
                     <FaPlay/>
-                </div>
+                </Link>
                 <div className="similar-movie-overview-info">
                     <div className="similar-movie-overview-header">
                         <h4>{similarMovie.title}</h4>
@@ -66,7 +66,10 @@ const SimilarMovies = ({ similarMovie }) =>{
                         <p>{!similarMovieDetail.genres ? "" : similarMovieDetail.genres.map((genre,index) => <span key={genre.id} style={{marginRight:"3px"}}>{`${genre.name},`}</span>)}</p>
                     </div>
                     <div className="similar-button">
-                        <button className="watchnow-btn"><FaPlay className="similar-movies-play"/>Watch Now</button>
+                        <Link to={`/movie/${similarMovie.id}`} className="watchnow-btn">
+                            <FaPlay className="similar-movies-play"/>
+                            Watch Now
+                        </Link>
                         <button className="add-to-list"><FaRegHeart className="heart"/></button>
                     </div>
                 </div>

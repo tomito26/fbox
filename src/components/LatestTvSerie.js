@@ -40,9 +40,9 @@ const LatestTvSerie = ({ tvSeries }) =>{
             </Link>
             <div className={ isHovering > 0 ? "movie-overview" : "no-hover"}>
                 <div className='movie-container'>
-                    <div className="movie-play-icon">
+                    <Link to={`/tvshows/${tvSeries.id}`} className="movie-play-icon">
                         <p><FaPlay/></p>
-                    </div>
+                    </Link>
                     <div className="movie-overview-wrapper">
                         <h3>{tvSeries.name}</h3>
                         <p className="movie-overview-info">
@@ -73,12 +73,12 @@ const LatestTvSerie = ({ tvSeries }) =>{
                             </p>
                         </div>
                         <div className="overview-button">
-                            <button className="watch-now-btn">
+                            <Link to={`/tvshows/${tvSeries.id}`} className="watch-now-btn">
                                 <span>
                                     <FaPlay className='watchnow-icon'/>
                                 </span> 
                                 Watch Now
-                            </button>
+                            </Link>
                             <p className="watchlist-icon"><FaRegHeart/></p>
                         </div>
                     </div>

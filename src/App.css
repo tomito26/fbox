@@ -774,15 +774,17 @@ form{
 .watch-now-btn{
   /* padding: 0 20px; */
   margin: 0;
-  padding: 0;
+  padding: 10px;
   height: 40px;
   width: 180px;
   border: none;
   background-color: #041C32;
   border-radius: 40px;
   color: #ccc;
+  text-align: center;
   /* text-align: center; */
   font-size: 14px;
+  text-decoration: none;
 }
 .watchnow-icon{
   color: #FFC300;
@@ -1177,6 +1179,7 @@ footer p{
   background-color: #041C32;
   padding: 5px 20px;
   border-radius: 20px;
+  text-decoration: none;
   color: #ccc;
   font-size: 13px;
   margin-top: 5px;
@@ -1186,6 +1189,10 @@ footer p{
   color: #FFC300;
   margin-right: 3px;
   margin-bottom: 2px;
+}
+.similar-movie-play:hover{
+  color: #FFC300;
+
 }
 .add-to-list {
   float: right;
