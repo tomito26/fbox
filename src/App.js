@@ -6,7 +6,7 @@ import Register from './pages/Register';
 import Home from './pages/Home';
 import { UserAuthContextProvider } from './Context/UserAuthContext';
 import PrivateLink from './components/PrivateLink';
-import Movies from './pages/Movies';
+import Movies from './pages/movies/Movies';
 import TvSeries from './pages/TvSeries';
 import TopImdb from './pages/TopImdb';
 import 'bootstrap/dist/css/bootstrap.min.css';

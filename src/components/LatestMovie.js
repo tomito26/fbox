@@ -1,6 +1,9 @@
 import { FaCircle, FaPlay, FaRegHeart, FaStar } from 'react-icons/fa'
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { storage } from '../firebase-config';
+import { ref,uploadBytes  } from 'firebase/storage';
+
 const LatestMovie = ({ movie }) => {
     const[isHovering,setIsHovering] = useState(-1);
     const[movieDetail,setMovieDetail] = useState({});
@@ -14,17 +17,24 @@ const LatestMovie = ({ movie }) => {
         getMovieDetail()
     },[])
 
-    const baseUrl = "https://image.tmdb.org/t/p/original/";
+    const baseUrl = "https://image.tmdb.org/t/p/original";
 
     const releaseYear = !movie.release_date ? "" : movie.release_date.split("-");
     const year = releaseYear[0];
+
+    const uploadMoviePoster = async (movie_poster) =>{
+        if (movie_poster === null) return;
+        const imageUrl = movie_poster;
+        const imageRef = ref(storage,`movies/${imageUrl}`)
+        const uploadMovie = await uploadBytes(imageRef,imageUrl);
+    }
     
     return(
         <div className="movie-card" onMouseOver={e =>setIsHovering(movie.id)} onMouseOut={()=>setIsHovering(-1)}>
             <Link className='movie-link' to={`/movie/${movie.id}`}>
                 <div className="movie-img">
                     <img 
-                        src={`${baseUrl}/${movie.poster_path}`} 
+                        src={`${baseUrl}${movie.poster_path}`} 
                         alt={movie.overview} 
                     />
                     <p className='movie-hd-tag'>HD</p>
@@ -85,7 +95,7 @@ const LatestMovie = ({ movie }) => {
                                 Watch Now
                             </Link>
                             <p className="watchlist-icon">
-                                <FaRegHeart/>
+                                <FaRegHeart  onClick={()=>uploadMoviePoster(`${movie.poster_path}`)}/>
                             </p>
                         </div>
                     </div>

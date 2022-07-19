@@ -990,9 +990,7 @@ footer p{
 .similar-movie-container{
   position: relative;
 }
-.similar-movie-container:nth-child(2){
 
-}
 .similar-movie-container .similar-movie-link{
   text-decoration: none;
 }
@@ -1271,4 +1269,341 @@ footer p{
   font-size: 20px;
   color: #eee;
   
+}
+/* // profile page  */
+.profile-page{
+  min-height: 50vh;
+  padding: 30px;
+}
+.profile-page h2{
+  font-size: 29px;
+  font-weight: 300;
+}
+.profile-page h2 span{
+  border-bottom: 1px solid #eee;
+}
+.form-group-profile{
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  margin-top: 30px;
+}
+.form-group-profile .form-input{
+  height: 45px;
+  width: 400px;
+  border-radius: 50px;
+  border: none;
+  outline: none;
+  /* margin-left: ; */
+  background-color: rgba(238, 235, 221,0.2);
+  color: #eee;
+  font-weight: 300;
+  padding: 4px 20px;
+}
+.form-group-profile .form-input::placeholder{
+  color: #eee;
+}
+.save-button{
+  margin-top: 30px;
+}
+.save-button .saveBtn{
+  padding: 10px 20px;
+  background-color: #FFC300;
+  font-family: "Lato",sans-serif;
+  color: #333;
+  border: none;
+  border-radius: 30px;
+  margin-left: 20px;
+  cursor: pointer;
+}
+.save-button .saveBtn:hover{
+  background-color: #F0A500;
+}
+/* // movies page  */
+.movie-page{
+  margin-top: 40px;
+  padding: 0 30px;
+}
+.movie-page .movie-header h2{
+  font-size: 30px;
+  color: rgb(164, 173, 189);
+  font-weight: 100;
+  width: 250px;
+  margin: 0 0 30px;
+}
+.movie-page hr{
+  width: 32%;
+  padding: 0;
+  margin: 5px 0;
+}
+.movie-page .category-section{
+  margin-bottom: 30px;
+}
+.movie-page .category-section .dropdown-category{
+  position: relative;
+}
+.movie-page .category-section .dropdown-category .category-dropdownBtn{
+  background-color: #314458;
+  padding: 5px 10px;
+  border-radius: 40px;
+  text-align: center;
+  color: #a1a5ac;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+
+.movie-page .category-section .dropdown-category .menu-items{
+  position: absolute;
+  top: 120%;
+  border-radius: 10px;
+  z-index: 1;
+  width: 600px;
+  padding: 15px;
+  background-color: #314458;
+  display: grid;
+  grid-template-columns: 2fr 2.6fr 2fr 2.5fr;
+  color: #d5d9e4;
+
+  
+}
+.form-check{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5px;
+}
+
+.form-check input[type="checkbox"]{
+  cursor: pointer;
+  opacity: 0;
+  position: absolute;
+
+}
+.form-check label{
+  cursor: pointer;
+  display: flex;
+  font-size: 14px;
+}
+.form-check label:hover{
+  color: #fff;
+}
+.form-check label::before{
+  content: "";
+  width: 1em;
+  height: 1em;
+  border-radius: .15em;
+  margin-right: .5em;
+  background-color: #475e7e;
+  margin-top: 4px;
+
+}
+.form-check input[type='checkbox']:checked + label::before{
+  content: '\002714';
+  background-color: transparent;
+  color: #F0A500;
+  /* font-size: 16px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.includeall label{
+  color: #707e8d;
+}
+
+.menu-type{
+  position: relative;
+}
+.menu-type-btn{
+  background-color: #314458;
+  padding: 5px 10px;
+  border-radius: 40px;
+  text-align: center;
+  color: #a1a5ac;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 14px
+}
+.menu-type-items{
+  width: 150px;
+  background-color: #314458;
+  position: absolute;
+  top: 120%;
+  left: 10%;
+  border-radius: 10px;
+  z-index: 1;
+  padding: 15px;
+  background-color: #314458;
+  color: #d5d9e4;
+}
+.country-dropdown-menu{
+  position: relative;
+}
+.country-btn{
+  background-color: #314458;
+  padding: 5px 10px;
+  border-radius: 40px;
+  text-align: center;
+  color: #a1a5ac;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 14px
+
+}
+.countries-menu{
+  position: absolute;
+  top: 120%;
+  left: 4%;
+  border-radius: 10px;
+  z-index: 1;
+  width: 620px;
+  padding:20px;
+  background-color: #314458;
+  display: grid;
+  grid-template-columns: 2.6fr 2.6fr 2.6fr 2.5fr;
+  color: #d5d9e4;
+}
+.yearDropdownMenu{
+  position: relative;
+}
+.yearDropdownBtn{
+  background-color: #314458;
+  padding: 5px 10px;
+  border-radius: 40px;
+  text-align: center;
+  color: #a1a5ac;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 14px
+}
+.yearDropdownItems{
+  position: absolute;
+  top: 120%;
+  left: 4%;
+  border-radius: 10px;
+  z-index: 1;
+  width: 300px;
+  padding:20px;
+  background-color: #314458;
+  display: grid;
+  grid-template-columns: 2fr 2fr 2fr 2fr;
+  grid-column-gap: .5em;
+  justify-content: center;
+  color: #d5d9e4;
+}
+.quality{
+  position: relative;
+}
+.qualityBtn{
+  background-color: #314458;
+  padding: 5px 10px;
+  border-radius: 40px;
+  text-align: center;
+  color: #a1a5ac;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 14px
+}
+
+.qualityMenu{
+  width: 150px;
+  background-color: #314458;
+  position: absolute;
+  top: 120%;
+  left: 10%;
+  border-radius: 10px;
+  z-index: 1;
+  padding: 15px;
+  background-color: #314458;
+  color: #d5d9e4;
+}
+.sortMenu{
+  position: relative;
+}
+.sortBtn{
+  background-color: #314458;
+  padding: 2px 10px;
+  border-radius: 40px;
+  text-align: center;
+  color: #a1a5ac;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  
+
+}
+.sortBtn span{
+  display: flex;
+  flex-direction: column;
+}
+.sortBtn span:last-child{
+  margin-top: 3px;
+}
+.sort-items{
+  width: 200px;
+  background-color: #314458;
+  position: absolute;
+  top: 120%;
+  left: 10%;
+  border-radius: 10px;
+  z-index: 1;
+  padding: 15px;
+  background-color: #314458;
+  color: #d5d9e4;
+}
+
+
+.form-check input[type="radio"]{
+  cursor: pointer;
+  opacity: 0;
+  position: absolute;
+
+}
+.form-check label{
+  cursor: pointer;
+  display: flex;
+  font-size: 14px;
+}
+.form-check label:hover{
+  color: #fff;
+}
+.sort-items .form-check label::before{
+  content: "";
+  width: 1em;
+  height: 1em;
+  border-radius: 100%;
+  margin-right: .5em;
+  background-color: #475e7e;
+  margin-top: 4px;
+
+}
+.form-check input[type='radio']:checked + label::before{
+  content: '\002714';
+  background-color: #F0A500;
+  color: #314458;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.movie-page .category-section .filterBtn{
+  background-color: #FFC300;
+  color: #333;
+  font-family: "Lato",sans-serif;
+  font-weight: 400;
+  outline: none;
+  border: none;
+  margin-left: 10px;
+  padding: 3px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-align: center;
+
+}
+
+.movie-page .category-section .filterBtn:hover{
+  background-color: #F0A500;
 }
