@@ -39,7 +39,7 @@ const LatestMovie = ({ movie }) => {
                     />
                     <p className='movie-hd-tag'>HD</p>
                     <div className="movie-info">
-                    <p className="movie-title">{movie.title.length  > 25 ? `${movie.title.substring(0,23)}...` : movie.name}</p>
+                    <p className="movie-title">{movie.title.length  > 20 ? `${movie.title.substring(0,23)}...` : movie.title}</p>
                         <div className="movie-footer">
                             <p className="year">
                                 <span>{year}</span>
