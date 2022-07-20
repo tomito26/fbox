@@ -40,7 +40,7 @@ const TvSeries = () =>{
     return(
         <div className="movie-page">
             <div className="movie-header">
-            <h2>
+                <h2>
                     <span>Tv Series</span>
                     <hr />
                 </h2>

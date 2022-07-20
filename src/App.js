@@ -8,7 +8,7 @@ import { UserAuthContextProvider } from './Context/UserAuthContext';
 import PrivateLink from './components/PrivateLink';
 import Movies from './pages/movies/Movies';
 import TvSeries from './pages/tvSeries/TvSeries';
-import TopImdb from './pages/TopImdb';
+import TopImdb from './pages/imdb/TopImdb';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Profile from './pages/Profile';
 import TvShows from './components/TvShows';

@@ -6,13 +6,16 @@ const SimilarMovies = ({ similarMovie }) =>{
     const [similarMovieDetail,setSimilarMovieDetail] = useState({});
     const [isHovering,setIsHovering] = useState(-1);
     useEffect(()=>{
+        const abortCont = new AbortController();
         const getSimilarMovieDetails = async () =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/movie/${similarMovie.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
+            const rest = await fetch(`https://api.themoviedb.org/3/movie/${similarMovie.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`,{signal:abortCont.signal});
             const data = await rest.json();
             setSimilarMovieDetail(data)
         }
         getSimilarMovieDetails();
-    })
+
+        return () => abortCont.abort();
+    },[])
     const baseUrl = "https://image.tmdb.org/t/p/original/";
     const releaseDate = similarMovie.release_date;
     const year = releaseDate.split("-");

@@ -9,7 +9,7 @@ const RequestedMovieShows = () =>{
     },[]);
 
     const getRequestedMovieShow = async () =>{
-        const rest = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${process.env.REACT_APP_MOVIE_API_KEY}`);
+        const rest = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=30`);
         const data = await rest.json(); 
         setRequestedMovieShow(data.results)
     }
