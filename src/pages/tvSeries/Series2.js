@@ -2,10 +2,9 @@ import { useEffect, useState } from "react";
 import { FaCircle, FaPlay, FaRegHeart, FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const Series = ({ tvShow }) =>{
+const Series2 = ({ tvShow }) =>{
     const[isHovering,setIsHovering] = useState(-1)
     const[tvShowDetails,setTvShowDetails] = useState({});
-
     useEffect(()=>{
         const getTvShowDetails = async () =>{
             const rest = await fetch(`https://api.themoviedb.org/3/tv/${tvShow.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
@@ -18,6 +17,7 @@ const Series = ({ tvShow }) =>{
     const baseUrl = "https://image.tmdb.org/t/p/original/";
     const releaseYear = tvShow.first_air_date.split("-");
     const year = releaseYear[0];
+    
 
     return(
         <div className="movie-card" onMouseOver={e =>setIsHovering(tvShow.id)} onMouseOut={()=>setIsHovering(-1)}>
@@ -89,4 +89,5 @@ const Series = ({ tvShow }) =>{
         </div>
     );
 };
-export default Series;
+
+export default Series2;

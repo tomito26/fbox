@@ -41,6 +41,7 @@ const LatestTvSerie = ({ tvSeries }) =>{
             <div className={ isHovering > 0 ? "movie-overview" : "no-hover"}>
                 <div className='movie-container'>
                     <Link to={`/tvshows/${tvSeries.id}`} className="movie-play-icon">
+                        
                         <p><FaPlay/></p>
                     </Link>
                     <div className="movie-overview-wrapper">
