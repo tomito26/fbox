@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaCircle, FaPlay, FaRegHeart, FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { tmdbFetch } from "../../api/tmdb";
 
 const Imdb = ({ trending }) =>{
     const[isHovering,setIsHovering] = useState(-1);
@@ -9,9 +10,13 @@ const Imdb = ({ trending }) =>{
     useEffect(()=>{
         const abortCont  = new AbortController();
         const getTrendingDetails = async () =>{
-            const rest = trending.media_type === "movie" ? await fetch(`https://api.themoviedb.org/3/movie/${trending.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`) : await fetch(`https://api.themoviedb.org/3/tv/${trending.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`,{signal:abortCont.signal});
-            const data = await rest.json();
-            setTrendingDetails(data)
+            try {
+                const path = trending.media_type === "movie" ? `/movie/${trending.id}` : `/tv/${trending.id}`;
+                const data = await tmdbFetch(path, { language: "en-US" }, { signal: abortCont.signal });
+                setTrendingDetails(data)
+            } catch (err) {
+                if (err.name !== "AbortError") console.error(err);
+            }
         }
         getTrendingDetails()
 

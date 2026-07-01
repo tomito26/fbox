@@ -3,6 +3,8 @@ import { FaListUl, FaStar,FaExclamationCircle } from "react-icons/fa";
 import { Outlet, useParams } from "react-router-dom";
 import SeasonMenu from "./SeasonMenu";
 import SimilarTvShow from "./SimilarTvShow";
+import { tmdbFetch } from "../api/tmdb";
+import ErrorMessage from "./ErrorMessage";
 
 const TvShowVideos = () =>{
     const [video,setVideo] = useState({});
@@ -11,6 +13,7 @@ const TvShowVideos = () =>{
     const[isClicked,setIsClicked] = useState(false);
     const[directors,setDirectors]= useState([]);
     const[similarTvShows,setSimilarTvShows]=useState([]);
+    const[error,setError] = useState(null);
     const { tvshowId } = useParams();
     const[selectedSeason,setSelectedSeason] = useState({
         seasonNumber:"",
@@ -21,40 +24,47 @@ const TvShowVideos = () =>{
 
     useEffect(()=>{
         const getTvShowVideos = async()=>{
-            const rest = await fetch(`https://api.themoviedb.org/3/tv/${tvshowId}/videos?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&append_to_response=videos`);
-            const data = await rest.json();
-            console.log(data)
-            const trailer = data.results.filter(video => video.type === "Trailer" || video.name === "Official Trailer" || video.site === "YouTube");
-            console.log(trailer)
-            setVideo(trailer[trailer.length - 1]);
-            
+            try {
+                const data = await tmdbFetch(`/tv/${tvshowId}/videos`, { append_to_response: "videos" });
+                const trailer = data.results.filter(video => video.type === "Trailer" || video.name === "Official Trailer" || video.site === "YouTube");
+                setVideo(trailer[trailer.length - 1]);
+            } catch (err) {
+                setError("Couldn't load this TV show. Please try again later.");
+            }
         }
 
         const getTvShowDetails = async () =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/tv/${tvshowId}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
-            const data = await rest.json();
-            setTvShowDetails(data)
+            try {
+                const data = await tmdbFetch(`/tv/${tvshowId}`, { language: "en-US" });
+                setTvShowDetails(data)
+            } catch (err) {
+                setError("Couldn't load this TV show. Please try again later.");
+            }
         }
         const getCredits = async () =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/tv/${tvshowId}/credits?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
-            const data = await rest.json();
-            setCasts(data.cast);
-            const crew = data.crew.filter(crew => crew.known_for_department === "Directing")
-            setDirectors(crew) 
-        
+            try {
+                const data = await tmdbFetch(`/tv/${tvshowId}/credits`, { language: "en-US" });
+                setCasts(data.cast);
+                const crew = data.crew.filter(crew => crew.known_for_department === "Directing")
+                setDirectors(crew)
+            } catch (err) {
+                setError("Couldn't load this TV show. Please try again later.");
+            }
         }
         const getSimilarTvShows = async () =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/tv/${tvshowId}/similar?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=1`);
-            const data = await rest.json();
+            try {
+                const data = await tmdbFetch(`/tv/${tvshowId}/similar`, { language: "en-US", page: 1 });
+                setSimilarTvShows(data.results.slice(0,9));
+            } catch (err) {
+                setError("Couldn't load this TV show. Please try again later.");
+            }
+        }
 
-            setSimilarTvShows(data.results.slice(0,9));
-        }   
-        
         getTvShowVideos();
         getTvShowDetails();
         getCredits()
         getSimilarTvShows()
-    },[]);
+    },[tvshowId]);
     const baseUrl = "https://image.tmdb.org/t/p/original/";
     // console.log(tvShowDetails)
     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
@@ -66,6 +76,7 @@ const TvShowVideos = () =>{
 
     return(
         <div className="movie-video-container">
+            {error && <ErrorMessage message={error}/>}
             <div className="video-wrapper" style={{backgroundImage: `linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url(${baseUrl}/${!tvShowDetails ? "" :tvShowDetails.backdrop_path})`,height:"600px",width:"100%", backgroundPosition:"center",backgroundSize:"cover",margin:"40px 0"}}>
                 <div style={{padding:"0 10px 0 40px",width:"1400px",height:"600px",position:"relative"}}>
                     <iframe 

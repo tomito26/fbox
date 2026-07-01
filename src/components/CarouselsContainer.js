@@ -2,23 +2,30 @@ import { Carousel } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useEffect, useState } from 'react';
 import { FaHeart, FaPlay, FaRegHeart, FaStar } from 'react-icons/fa'
+import { tmdbFetch } from '../api/tmdb';
+import ErrorMessage from './ErrorMessage';
 
 const CarouselContainer = () =>{
     const[carouselMovies,setCarouselMovies] = useState([]);
+    const [error,setError] = useState(null);
     useEffect(()=>{
         getTrendingMovies();
 
     },[]);
 
     const getTrendingMovies = async () =>{
-        const rest = await fetch(`https://api.themoviedb.org/3/trending/all/day?api_key=${process.env.REACT_APP_MOVIE_API_KEY}`)
-        const data = await rest.json();
-        setCarouselMovies(data.results.slice(0,11));
+        try {
+            const data = await tmdbFetch("/trending/all/day");
+            setCarouselMovies(data.results.slice(0,11));
+        } catch (err) {
+            setError("Couldn't load the carousel. Please try again later.");
+        }
     };
-    // console.log(carouselMovies)
 
     const baseUrl = "https://image.tmdb.org/t/p/original/"
-    
+
+    if (error) return <ErrorMessage message={error}/>;
+
     return(
         <Carousel className='carousel-wrapper' controls={false}>
             <Carousel.Item interval={3000} className="wrapper" >

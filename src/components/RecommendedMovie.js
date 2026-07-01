@@ -1,16 +1,20 @@
 import { FaCircle, FaPlay, FaRegHeart, FaStar } from 'react-icons/fa'
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { tmdbFetch } from '../api/tmdb';
 const RecommendedMovie = ({ movie }) =>{
     const[isHovering,setIsHovering] = useState(-1);
     const[movieDetails,setMovieDetails] = useState({})
 
     useEffect(()=>{
         const getMovieDetails = async ()=>{
-            const rest = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
-            const data = await rest.json();
-            setMovieDetails(data);
-        } 
+            try {
+                const data = await tmdbFetch(`/movie/${movie.id}`, { language: "en-US" });
+                setMovieDetails(data);
+            } catch (err) {
+                console.error(err);
+            }
+        }
         getMovieDetails()
     },[])
 

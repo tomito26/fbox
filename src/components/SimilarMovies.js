@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaCircle,FaPlay, FaRegHeart, FaStar } from "react-icons/fa";
+import { tmdbFetch } from "../api/tmdb";
 
 const SimilarMovies = ({ similarMovie }) =>{
     const [similarMovieDetail,setSimilarMovieDetail] = useState({});
@@ -8,9 +9,12 @@ const SimilarMovies = ({ similarMovie }) =>{
     useEffect(()=>{
         const abortCont = new AbortController();
         const getSimilarMovieDetails = async () =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/movie/${similarMovie.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`,{signal:abortCont.signal});
-            const data = await rest.json();
-            setSimilarMovieDetail(data)
+            try {
+                const data = await tmdbFetch(`/movie/${similarMovie.id}`, { language: "en-US" }, { signal: abortCont.signal });
+                setSimilarMovieDetail(data)
+            } catch (err) {
+                if (err.name !== "AbortError") console.error(err);
+            }
         }
         getSimilarMovieDetails();
 
