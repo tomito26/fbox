@@ -34,6 +34,14 @@ const Imdb = ({ trending }) => {
       onMouseOver={() => setIsHovering(true)}
       onMouseOut={() => setIsHovering(false)}
     >
+      <button
+        className={`card-heart${saved ? " saved" : ""}`}
+        aria-label={saved ? "Remove from watchlist" : "Add to watchlist"}
+        aria-pressed={saved}
+        onClick={() => toggleWatchlist(trending)}
+      >
+        {saved ? <FaHeart /> : <FaRegHeart />}
+      </button>
       <Link className="movie-link" to={to}>
         <div className="movie-img">
           <img src={imageUrl(trending.poster_path, "w342")} alt={displayTitle} loading="lazy" />
@@ -96,14 +104,6 @@ const Imdb = ({ trending }) => {
                 <span><FaPlay className="watchnow-icon" /></span>
                 Watch Now
               </Link>
-              <button
-                className="watchlist-icon"
-                aria-label={saved ? "Remove from watchlist" : "Add to watchlist"}
-                aria-pressed={saved}
-                onClick={() => toggleWatchlist(trending)}
-              >
-                {saved ? <FaHeart /> : <FaRegHeart />}
-              </button>
             </div>
           </div>
         </div>

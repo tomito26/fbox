@@ -5,16 +5,28 @@ import ProfileIcon from './ProfileIcon';
 import { useUserAuth } from '../Context/UserAuthContext';
 import { FaCaretDown, FaHeart, FaSignOutAlt, FaUserCircle } from 'react-icons/fa'
 import { auth, database } from '../firebase-config';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { NAV_GENRES, NAV_COUNTRIES } from './categorySection/filterOptions';
 
 const Navbar = () =>{
     const[isActive,setIsActive] = useState(false);
     const[userData,setUserData] = useState({});
     const[searchTerm,setSearchTerm] = useState("");
+    const[openNav,setOpenNav] = useState(null); // 'genres' | 'country' | null
     const { user} = useUserAuth();
     const navigate = useNavigate()
+
+    const toggleNav = (name) => setOpenNav((cur) => (cur === name ? null : name));
+
+    useEffect(()=>{
+        const closeOnOutside = (e) => {
+            if(!e.target.closest('.nav-dropdown')) setOpenNav(null);
+        };
+        document.addEventListener('mousedown', closeOnOutside);
+        return () => document.removeEventListener('mousedown', closeOnOutside);
+    },[])
 
     const handleSearch = (e) =>{
         e.preventDefault();
@@ -56,8 +68,50 @@ const Navbar = () =>{
             </div>
             <ul>
                 <li><NavLink style={({isActive})=>{ return {color: isActive ?  "#FFC300 " :"#ccc" } }}  className="nav-link" to="/">Home</NavLink></li>
-                <li><span className='nav-link'>Genres</span></li>
-                <li><span className='nav-link'>Country</span></li>
+                <li className='nav-dropdown'>
+                    <button
+                        type='button'
+                        className='nav-link nav-dropdown-toggle'
+                        aria-haspopup='true'
+                        aria-expanded={openNav === 'genres'}
+                        onClick={()=>toggleNav('genres')}
+                    >
+                        Genres <FaCaretDown className='nav-caret'/>
+                    </button>
+                    { openNav === 'genres' &&
+                        <div className='nav-dropdown-menu'>
+                            {NAV_GENRES.map(g=>
+                                <Link
+                                    key={g.id}
+                                    to={`/browse?media=movie&genre=${g.id}&title=${encodeURIComponent(g.label)}`}
+                                    onClick={()=>setOpenNav(null)}
+                                >{g.label}</Link>
+                            )}
+                        </div>
+                    }
+                </li>
+                <li className='nav-dropdown'>
+                    <button
+                        type='button'
+                        className='nav-link nav-dropdown-toggle'
+                        aria-haspopup='true'
+                        aria-expanded={openNav === 'country'}
+                        onClick={()=>toggleNav('country')}
+                    >
+                        Country <FaCaretDown className='nav-caret'/>
+                    </button>
+                    { openNav === 'country' &&
+                        <div className='nav-dropdown-menu'>
+                            {NAV_COUNTRIES.map(c=>
+                                <Link
+                                    key={c.code}
+                                    to={`/browse?media=movie&country=${c.code}&title=${encodeURIComponent(c.label)}`}
+                                    onClick={()=>setOpenNav(null)}
+                                >{c.label}</Link>
+                            )}
+                        </div>
+                    }
+                </li>
                 <li><NavLink style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="nav-link" to="/movies">Movies</NavLink></li>
                 <li><NavLink style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="nav-link" to="/tvSeries">TV-Series</NavLink></li>
                 <li><NavLink style={({isActive})=>{ return {color: isActive ?  "#FFC300 " :"#ccc" } }} className="nav-link" to="/topImdb">Top IMDb</NavLink></li>

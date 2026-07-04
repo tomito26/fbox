@@ -77,6 +77,44 @@ export const SORT_VALUES = {
   "site-rating": "vote_count.desc",
 };
 
+// Curated lists for the navbar Genres / Country dropdowns. These are the single
+// source for those menus; each links to /browse with the corresponding TMDB value.
+export const NAV_GENRES = [
+  { label: "Action", id: 28 },
+  { label: "Adventure", id: 12 },
+  { label: "Animation", id: 16 },
+  { label: "Comedy", id: 35 },
+  { label: "Crime", id: 80 },
+  { label: "Documentary", id: 99 },
+  { label: "Drama", id: 18 },
+  { label: "Family", id: 10751 },
+  { label: "Fantasy", id: 14 },
+  { label: "Horror", id: 27 },
+  { label: "Mystery", id: 9648 },
+  { label: "Romance", id: 10749 },
+  { label: "Sci-Fi", id: 878 },
+  { label: "Thriller", id: 53 },
+  { label: "War", id: 10752 },
+  { label: "Western", id: 37 },
+];
+
+export const NAV_COUNTRIES = [
+  { label: "United States", code: "US" },
+  { label: "United Kingdom", code: "GB" },
+  { label: "Canada", code: "CA" },
+  { label: "France", code: "FR" },
+  { label: "Germany", code: "DE" },
+  { label: "Italy", code: "IT" },
+  { label: "Spain", code: "ES" },
+  { label: "Japan", code: "JP" },
+  { label: "South Korea", code: "KR" },
+  { label: "China", code: "CN" },
+  { label: "India", code: "IN" },
+  { label: "Brazil", code: "BR" },
+  { label: "Mexico", code: "MX" },
+  { label: "Australia", code: "AU" },
+];
+
 // The empty selection state shared by the filter UI.
 export const emptyFilters = {
   genres: [],       // checkbox ids

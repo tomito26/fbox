@@ -13,6 +13,7 @@ import Movies from './pages/movies/Movies';
 import TvSeries from './pages/tvSeries/TvSeries';
 import TopImdb from './pages/imdb/TopImdb';
 import SearchResults from './pages/SearchResults';
+import Browse from './pages/Browse';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Profile from './pages/Profile';
 import TvShows from './components/TvShows';
@@ -44,6 +45,7 @@ function App() {
           <Route path="/tvSeries" element={<PrivateLink><TvSeries/></PrivateLink>}/>
           <Route path='topImdb' element={<PrivateLink><TopImdb/></PrivateLink>}/>
           <Route path='/search' element={<PrivateLink><SearchResults/></PrivateLink>}/>
+          <Route path='/browse' element={<PrivateLink><Browse/></PrivateLink>}/>
           <Route path='/watchlist' element={<PrivateLink><Watchlist/></PrivateLink>}/>
           <Route path='/profile' element={<PrivateLink><Profile/></PrivateLink>}/>
           <Route path='/movie/:movieId' element={<PrivateLink><Movie/></PrivateLink>}/>

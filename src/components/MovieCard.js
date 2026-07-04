@@ -32,6 +32,14 @@ const MovieCard = ({ movie }) => {
       onMouseOver={() => setIsHovering(true)}
       onMouseOut={() => setIsHovering(false)}
     >
+      <button
+        className={`card-heart${saved ? " saved" : ""}`}
+        aria-label={saved ? "Remove from watchlist" : "Add to watchlist"}
+        aria-pressed={saved}
+        onClick={() => toggleWatchlist({ ...movie, media_type: "movie" })}
+      >
+        {saved ? <FaHeart /> : <FaRegHeart />}
+      </button>
       <Link className="movie-link" to={`/movie/${movie.id}`}>
         <div className="movie-img">
           <img src={imageUrl(movie.poster_path, "w342")} alt={title} loading="lazy" />
@@ -88,14 +96,6 @@ const MovieCard = ({ movie }) => {
                 <span><FaPlay className="watchnow-icon" /></span>
                 Watch Now
               </Link>
-              <button
-                className="watchlist-icon"
-                aria-label={saved ? "Remove from watchlist" : "Add to watchlist"}
-                aria-pressed={saved}
-                onClick={() => toggleWatchlist({ ...movie, media_type: "movie" })}
-              >
-                {saved ? <FaHeart /> : <FaRegHeart />}
-              </button>
             </div>
           </div>
         </div>
