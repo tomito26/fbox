@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import DropdownMenus from "../../components/categorySection/DropdownMenus";
 import MovieCard from "../../components/MovieCard";
 import SeriesCard from "../../components/SeriesCard";
-import Loading from "../../components/Loading";
+import SkeletonGrid from "../../components/SkeletonGrid";
 import { getList, discover } from "../../services/tmdb";
 
 const Movies = () => {
@@ -58,14 +58,14 @@ const Movies = () => {
         </h2>
         <DropdownMenus onFilter={handleFilter} />
       </div>
-      {status === "loading" && <Loading />}
+      {status === "loading" && <SkeletonGrid />}
       {status === "error" && (
         <p className="fetch-error">Couldn't load movies. Please try again later.</p>
       )}
       {status === "ready" && movies.length === 0 && (
         <p className="fetch-error">No titles match those filters.</p>
       )}
-      <div className="movie-wrapper">{movies.map(renderCard)}</div>
+      {status === "ready" && <div className="movie-wrapper">{movies.map(renderCard)}</div>}
     </div>
   );
 };

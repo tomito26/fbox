@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Imdb from "./imdb/Imdb";
-import Loading from "../components/Loading";
+import SkeletonGrid from "../components/SkeletonGrid";
 import { searchMulti } from "../services/tmdb";
 
 // Search results page. Reuses the Imdb card because it already handles both
@@ -48,7 +48,7 @@ const SearchResults = () => {
           <hr />
         </h2>
       </div>
-      {status === "loading" && <Loading />}
+      {status === "loading" && <SkeletonGrid count={12} />}
       {status === "error" && (
         <p className="fetch-error">Something went wrong with your search. Please try again.</p>
       )}

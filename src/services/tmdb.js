@@ -39,7 +39,16 @@ export async function getList(path, { pages = 1, startPage = 1, params = {} } = 
   );
   const error = responses.find((r) => r.error)?.error || null;
   const results = responses.flatMap((r) => r.data?.results || []);
-  return { data: results, error };
+  // TMDB pages (and mixed movie/tv trending) can repeat items — dedupe so React
+  // keys stay unique and cards aren't dropped/duplicated.
+  const seen = new Set();
+  const deduped = results.filter((item) => {
+    const key = `${item.media_type || ""}-${item.id}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  return { data: deduped, error };
 }
 
 export const getMovie = (id) => request(`/movie/${id}`);

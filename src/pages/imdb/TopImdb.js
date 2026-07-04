@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Imdb from "./Imdb";
 import DropdownMenus from "../../components/categorySection/DropdownMenus";
-import Loading from "../../components/Loading";
+import SkeletonGrid from "../../components/SkeletonGrid";
 import { getList } from "../../services/tmdb";
 
 const TopImdb = () => {
@@ -33,15 +33,17 @@ const TopImdb = () => {
         </h2>
         <DropdownMenus />
       </div>
-      {status === "loading" && <Loading />}
+      {status === "loading" && <SkeletonGrid />}
       {status === "error" && (
         <p className="fetch-error">Couldn't load titles. Please try again later.</p>
       )}
-      <div className="movie-wrapper">
-        {trendings.map((trending) => (
-          <Imdb trending={trending} key={trending.id} />
-        ))}
-      </div>
+      {status === "ready" && (
+        <div className="movie-wrapper">
+          {trendings.map((trending) => (
+            <Imdb trending={trending} key={`${trending.media_type}-${trending.id}`} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
