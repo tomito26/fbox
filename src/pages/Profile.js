@@ -16,19 +16,14 @@ const Profile = () =>{
   useEffect(()=>{
     if(user){
         const unsub = onSnapshot(doc(database,"users",auth.currentUser?.uid),snap=>setUserData(snap.data()))
-        return () => unsub
+        return () => unsub()
     }
-  },[])
-
-  const { newUsername,newEmail,newPassword,confirmPassword } = newProfile;
+  },[user])
 
   const handleProfileUpdate = (e) =>{
       e.preventDefault()
-      console.log(newProfile)
 
   }
-
-  console.log(userData)
 
     return(
     <div className="profile-page">

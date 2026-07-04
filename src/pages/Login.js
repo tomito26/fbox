@@ -34,7 +34,6 @@ const Login = () =>{
         }
 
     }
-    console.log(loginData)
     return(
         <section className="sectionForm">
             <div className="formInput">
@@ -60,7 +59,7 @@ const Login = () =>{
                             placeholder="Password"
                             onChange={e=>setLoginData({...loginData,[e.target.name]:e.target.value})}
                         />
-                        <span className="forgot"><a href="#">forgot your password?</a></span>
+                        <span className="forgot"><button type="button" className="link-button">forgot your password?</button></span>
                     </div>
                     <div className="button">
                         <button className="btn" onClick={handleLogin}>Login</button>

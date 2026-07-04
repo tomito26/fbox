@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Footer = () => {
     return(
         <div className="footer-items">
@@ -5,20 +7,20 @@ const Footer = () => {
                 <h3>Links</h3>
                 <div className="footer-links">
                     <ul>
-                        <li><a href="#">Movies</a></li>
-                        <li><a href="#">TV-Shows</a></li>
-                        <li><a href="#">Most Watched</a></li>
-                        <li><a href="#">Top IMDb</a></li>
+                        <li><Link to="/movies">Movies</Link></li>
+                        <li><Link to="/tvSeries">TV-Shows</Link></li>
+                        <li><Link to="/topImdb">Most Watched</Link></li>
+                        <li><Link to="/topImdb">Top IMDb</Link></li>
                     </ul>
                     <ul>
-                        <li><a href="#">Action Movies</a></li>
-                        <li><a href="#">Horrors</a></li>
-                        <li><a href="#">Sci-fi</a></li>
-                        <li><a href="#">Thriller</a></li>
+                        <li><Link to="/search?q=action">Action Movies</Link></li>
+                        <li><Link to="/search?q=horror">Horrors</Link></li>
+                        <li><Link to="/search?q=science%20fiction">Sci-fi</Link></li>
+                        <li><Link to="/search?q=thriller">Thriller</Link></li>
                     </ul>
                     <ul>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">Request</a></li>
+                        <li><Link to="/">Contact</Link></li>
+                        <li><Link to="/">Request</Link></li>
                     </ul>
                 </div>
             </div>

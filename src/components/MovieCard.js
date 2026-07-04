@@ -1,29 +1,27 @@
 import { useEffect, useState } from "react";
-import { FaCircle, FaPlay, FaRegHeart, FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { getMovie, getTvShow, imageUrl } from "../../services/tmdb";
+import { FaPlay, FaCircle, FaRegHeart, FaStar } from "react-icons/fa";
+import { getMovie, imageUrl } from "../services/tmdb";
 
-const Imdb = ({ trending }) => {
+// Single reusable movie card. Replaces the former MoviePage / MoviePage2 /
+// MoviesPage3 / MoviePage4 copies, which were byte-for-byte identical.
+const MovieCard = ({ movie }) => {
+  const [movieDetails, setMovieDetails] = useState({});
   const [isHovering, setIsHovering] = useState(false);
-  const [trendingDetails, setTrendingDetails] = useState({});
-
-  const isMovie = trending.media_type === "movie";
-  const to = isMovie ? `/movie/${trending.id}` : `/tvshows/${trending.id}`;
-  const displayTitle = trending.title || trending.name || "";
-  const overview = trending.overview || "";
-  const rawDate = trending.release_date || trending.first_air_date || "";
-  const releaseYear = rawDate ? rawDate.split("-")[0] : "";
 
   useEffect(() => {
     let active = true;
-    const fetchDetails = isMovie ? getMovie : getTvShow;
-    fetchDetails(trending.id).then(({ data }) => {
-      if (active && data) setTrendingDetails(data);
+    getMovie(movie.id).then(({ data }) => {
+      if (active && data) setMovieDetails(data);
     });
     return () => {
       active = false;
     };
-  }, [trending.id, isMovie]);
+  }, [movie.id]);
+
+  const year = movie.release_date ? movie.release_date.split("-")[0] : "";
+  const title = movie.title || "";
+  const overview = movie.overview || "";
 
   return (
     <div
@@ -31,42 +29,36 @@ const Imdb = ({ trending }) => {
       onMouseOver={() => setIsHovering(true)}
       onMouseOut={() => setIsHovering(false)}
     >
-      <Link className="movie-link" to={to}>
+      <Link className="movie-link" to={`/movie/${movie.id}`}>
         <div className="movie-img">
-          <img src={imageUrl(trending.poster_path, "w342")} alt={displayTitle} loading="lazy" />
+          <img src={imageUrl(movie.poster_path, "w342")} alt={title} loading="lazy" />
           <p className="movie-hd-tag">HD</p>
         </div>
         <div className="movie-info">
           <p className="movie-title">
-            {displayTitle.length > 22 ? `${displayTitle.substring(0, 21)}...` : displayTitle}
+            {title.length > 22 ? `${title.substring(0, 21)}...` : title}
           </p>
           <div className="movie-footer">
             <p className="year">
-              <span>{isMovie ? releaseYear : `SS ${trendingDetails.number_of_seasons ?? ""}`}</span>
+              <span>{year}</span>
               <span className="dot"><FaCircle className="dot-circle" /></span>
-              <span>
-                {isMovie
-                  ? trendingDetails.runtime
-                    ? `${trendingDetails.runtime} min`
-                    : ""
-                  : `EP ${trendingDetails.last_episode_to_air?.episode_number ?? ""}`}
-              </span>
+              <span>{movieDetails.runtime ? `${movieDetails.runtime} min` : ""}</span>
             </p>
-            <p className="movie-tag">{trending.media_type}</p>
+            <p className="movie-tag">movie</p>
           </div>
         </div>
       </Link>
       <div className={isHovering ? "movie-overview" : "no-hover"}>
         <div className="movie-container">
-          <Link to={to} className="movie-play-icon">
+          <Link to={`/movie/${movie.id}`} className="movie-play-icon">
             <p><FaPlay /></p>
           </Link>
           <div className="movie-overview-wrapper">
-            <h3>{displayTitle}</h3>
+            <h3>{title}</h3>
             <p className="movie-overview-info">
-              <span className="movie-rating"><FaStar className="rate-icon" />{trending.vote_average}</span>
-              <span>{releaseYear}</span>
-              <span>{isMovie && trendingDetails.runtime ? `${trendingDetails.runtime} min` : "na min"}</span>
+              <span className="movie-rating"><FaStar className="rate-icon" />{movie.vote_average}</span>
+              <span>{year}</span>
+              <span>{movieDetails.runtime ? `${movieDetails.runtime} min` : ""}</span>
               <span className="overview-tag">HD</span>
             </p>
             <p className="movie-overview-details">
@@ -75,7 +67,7 @@ const Imdb = ({ trending }) => {
             <div className="country">
               <h4>Country:</h4>
               <p>
-                {(trendingDetails.production_countries || []).map((country, index) => (
+                {(movieDetails.production_countries || []).map((country, index) => (
                   <span className="country-item muted" key={index}>{`${country.name},`}</span>
                 ))}
               </p>
@@ -83,13 +75,13 @@ const Imdb = ({ trending }) => {
             <div className="genre">
               <h4>Genre:</h4>
               <p>
-                {(trendingDetails.genres || []).map((genre) => (
+                {(movieDetails.genres || []).map((genre) => (
                   <span key={genre.id} className="genre-item muted">{`${genre.name},`}</span>
                 ))}
               </p>
             </div>
             <div className="overview-button">
-              <Link to={to} className="watch-now-btn">
+              <Link to={`/movie/${movie.id}`} className="watch-now-btn">
                 <span><FaPlay className="watchnow-icon" /></span>
                 Watch Now
               </Link>
@@ -102,4 +94,4 @@ const Imdb = ({ trending }) => {
   );
 };
 
-export default Imdb;
+export default MovieCard;

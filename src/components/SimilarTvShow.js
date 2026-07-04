@@ -13,7 +13,7 @@ const SimilarTvShow = ({ similarTvShow }) =>{
             setSimilarTvShowDetails(data);
         }
         getSimilarTvShowDetails();
-    },[])
+    },[similarTvShow.id])
 
     const baseUrl = "https://image.tmdb.org/t/p/original/";
     

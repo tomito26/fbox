@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { getTvSeason } from "../services/tmdb";
 
-const  Season = () =>{
-    const[seasonDetails,setSeasonDetails] = useState([]);
-    const { tvshowId,seasonNumber} = useParams();
-    console.log(tvshowId)
-    
-    useEffect(()=>{
-        const getSeasonDetails = async () =>{
-            const res = await fetch(`https://api.themoviedb.org/3/tv/${tvshowId}/season/${seasonNumber}/episode/1?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
-            const data = await res.json()
-            console.log(data);
-        }
-        getSeasonDetails()
-    },[])
+const Season = () => {
+  const [seasonDetails, setSeasonDetails] = useState({});
+  const { tvshowId, seasonNumber } = useParams();
 
-    return(<>Season {seasonNumber}</>)
-}
+  useEffect(() => {
+    let active = true;
+    getTvSeason(tvshowId, seasonNumber).then(({ data }) => {
+      if (active && data) setSeasonDetails(data);
+    });
+    return () => {
+      active = false;
+    };
+  }, [tvshowId, seasonNumber]);
+
+  return <>{seasonDetails.name || `Season ${seasonNumber}`}</>;
+};
 
 export default Season;

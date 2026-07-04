@@ -15,7 +15,7 @@ const SimilarMovies = ({ similarMovie }) =>{
         getSimilarMovieDetails();
 
         return () => abortCont.abort();
-    },[])
+    },[similarMovie.id])
     const baseUrl = "https://image.tmdb.org/t/p/original/";
     const releaseDate = similarMovie.release_date;
     const year = releaseDate.split("-");

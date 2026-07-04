@@ -7,23 +7,29 @@ import { FaCaretDown, FaHeart, FaSignOutAlt, FaUserCircle } from 'react-icons/fa
 import { auth, database } from '../firebase-config';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
-import { async } from '@firebase/util';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
-import Loading from './Loading';
 
 const Navbar = () =>{
     const[isActive,setIsActive] = useState(false);
     const[userData,setUserData] = useState({});
-    const[loading,setLoading] = useState(true);
+    const[searchTerm,setSearchTerm] = useState("");
     const { user} = useUserAuth();
     const navigate = useNavigate()
+
+    const handleSearch = (e) =>{
+        e.preventDefault();
+        const query = searchTerm.trim();
+        if(!query) return;
+        navigate(`/search?q=${encodeURIComponent(query)}`);
+        setSearchTerm("");
+    }
 
     useEffect(()=>{
         if(user){
             const unsub = onSnapshot(doc(database,"users",auth.currentUser?.uid),snap=>setUserData(snap.data()))
-            return () => unsub
+            return () => unsub()
         }
-    },[])
+    },[user])
 
     const handleLogOut = async () =>{
         const docRef = doc(database,"users",auth.currentUser.uid)
@@ -56,10 +62,20 @@ const Navbar = () =>{
                 <li><NavLink style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="nav-link" to="/tvSeries">TV-Series</NavLink></li>
                 <li><NavLink style={({isActive})=>{ return {color: isActive ?  "#FFC300 " :"#ccc" } }} className="nav-link" to="/topImdb">Top IMDb</NavLink></li>
             </ul>
-            <div className="search-form">
-                <input type="text" name="searchItem" className='form-control' placeholder='Enter your keywords...'/>
-                <SearchIcon/>
-            </div>
+            <form className="search-form" onSubmit={handleSearch} role="search">
+                <input
+                    type="text"
+                    name="searchItem"
+                    className='form-control'
+                    placeholder='Enter your keywords...'
+                    aria-label="Search movies and TV shows"
+                    value={searchTerm}
+                    onChange={e=>setSearchTerm(e.target.value)}
+                />
+                <button type="submit" className="search-btn" aria-label="Search">
+                    <SearchIcon/>
+                </button>
+            </form>
             <div className="register">
                 { !user ?
                     <NavLink  to='/login'>
@@ -76,7 +92,7 @@ const Navbar = () =>{
                             <div className='menu'>
                                 <div className='user-menu'>
                                     <NavLink className='menu-link' to="/profile" onClick={()=>setIsActive(false)}><FaUserCircle className='icon'/>Profile</NavLink>
-                                    <a href='#' className='menu-link' onClick={()=>setIsActive(false)}><FaHeart className='icon'/>My WatchList</a>
+                                    <button type='button' className='menu-link' onClick={()=>setIsActive(false)}><FaHeart className='icon'/>My WatchList</button>
                                 </div>
                                 <button className='signOut-btn' onClick={handleLogOut}><FaSignOutAlt className='icon'/>SignOut</button>
                             </div>

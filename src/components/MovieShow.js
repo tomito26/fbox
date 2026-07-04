@@ -13,8 +13,7 @@ const MovieShow = ({movieShow}) =>{
             setMovieShowDetails(data)
         };  
         getMovieShowDetails();
-    },[]);
-    // console.log(movieShow)
+    },[movieShow.id, movieShow.media_type]);
 
     const baseUrl = "https://image.tmdb.org/t/p/original/";
     const seriesReleaseDate =movieShow.first_air_date;

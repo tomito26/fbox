@@ -1,41 +1,31 @@
 import { FaCircle, FaPlay, FaRegHeart, FaStar } from 'react-icons/fa'
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { storage } from '../firebase-config';
-import { ref,uploadBytes  } from 'firebase/storage';
+import { getMovie, imageUrl } from '../services/tmdb';
 
 const LatestMovie = ({ movie }) => {
     const[isHovering,setIsHovering] = useState(-1);
     const[movieDetail,setMovieDetail] = useState({});
 
     useEffect(()=>{
-        const getMovieDetail = async () =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
-            const data = await rest.json();
-            setMovieDetail(data)
-        }
-        getMovieDetail()
-    },[])
-
-    const baseUrl = "https://image.tmdb.org/t/p/original";
+        let active = true;
+        getMovie(movie.id).then(({ data }) => {
+            if (active && data) setMovieDetail(data);
+        });
+        return () => { active = false; };
+    },[movie.id])
 
     const releaseYear = !movie.release_date ? "" : movie.release_date.split("-");
     const year = releaseYear[0];
 
-    const uploadMoviePoster = async (movie_poster) =>{
-        if (movie_poster === null) return;
-        const imageUrl = movie_poster;
-        const imageRef = ref(storage,`movies/${imageUrl}`)
-        const uploadMovie = await uploadBytes(imageRef,imageUrl);
-    }
-    
     return(
         <div className="movie-card" onMouseOver={e =>setIsHovering(movie.id)} onMouseOut={()=>setIsHovering(-1)}>
             <Link className='movie-link' to={`/movie/${movie.id}`}>
                 <div className="movie-img">
-                    <img 
-                        src={`${baseUrl}${movie.poster_path}`} 
-                        alt={movie.overview} 
+                    <img
+                        src={imageUrl(movie.poster_path, "w342")}
+                        alt={movie.title}
+                        loading="lazy"
                     />
                     <p className='movie-hd-tag'>HD</p>
                     <div className="movie-info">
@@ -94,9 +84,9 @@ const LatestMovie = ({ movie }) => {
                                 </span> 
                                 Watch Now
                             </Link>
-                            <p className="watchlist-icon">
-                                <FaRegHeart  onClick={()=>uploadMoviePoster(`${movie.poster_path}`)}/>
-                            </p>
+                            <button className="watchlist-icon" aria-label="Add to watchlist">
+                                <FaRegHeart/>
+                            </button>
                         </div>
                     </div>
                 </div>

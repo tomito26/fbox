@@ -1,4 +1,4 @@
-import { FaEnvelope, FaFacebookF,FaPinterest,FaPinterestP,FaTelegram,FaTwitter, FaWhatsapp } from "react-icons/fa"
+import { FaEnvelope, FaFacebookF,FaPinterestP,FaTelegram,FaTwitter, FaWhatsapp } from "react-icons/fa"
 const About = () =>{
     return(
     <div className="about">

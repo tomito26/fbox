@@ -15,11 +15,8 @@ const Movie = () => {
         const getVideos = async() =>{
             const rest = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&append_to_response=videos`);
             const data = await rest.json()
-            console.log(data)
             const officialTrailer = data.results.filter(trailer=>trailer.type === "Trailer"  || trailer.site === "YouTube");
-            console.log(officialTrailer[0])
             setVideos(officialTrailer[officialTrailer.length - 1])
-            // console.log(officialTrailer)
         };
 
         const getMovieDetails = async () =>{
@@ -47,7 +44,7 @@ const Movie = () => {
         getVideos();
         getMovieDetails();
         getSimilarMovies();
-    },[]);
+    },[movieId]);
 
     const baseUrl = "https://image.tmdb.org/t/p/original/";
     
@@ -80,7 +77,7 @@ const Movie = () => {
             <div className="movie-items-wrapper">
                 <div className="movie-item-details">
                     <div className="movie-poster">
-                        <img src={`${baseUrl}/${movieDetails.poster_path}`} alt={movieDetails.name} />
+                        <img src={`${baseUrl}/${movieDetails.poster_path}`} alt={movieDetails.title} />
                     </div>
                     <div className="movie-item-info">
                         <h3>{movieDetails.title}</h3>

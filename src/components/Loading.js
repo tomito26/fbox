@@ -1,16 +1,10 @@
-const Loading = () =>{
-    return(
-    <div style={{position:"relative"}}>
-        <h2 
-         style={{
-            position:"fixed",
-            top:"50%",
-            left:"50%",
-            transform:"translate(-50%,-50%)"}}
-        >
-        Loading....
-        </h2>
+const Loading = () => {
+  return (
+    <div className="loading" role="status" aria-live="polite">
+      <div className="loading-spinner" />
+      <span className="loading-text">Loading…</span>
     </div>
-    );
+  );
 };
+
 export default Loading;

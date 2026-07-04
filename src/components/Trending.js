@@ -7,16 +7,13 @@ const Trending = ({ trending })=>{
     const[trendingDetails,setTrendingDetails] = useState({});
 
     useEffect(()=>{
-        const trenndingDetails = []
         const getTrendingDetails = async () =>{
-          
             const rest = trending.media_type === "movie" ? await fetch(`https://api.themoviedb.org/3/movie/${trending.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`) : await fetch(`https://api.themoviedb.org/3/tv/${trending.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
             const data = await rest.json();
-            
             setTrendingDetails(data)
         }
         getTrendingDetails()
-    },[])
+    },[trending.id, trending.media_type])
 
     const baseUrl = "https://image.tmdb.org/t/p/original/";
     const seriesReleaseDate =trending.first_air_date;

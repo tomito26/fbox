@@ -23,9 +23,7 @@ const TvShowVideos = () =>{
         const getTvShowVideos = async()=>{
             const rest = await fetch(`https://api.themoviedb.org/3/tv/${tvshowId}/videos?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&append_to_response=videos`);
             const data = await rest.json();
-            console.log(data)
             const trailer = data.results.filter(video => video.type === "Trailer" || video.name === "Official Trailer" || video.site === "YouTube");
-            console.log(trailer)
             setVideo(trailer[trailer.length - 1]);
             
         }
@@ -54,7 +52,7 @@ const TvShowVideos = () =>{
         getTvShowDetails();
         getCredits()
         getSimilarTvShows()
-    },[]);
+    },[tvshowId]);
     const baseUrl = "https://image.tmdb.org/t/p/original/";
     // console.log(tvShowDetails)
     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
@@ -122,9 +120,9 @@ const TvShowVideos = () =>{
                             <p style={{fontSize:"16px"}}>
                                 {
                                     !tvShowDetails.overview ? "" : 
-                                    tvShowDetails.overview.length > 200 ? 
-                                    `${tvShowDetails.overview.substring(0,180)}...${<button>hello</button>}`
-                                    : tvShowDetails.overview 
+                                    tvShowDetails.overview.length > 200 ?
+                                    `${tvShowDetails.overview.substring(0,180)}...`
+                                    : tvShowDetails.overview
                                 }
                             </p>
                             <div className="movie-category" style={{fontSize:"14px"}}>

@@ -6,9 +6,11 @@ import Register from './pages/Register';
 import Home from './pages/Home';
 import { UserAuthContextProvider } from './Context/UserAuthContext';
 import PrivateLink from './components/PrivateLink';
+import ErrorBoundary from './components/ErrorBoundary';
 import Movies from './pages/movies/Movies';
 import TvSeries from './pages/tvSeries/TvSeries';
 import TopImdb from './pages/imdb/TopImdb';
+import SearchResults from './pages/SearchResults';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Profile from './pages/Profile';
 import TvShows from './components/TvShows';
@@ -25,6 +27,7 @@ function App() {
   return (
     <UserAuthContextProvider>
       <Router>
+        <ErrorBoundary>
         <Navbar/>
         <Routes>
           <Route path='/login' element={<Login/>}/>
@@ -37,6 +40,7 @@ function App() {
           <Route path='/movies' element={<PrivateLink><Movies/></PrivateLink>}/>
           <Route path="/tvSeries" element={<PrivateLink><TvSeries/></PrivateLink>}/>
           <Route path='topImdb' element={<PrivateLink><TopImdb/></PrivateLink>}/>
+          <Route path='/search' element={<PrivateLink><SearchResults/></PrivateLink>}/>
           <Route path='/profile' element={<PrivateLink><Profile/></PrivateLink>}/>
           <Route path='/movie/:movieId' element={<PrivateLink><Movie/></PrivateLink>}/>
           <Route path='/tvshows/:tvshowId' element={<PrivateLink><TvShowVideos/></PrivateLink>}>
@@ -45,6 +49,7 @@ function App() {
           </Route>
         </Routes>
         <Footer/>
+        </ErrorBoundary>
       </Router>
     </UserAuthContextProvider>
   );

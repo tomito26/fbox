@@ -13,7 +13,7 @@ const LatestTvSerie = ({ tvSeries }) =>{
             setTvDetails(data)
         };
         getTvDetails()
-    },[])
+    },[tvSeries.id])
 
     const baseUrl = "https://image.tmdb.org/t/p/original/";
     const releaseYear = tvSeries.first_air_date.split("-");
