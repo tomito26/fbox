@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaPlay, FaCircle, FaRegHeart, FaStar } from "react-icons/fa";
+import { FaPlay, FaCircle, FaHeart, FaRegHeart, FaStar } from "react-icons/fa";
 import { getMovie, imageUrl } from "../services/tmdb";
+import { useWatchlist } from "../Context/WatchlistContext";
 
 // Single reusable movie card. Replaces the former MoviePage / MoviePage2 /
 // MoviesPage3 / MoviePage4 copies, which were byte-for-byte identical.
 const MovieCard = ({ movie }) => {
   const [movieDetails, setMovieDetails] = useState({});
   const [isHovering, setIsHovering] = useState(false);
+  const { isSaved, toggleWatchlist } = useWatchlist();
+  const saved = isSaved(movie.id);
 
   useEffect(() => {
     let active = true;
@@ -85,7 +88,14 @@ const MovieCard = ({ movie }) => {
                 <span><FaPlay className="watchnow-icon" /></span>
                 Watch Now
               </Link>
-              <button className="watchlist-icon" aria-label="Add to watchlist"><FaRegHeart /></button>
+              <button
+                className="watchlist-icon"
+                aria-label={saved ? "Remove from watchlist" : "Add to watchlist"}
+                aria-pressed={saved}
+                onClick={() => toggleWatchlist({ ...movie, media_type: "movie" })}
+              >
+                {saved ? <FaHeart /> : <FaRegHeart />}
+              </button>
             </div>
           </div>
         </div>

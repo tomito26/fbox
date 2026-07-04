@@ -5,8 +5,10 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
 import { UserAuthContextProvider } from './Context/UserAuthContext';
+import { WatchlistProvider } from './Context/WatchlistContext';
 import PrivateLink from './components/PrivateLink';
 import ErrorBoundary from './components/ErrorBoundary';
+import Watchlist from './pages/Watchlist';
 import Movies from './pages/movies/Movies';
 import TvSeries from './pages/tvSeries/TvSeries';
 import TopImdb from './pages/imdb/TopImdb';
@@ -26,6 +28,7 @@ import Season from './components/Season';
 function App() {
   return (
     <UserAuthContextProvider>
+      <WatchlistProvider>
       <Router>
         <ErrorBoundary>
         <Navbar/>
@@ -41,6 +44,7 @@ function App() {
           <Route path="/tvSeries" element={<PrivateLink><TvSeries/></PrivateLink>}/>
           <Route path='topImdb' element={<PrivateLink><TopImdb/></PrivateLink>}/>
           <Route path='/search' element={<PrivateLink><SearchResults/></PrivateLink>}/>
+          <Route path='/watchlist' element={<PrivateLink><Watchlist/></PrivateLink>}/>
           <Route path='/profile' element={<PrivateLink><Profile/></PrivateLink>}/>
           <Route path='/movie/:movieId' element={<PrivateLink><Movie/></PrivateLink>}/>
           <Route path='/tvshows/:tvshowId' element={<PrivateLink><TvShowVideos/></PrivateLink>}>
@@ -51,6 +55,7 @@ function App() {
         <Footer/>
         </ErrorBoundary>
       </Router>
+      </WatchlistProvider>
     </UserAuthContextProvider>
   );
 }

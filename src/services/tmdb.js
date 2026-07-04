@@ -57,3 +57,8 @@ export const getTvSeason = (id, seasonNumber) =>
   request(`/tv/${id}/season/${seasonNumber}`);
 
 export const searchMulti = (query) => request(`/search/multi`, { query, page: 1 });
+
+// Discover movies or TV shows with filter params (with_genres, sort_by, etc.).
+// `type` is "movie" or "tv".
+export const discover = (type, params = {}, pages = 2) =>
+  getList(`/discover/${type}`, { pages, params });

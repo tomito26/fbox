@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { FaCircle, FaPlay, FaRegHeart, FaStar } from "react-icons/fa";
+import { FaCircle, FaPlay, FaHeart, FaRegHeart, FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { getMovie, getTvShow, imageUrl } from "../../services/tmdb";
+import { useWatchlist } from "../../Context/WatchlistContext";
 
 const Imdb = ({ trending }) => {
   const [isHovering, setIsHovering] = useState(false);
   const [trendingDetails, setTrendingDetails] = useState({});
+  const { isSaved, toggleWatchlist } = useWatchlist();
+  const saved = isSaved(trending.id);
 
   const isMovie = trending.media_type === "movie";
   const to = isMovie ? `/movie/${trending.id}` : `/tvshows/${trending.id}`;
@@ -93,7 +96,14 @@ const Imdb = ({ trending }) => {
                 <span><FaPlay className="watchnow-icon" /></span>
                 Watch Now
               </Link>
-              <button className="watchlist-icon" aria-label="Add to watchlist"><FaRegHeart /></button>
+              <button
+                className="watchlist-icon"
+                aria-label={saved ? "Remove from watchlist" : "Add to watchlist"}
+                aria-pressed={saved}
+                onClick={() => toggleWatchlist(trending)}
+              >
+                {saved ? <FaHeart /> : <FaRegHeart />}
+              </button>
             </div>
           </div>
         </div>

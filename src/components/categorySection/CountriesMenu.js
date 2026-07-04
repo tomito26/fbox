@@ -1,6 +1,6 @@
-const CountriesMenu = () => {
+const CountriesMenu = ({ onChange }) => {
     return(
-        <div className="countries-menu">
+        <div className="countries-menu" onChange={onChange}>
             <div className="contries-wrapper1">
                 <div className="form-check">
                     <input type="checkbox" name="argentina" id="argentina" />

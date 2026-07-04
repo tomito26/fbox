@@ -1,6 +1,6 @@
-const MovieGenre = () =>{
+const MovieGenre = ({ onChange }) =>{
     return(
-        <div className="menu-items">
+        <div className="menu-items" onChange={onChange}>
             <div className="div">
                 <div className="form-check">
                     <input type="checkbox" name="action" id="action" />

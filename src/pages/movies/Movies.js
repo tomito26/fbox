@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
 import DropdownMenus from "../../components/categorySection/DropdownMenus";
 import MovieCard from "../../components/MovieCard";
+import SeriesCard from "../../components/SeriesCard";
 import Loading from "../../components/Loading";
-import { getList } from "../../services/tmdb";
+import { getList, discover } from "../../services/tmdb";
 
 const Movies = () => {
   const [movies, setMovies] = useState([]);
   const [status, setStatus] = useState("loading"); // loading | error | ready
+  // Once a filter is applied we show discover results instead of the default list.
+  const [filtered, setFiltered] = useState(false);
+  const [filterType, setFilterType] = useState("movie");
 
   useEffect(() => {
     let active = true;
@@ -24,6 +28,27 @@ const Movies = () => {
     };
   }, []);
 
+  const handleFilter = (type, params) => {
+    setStatus("loading");
+    setFiltered(true);
+    setFilterType(type);
+    discover(type, params).then(({ data, error }) => {
+      if (error) {
+        setStatus("error");
+        return;
+      }
+      setMovies(data);
+      setStatus("ready");
+    });
+  };
+
+  const renderCard = (item) =>
+    filtered && filterType === "tv" ? (
+      <SeriesCard tvShow={item} key={item.id} />
+    ) : (
+      <MovieCard movie={item} key={item.id} />
+    );
+
   return (
     <div className="movie-page">
       <div className="movie-header">
@@ -31,17 +56,16 @@ const Movies = () => {
           <span>Movies</span>
           <hr />
         </h2>
-        <DropdownMenus />
+        <DropdownMenus onFilter={handleFilter} />
       </div>
       {status === "loading" && <Loading />}
       {status === "error" && (
         <p className="fetch-error">Couldn't load movies. Please try again later.</p>
       )}
-      <div className="movie-wrapper">
-        {movies.map((movie) => (
-          <MovieCard movie={movie} key={movie.id} />
-        ))}
-      </div>
+      {status === "ready" && movies.length === 0 && (
+        <p className="fetch-error">No titles match those filters.</p>
+      )}
+      <div className="movie-wrapper">{movies.map(renderCard)}</div>
     </div>
   );
 };

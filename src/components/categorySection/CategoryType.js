@@ -1,6 +1,6 @@
-const CategoryType = () =>{
+const CategoryType = ({ onChange }) =>{
     return(
-        <div className="menu-type-items">
+        <div className="menu-type-items" onChange={onChange}>
             <div className="form-check">
                 <input type="checkbox" name="movie" id="movie"/>
                 <label htmlFor="movie">Movie</label>

@@ -1,6 +1,6 @@
-const ReleaseYear = () =>{
+const ReleaseYear = ({ onChange }) =>{
     return(
-        <div className="yearDropdownItems">
+        <div className="yearDropdownItems" onChange={onChange}>
             <div className="yearItems-wrapper1">
                 <div className="form-check">
                     <input type="checkbox" name="2022" id="2022" />

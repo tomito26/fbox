@@ -92,7 +92,7 @@ const Navbar = () =>{
                             <div className='menu'>
                                 <div className='user-menu'>
                                     <NavLink className='menu-link' to="/profile" onClick={()=>setIsActive(false)}><FaUserCircle className='icon'/>Profile</NavLink>
-                                    <button type='button' className='menu-link' onClick={()=>setIsActive(false)}><FaHeart className='icon'/>My WatchList</button>
+                                    <NavLink className='menu-link' to="/watchlist" onClick={()=>setIsActive(false)}><FaHeart className='icon'/>My WatchList</NavLink>
                                 </div>
                                 <button className='signOut-btn' onClick={handleLogOut}><FaSignOutAlt className='icon'/>SignOut</button>
                             </div>

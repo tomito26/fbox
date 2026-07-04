@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaPlay, FaCircle, FaRegHeart, FaStar } from "react-icons/fa";
+import { FaPlay, FaCircle, FaHeart, FaRegHeart, FaStar } from "react-icons/fa";
 import { getTvShow, imageUrl } from "../services/tmdb";
+import { useWatchlist } from "../Context/WatchlistContext";
 
 // Single reusable TV-series card. Replaces the former Series / Series2 /
 // Series3 / Series4 copies.
 const SeriesCard = ({ tvShow }) => {
   const [tvShowDetails, setTvShowDetails] = useState({});
   const [isHovering, setIsHovering] = useState(false);
+  const { isSaved, toggleWatchlist } = useWatchlist();
+  const saved = isSaved(tvShow.id);
 
   useEffect(() => {
     let active = true;
@@ -86,7 +89,14 @@ const SeriesCard = ({ tvShow }) => {
                 <span><FaPlay className="watchnow-icon" /></span>
                 Watch Now
               </Link>
-              <button className="watchlist-icon" aria-label="Add to watchlist"><FaRegHeart /></button>
+              <button
+                className="watchlist-icon"
+                aria-label={saved ? "Remove from watchlist" : "Add to watchlist"}
+                aria-pressed={saved}
+                onClick={() => toggleWatchlist({ ...tvShow, media_type: "tv" })}
+              >
+                {saved ? <FaHeart /> : <FaRegHeart />}
+              </button>
             </div>
           </div>
         </div>
