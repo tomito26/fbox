@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaCircle, FaPlay, FaHeart, FaRegHeart, FaStar } from "react-icons/fa";
+import { FaCircle, FaPlay, FaHeart, FaRegHeart, FaStar, FaFilm } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { getMovie, getTvShow, imageUrl } from "../../services/tmdb";
 import { useWatchlist } from "../../Context/WatchlistContext";
@@ -44,7 +44,14 @@ const Imdb = ({ trending }) => {
       </button>
       <Link className="movie-link" to={to}>
         <div className="movie-img">
-          <img src={imageUrl(trending.poster_path, "w342")} alt={displayTitle} loading="lazy" />
+          {trending.poster_path ? (
+            <img src={imageUrl(trending.poster_path, "w342")} alt={displayTitle} loading="lazy" />
+          ) : (
+            <div className="poster-fallback" aria-label={displayTitle}>
+              <FaFilm />
+              <span>{displayTitle}</span>
+            </div>
+          )}
           <p className="movie-hd-tag">HD</p>
         </div>
         <div className="movie-info">

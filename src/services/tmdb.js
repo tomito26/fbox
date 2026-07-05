@@ -89,7 +89,10 @@ export const pickTrailer = (results = []) => {
   );
 };
 
-export const searchMulti = (query) => request(`/search/multi`, { query, page: 1 });
+// Multi search (movies + TV + people). Accepts a page for "Load More" flows and
+// an AbortSignal so the navbar autocomplete can cancel superseded requests.
+export const searchMulti = (query, page = 1, signal) =>
+  request(`/search/multi`, { query, page }, { signal });
 
 // Discover movies or TV shows with filter params (with_genres, sort_by, etc.).
 // `type` is "movie" or "tv".

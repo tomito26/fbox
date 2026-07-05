@@ -1,6 +1,6 @@
 import { useEffect,useState } from 'react';
 import Img from '../logo.png';
-import SearchIcon from './SearchIcon';
+import SearchBox from './SearchBox';
 import ProfileIcon from './ProfileIcon';
 import { useUserAuth } from '../Context/UserAuthContext';
 import { FaBars, FaTimes, FaCaretDown, FaHeart, FaSignOutAlt, FaUserCircle } from 'react-icons/fa'
@@ -13,7 +13,6 @@ import { NAV_GENRES, NAV_COUNTRIES } from './categorySection/filterOptions';
 const Navbar = () =>{
     const[isActive,setIsActive] = useState(false);
     const[userData,setUserData] = useState({});
-    const[searchTerm,setSearchTerm] = useState("");
     const[openNav,setOpenNav] = useState(null); // 'genres' | 'country' | null
     const[menuOpen,setMenuOpen] = useState(false);
     const { user} = useUserAuth();
@@ -35,14 +34,6 @@ const Navbar = () =>{
         document.addEventListener('mousedown', closeOnOutside);
         return () => document.removeEventListener('mousedown', closeOnOutside);
     },[])
-
-    const handleSearch = (e) =>{
-        e.preventDefault();
-        const query = searchTerm.trim();
-        if(!query) return;
-        navigate(`/search?q=${encodeURIComponent(query)}`);
-        setSearchTerm("");
-    }
 
     useEffect(()=>{
         if(user){
@@ -134,20 +125,7 @@ const Navbar = () =>{
                 <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="nav-link" to="/tvSeries">TV-Series</NavLink></li>
                 <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300 " :"#ccc" } }} className="nav-link" to="/topImdb">Top IMDb</NavLink></li>
             </ul>
-            <form className="search-form" onSubmit={handleSearch} role="search">
-                <input
-                    type="text"
-                    name="searchItem"
-                    className='form-control'
-                    placeholder='Enter your keywords...'
-                    aria-label="Search movies and TV shows"
-                    value={searchTerm}
-                    onChange={e=>setSearchTerm(e.target.value)}
-                />
-                <button type="submit" className="search-btn" aria-label="Search">
-                    <SearchIcon/>
-                </button>
-            </form>
+            <SearchBox/>
             <div className="register">
                 { !user ?
                     <NavLink onClick={()=>setMenuOpen(false)} to='/login'>
