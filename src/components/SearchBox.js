@@ -82,6 +82,14 @@ const SearchBox = () => {
     return () => document.removeEventListener("keydown", focusOnSlash);
   }, []);
 
+  // Drop suggestions the moment the input is cleared/shortened — waiting for
+  // the debounce would leave the previous query's results clickable under a
+  // brand-new query (e.g. clear "batman", type "stranger things").
+  const trimmed = term.trim();
+  useEffect(() => {
+    if (trimmed.length < 2) setSuggestions([]);
+  }, [trimmed]);
+
   // Fetch suggestions for the debounced query; abort superseded requests.
   useEffect(() => {
     if (debouncedTerm.length < 2) {
@@ -147,7 +155,6 @@ const SearchBox = () => {
     runSearch(query);
   };
 
-  const trimmed = term.trim();
   const showRecent = trimmed.length < 2 && recent.length > 0;
   // Flat option list the keyboard walks through: recents, or suggestions plus
   // a final "see all results" row.
@@ -174,7 +181,10 @@ const SearchBox = () => {
       e.preventDefault();
       setOpen(true);
       const delta = e.key === "ArrowDown" ? 1 : -1;
-      setHighlight((cur) => (cur + delta + options.length + 1) % (options.length + 1) - 1);
+      // Cycle through -1 (input itself) .. options.length-1, wrapping both ways.
+      setHighlight(
+        (cur) => ((cur + 1 + delta + options.length + 1) % (options.length + 1)) - 1
+      );
     } else if (e.key === "Enter") {
       if (open && highlight >= 0 && options[highlight]) {
         e.preventDefault();

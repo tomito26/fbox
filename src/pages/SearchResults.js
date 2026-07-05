@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Imdb from "./imdb/Imdb";
 import SkeletonGrid from "../components/SkeletonGrid";
@@ -22,6 +22,14 @@ const SearchResults = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
+  const alive = useRef(true);
+
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!query) {
@@ -53,6 +61,7 @@ const SearchResults = () => {
     const nextPage = page + 1;
     setLoadingMore(true);
     searchMulti(query, nextPage).then(({ data, error }) => {
+      if (!alive.current) return;
       setLoadingMore(false);
       if (error || !data) return;
       const media = (data.results || []).filter(

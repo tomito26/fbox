@@ -2551,7 +2551,9 @@ button.menu-link{
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 10px;
   box-shadow: 0 12px 30px rgba(0,0,0,0.55);
-  z-index: 40;
+  /* Above the logged-in account pill, which is Bootstrap's .dropdown-menu
+     (z-index: 1000) and otherwise paints over the panel in the mobile menu. */
+  z-index: 1050;
   padding: 6px;
 }
 .search-suggestions-header{
