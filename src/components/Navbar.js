@@ -3,9 +3,9 @@ import Img from '../logo.png';
 import SearchIcon from './SearchIcon';
 import ProfileIcon from './ProfileIcon';
 import { useUserAuth } from '../Context/UserAuthContext';
-import { FaCaretDown, FaHeart, FaSignOutAlt, FaUserCircle } from 'react-icons/fa'
+import { FaBars, FaTimes, FaCaretDown, FaHeart, FaSignOutAlt, FaUserCircle } from 'react-icons/fa'
 import { auth, database } from '../firebase-config';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { NAV_GENRES, NAV_COUNTRIES } from './categorySection/filterOptions';
@@ -15,10 +15,18 @@ const Navbar = () =>{
     const[userData,setUserData] = useState({});
     const[searchTerm,setSearchTerm] = useState("");
     const[openNav,setOpenNav] = useState(null); // 'genres' | 'country' | null
+    const[menuOpen,setMenuOpen] = useState(false);
     const { user} = useUserAuth();
     const navigate = useNavigate()
+    const { pathname } = useLocation()
 
     const toggleNav = (name) => setOpenNav((cur) => (cur === name ? null : name));
+
+    // Close the mobile menu whenever the route changes
+    useEffect(()=>{
+        setMenuOpen(false);
+        setOpenNav(null);
+    },[pathname])
 
     useEffect(()=>{
         const closeOnOutside = (e) => {
@@ -59,15 +67,25 @@ const Navbar = () =>{
    
     
     return(
-        <nav className={window.location.pathname === "/" || window.location.pathname === "/trendings" ||  window.location.pathname === "/tvshows" ? "navbar" : "nav"}>
+        <nav className={pathname === "/" || pathname === "/trendings" ||  pathname === "/tvshows" ? "navbar" : "nav"}>
             <div className="logo">
                 <div className='image'>
                     <img src={Img} alt="fbox logo" />
                 </div>
                 <h3 className='text'>fbox.to</h3>
             </div>
+            <button
+                type='button'
+                className='nav-toggle'
+                aria-label='Toggle navigation menu'
+                aria-expanded={menuOpen}
+                onClick={()=>setMenuOpen(o=>!o)}
+            >
+                {menuOpen ? <FaTimes/> : <FaBars/>}
+            </button>
+            <div className={`nav-collapse${menuOpen ? ' open' : ''}`}>
             <ul>
-                <li><NavLink style={({isActive})=>{ return {color: isActive ?  "#FFC300 " :"#ccc" } }}  className="nav-link" to="/">Home</NavLink></li>
+                <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300 " :"#ccc" } }}  className="nav-link" to="/">Home</NavLink></li>
                 <li className='nav-dropdown'>
                     <button
                         type='button'
@@ -84,7 +102,7 @@ const Navbar = () =>{
                                 <Link
                                     key={g.id}
                                     to={`/browse?media=movie&genre=${g.id}&title=${encodeURIComponent(g.label)}`}
-                                    onClick={()=>setOpenNav(null)}
+                                    onClick={()=>{setOpenNav(null);setMenuOpen(false);}}
                                 >{g.label}</Link>
                             )}
                         </div>
@@ -106,15 +124,15 @@ const Navbar = () =>{
                                 <Link
                                     key={c.code}
                                     to={`/browse?media=movie&country=${c.code}&title=${encodeURIComponent(c.label)}`}
-                                    onClick={()=>setOpenNav(null)}
+                                    onClick={()=>{setOpenNav(null);setMenuOpen(false);}}
                                 >{c.label}</Link>
                             )}
                         </div>
                     }
                 </li>
-                <li><NavLink style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="nav-link" to="/movies">Movies</NavLink></li>
-                <li><NavLink style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="nav-link" to="/tvSeries">TV-Series</NavLink></li>
-                <li><NavLink style={({isActive})=>{ return {color: isActive ?  "#FFC300 " :"#ccc" } }} className="nav-link" to="/topImdb">Top IMDb</NavLink></li>
+                <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="nav-link" to="/movies">Movies</NavLink></li>
+                <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="nav-link" to="/tvSeries">TV-Series</NavLink></li>
+                <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300 " :"#ccc" } }} className="nav-link" to="/topImdb">Top IMDb</NavLink></li>
             </ul>
             <form className="search-form" onSubmit={handleSearch} role="search">
                 <input
@@ -132,7 +150,7 @@ const Navbar = () =>{
             </form>
             <div className="register">
                 { !user ?
-                    <NavLink  to='/login'>
+                    <NavLink onClick={()=>setMenuOpen(false)} to='/login'>
                         <ProfileIcon/>
                         Login/Register
                     </NavLink>
@@ -157,7 +175,7 @@ const Navbar = () =>{
                     
                 }
             </div>
-            
+            </div>
         </nav>
 
     );

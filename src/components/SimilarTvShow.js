@@ -1,30 +1,32 @@
 import { useEffect, useState } from "react";
-import { FaCircle, FaPlay, FaRegHeart, FaStar } from "react-icons/fa";
+import { FaCircle, FaHeart, FaPlay, FaRegHeart, FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { getTvShow, imageUrl } from "../services/tmdb";
+import { useWatchlist } from "../Context/WatchlistContext";
 
 const SimilarTvShow = ({ similarTvShow }) =>{
     const[isHovering,setIsHovering] = useState(-1);
     const [similarTvShowDetails,setSimilarTvShowDetails] = useState({});
+    const { isSaved, toggleWatchlist } = useWatchlist();
+    const saved = isSaved(similarTvShow.id);
 
     useEffect(()=>{
-        const getSimilarTvShowDetails = async () =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/tv/${similarTvShow.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
-            const data = await rest.json();
-            setSimilarTvShowDetails(data);
-        }
-        getSimilarTvShowDetails();
+        const abortCont = new AbortController();
+        getTvShow(similarTvShow.id, abortCont.signal).then(({ data }) => {
+            if (data) setSimilarTvShowDetails(data);
+        });
+        return () => abortCont.abort();
     },[similarTvShow.id])
 
-    const baseUrl = "https://image.tmdb.org/t/p/original/";
-    
     return(
         <div className="similar-movie-container" onMouseOver={e =>setIsHovering(similarTvShowDetails.id)} onMouseOut={()=>setIsHovering(-1)}>
             <Link className="similar-movie-link" to={`/tvshows/${similarTvShow.id}`}>
                 <div className="similar-movie-poster">
-                    <img 
-                        src={`${baseUrl}/${similarTvShow.poster_path}`} 
+                    <img
+                        src={imageUrl(similarTvShow.poster_path, "w342")}
                         alt={similarTvShow.name}
-                        style={{filter:isHovering < 0 ? "brightness(100%)" : "brightness(50%)"}} 
+                        loading="lazy"
+                        style={{filter:isHovering < 0 ? "brightness(100%)" : "brightness(50%)"}}
                     />
                 </div>
                 <div className="similar-movie-footer">
@@ -67,7 +69,14 @@ const SimilarTvShow = ({ similarTvShow }) =>{
                     </div>
                     <div className="similar-button">
                         <Link to={`/tvshows/${similarTvShow.id}`} style={{textDecoration:"none",color:""}} className="watchnow-btn"><FaPlay className="similar-movies-play"/>Watch Now</Link>
-                        <button className="add-to-list"><FaRegHeart className="heart"/></button>
+                        <button
+                            className={`add-to-list${saved ? " saved" : ""}`}
+                            aria-label={saved ? "Remove from watchlist" : "Add to watchlist"}
+                            aria-pressed={saved}
+                            onClick={() => toggleWatchlist({ ...similarTvShow, media_type: "tv" })}
+                        >
+                            {saved ? <FaHeart className="heart"/> : <FaRegHeart className="heart"/>}
+                        </button>
                     </div>
                 </div>
             </div>

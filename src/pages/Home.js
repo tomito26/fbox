@@ -11,7 +11,6 @@ const Home = () =>{
     return(
         <div>
             <CarouselsContainer/>
-            <About/>
             <div className="recommend-movies">
                 <div className="recommend-menu">
                     <h3><span>Recommended</span></h3>
@@ -66,6 +65,7 @@ const Home = () =>{
                 </div>
                 <RequestedMovieShows/>
             </div>
+            <About/>
         </div>
     );
 };

@@ -51,19 +51,43 @@ export async function getList(path, { pages = 1, startPage = 1, params = {} } = 
   return { data: deduped, error };
 }
 
-export const getMovie = (id) => request(`/movie/${id}`);
-export const getMovieCredits = (id) => request(`/movie/${id}/credits`);
-export const getMovieVideos = (id) =>
-  request(`/movie/${id}/videos`, { append_to_response: "videos" });
-export const getSimilarMovies = (id) => request(`/movie/${id}/similar`, { page: 1 });
+// Detail-page getters accept an optional AbortSignal so a component can cancel
+// its in-flight requests when it unmounts or the id changes.
+export const getMovie = (id, signal) => request(`/movie/${id}`, {}, { signal });
+export const getMovieCredits = (id, signal) =>
+  request(`/movie/${id}/credits`, {}, { signal });
+export const getMovieVideos = (id, signal) =>
+  request(`/movie/${id}/videos`, { append_to_response: "videos" }, { signal });
+export const getSimilarMovies = (id, signal) =>
+  request(`/movie/${id}/similar`, { page: 1 }, { signal });
+export const getMovieKeywords = (id, signal) =>
+  request(`/movie/${id}/keywords`, {}, { signal });
 
-export const getTvShow = (id) => request(`/tv/${id}`);
-export const getTvCredits = (id) => request(`/tv/${id}/credits`);
-export const getTvVideos = (id) =>
-  request(`/tv/${id}/videos`, { append_to_response: "videos" });
-export const getSimilarTvShows = (id) => request(`/tv/${id}/similar`, { page: 1 });
+export const getTvShow = (id, signal) => request(`/tv/${id}`, {}, { signal });
+export const getTvCredits = (id, signal) =>
+  request(`/tv/${id}/credits`, {}, { signal });
+export const getTvVideos = (id, signal) =>
+  request(`/tv/${id}/videos`, { append_to_response: "videos" }, { signal });
+export const getSimilarTvShows = (id, signal) =>
+  request(`/tv/${id}/similar`, { page: 1 }, { signal });
+export const getTvKeywords = (id, signal) =>
+  request(`/tv/${id}/keywords`, {}, { signal });
 export const getTvSeason = (id, seasonNumber) =>
   request(`/tv/${id}/season/${seasonNumber}`);
+
+// Pick the best trailer from a TMDB /videos results array. Prefers an official
+// YouTube trailer, then any YouTube trailer, then any YouTube video. Returns
+// undefined when there's nothing playable. Replaces the old loose OR-filter
+// that could surface a featurette and picked the last match arbitrarily.
+export const pickTrailer = (results = []) => {
+  const youtube = results.filter((v) => v.site === "YouTube");
+  const trailers = youtube.filter((v) => v.type === "Trailer");
+  return (
+    trailers.find((v) => v.official) ||
+    trailers[0] ||
+    youtube[0]
+  );
+};
 
 export const searchMulti = (query) => request(`/search/multi`, { query, page: 1 });
 

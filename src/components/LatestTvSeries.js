@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import LatestTvSerie from "./LatestTvSerie";
+import SeriesCard from "./SeriesCard";
 
 const LatestTvSeries = () =>{
     const[latestTvSeries,setLatestTvSeries] = useState([]);
@@ -16,7 +16,7 @@ const LatestTvSeries = () =>{
    
     return(
         <div className="movie-wrapper">
-            {latestTvSeries.map(tvSeries => <LatestTvSerie key={tvSeries.id} tvSeries={tvSeries}/>)}
+            {latestTvSeries.map(tvSeries => <SeriesCard key={tvSeries.id} tvShow={tvSeries}/>)}
         </div>
     );
 };

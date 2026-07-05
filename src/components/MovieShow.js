@@ -16,10 +16,10 @@ const MovieShow = ({movieShow}) =>{
     },[movieShow.id, movieShow.media_type]);
 
     const baseUrl = "https://image.tmdb.org/t/p/original/";
-    const seriesReleaseDate =movieShow.first_air_date;
-    // console.log(`${seriesReleaseDate} ~ series`)
-    // console.log(`${movieShow.release_date} ~ movies`)
-    const movieReleaseDate =  !movieShow.release_date ? seriesReleaseDate.split("-")[0] : movieShow.release_date.split("-")[0];
+    // Some list items (e.g. mixed movie/tv results) can be missing both dates —
+    // guard so we never call .split on undefined and crash the whole page.
+    const rawReleaseDate = movieShow.release_date || movieShow.first_air_date || "";
+    const movieReleaseDate = rawReleaseDate ? rawReleaseDate.split("-")[0] : "";
 
     return(
         <div className="movie-card" onMouseOver={e =>setIsHovering(movieShow.id)} onMouseOut={()=>setIsHovering(-1)}>
@@ -58,7 +58,7 @@ const MovieShow = ({movieShow}) =>{
                             <span className='overview-tag'>HD</span>
                         </p>
                         <p className="movie-overview-details">
-                            {movieShow.overview.length  > 120 ? `${movieShow.overview.substring(0,120)}...` : movieShow.overview }
+                            {(movieShow.overview || "").length  > 120 ? `${movieShow.overview.substring(0,120)}...` : movieShow.overview }
                         </p>
                         <div className="country">
                             <h4>Country:</h4>
