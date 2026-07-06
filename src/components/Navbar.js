@@ -9,6 +9,7 @@ import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { NAV_GENRES, NAV_COUNTRIES } from './categorySection/filterOptions';
+import Avatar from './Avatar';
 
 const Navbar = () =>{
     const[isActive,setIsActive] = useState(false);
@@ -21,15 +22,24 @@ const Navbar = () =>{
 
     const toggleNav = (name) => setOpenNav((cur) => (cur === name ? null : name));
 
-    // Close the mobile menu whenever the route changes
+    // Prefer the stored username, but fall back so the pill/avatar never render
+    // blank for accounts without a Firestore username set.
+    const displayName =
+        userData.username ||
+        auth.currentUser?.displayName ||
+        (auth.currentUser?.email || user?.email || '').split('@')[0];
+
+    // Close the mobile menu / dropdowns whenever the route changes
     useEffect(()=>{
         setMenuOpen(false);
         setOpenNav(null);
+        setIsActive(false);
     },[pathname])
 
     useEffect(()=>{
         const closeOnOutside = (e) => {
             if(!e.target.closest('.nav-dropdown')) setOpenNav(null);
+            if(!e.target.closest('.user-dropdown')) setIsActive(false);
         };
         document.addEventListener('mousedown', closeOnOutside);
         return () => document.removeEventListener('mousedown', closeOnOutside);
@@ -138,20 +148,21 @@ const Navbar = () =>{
                         Login/Register
                     </NavLink>
                     :
-                    <div className='dropdown-menu'>
-                        <div className='dropdown-button' onClick={e=>setIsActive(!isActive)}>
-                            <p>{userData.username}</p>
-                            <button className='dropdown-btn'><FaCaretDown/></button>
+                    <div className='user-dropdown'>
+                        <div className='dropdown-button' onClick={e=>setIsActive(!isActive)} role='button' aria-haspopup='true' aria-expanded={isActive}>
+                            <Avatar name={displayName} src={userData.photoURL} size={28} />
+                            <p>{displayName}</p>
+                            <FaCaretDown className='dropdown-caret'/>
                         </div>
                         { isActive &&
-                            <div className='menu'>
+                            <div className='user-dropdown-panel'>
                                 <div className='user-menu'>
                                     <NavLink className='menu-link' to="/profile" onClick={()=>setIsActive(false)}><FaUserCircle className='icon'/>Profile</NavLink>
                                     <NavLink className='menu-link' to="/watchlist" onClick={()=>setIsActive(false)}><FaHeart className='icon'/>My WatchList</NavLink>
                                 </div>
                                 <button className='signOut-btn' onClick={handleLogOut}><FaSignOutAlt className='icon'/>SignOut</button>
                             </div>
-                        
+
                         }
                     </div>
                    

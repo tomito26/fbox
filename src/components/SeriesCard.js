@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaPlay, FaCircle, FaHeart, FaRegHeart, FaStar } from "react-icons/fa";
 import { getTvShow, imageUrl } from "../services/tmdb";
@@ -12,25 +12,38 @@ const SeriesCard = ({ tvShow }) => {
   const { isSaved, toggleWatchlist } = useWatchlist();
   const saved = isSaved(tvShow.id);
 
-  useEffect(() => {
-    let active = true;
-    getTvShow(tvShow.id).then(({ data }) => {
-      if (active && data) setTvShowDetails(data);
+  // Detail (seasons/genres/country) feeds the hover overview only, so fetch it
+  // lazily on first hover rather than on mount — a homepage renders dozens of
+  // cards at once and fetching per card was an N+1 storm of TMDB calls.
+  const controllerRef = useRef(null);
+  const requestedRef = useRef(false);
+
+  const loadDetails = () => {
+    if (requestedRef.current) return;
+    requestedRef.current = true;
+    controllerRef.current = new AbortController();
+    getTvShow(tvShow.id, controllerRef.current.signal).then(({ data }) => {
+      if (data) setTvShowDetails(data);
     });
-    return () => {
-      active = false;
-    };
-  }, [tvShow.id]);
+  };
+
+  useEffect(() => () => controllerRef.current?.abort(), []);
+
+  const handleHover = () => {
+    setIsHovering(true);
+    loadDetails();
+  };
 
   const year = tvShow.first_air_date ? tvShow.first_air_date.split("-")[0] : "";
   const name = tvShow.name || "";
   const overview = tvShow.overview || "";
+  const seasons = tvShowDetails.number_of_seasons ?? "";
   const lastEpisode = tvShowDetails.last_episode_to_air?.episode_number ?? "";
 
   return (
     <div
       className="movie-card"
-      onMouseOver={() => setIsHovering(true)}
+      onMouseOver={handleHover}
       onMouseOut={() => setIsHovering(false)}
     >
       <button
@@ -52,9 +65,13 @@ const SeriesCard = ({ tvShow }) => {
           </p>
           <div className="movie-footer">
             <p className="year">
-              <span>{`SS ${tvShowDetails.number_of_seasons ?? ""}`}</span>
-              <span className="dot"><FaCircle className="dot-circle" /></span>
-              <span>{`EP${lastEpisode}`}</span>
+              <span>{year}</span>
+              {seasons !== "" ? (
+                <>
+                  <span className="dot"><FaCircle className="dot-circle" /></span>
+                  <span>{`SS ${seasons}${lastEpisode !== "" ? ` · EP${lastEpisode}` : ""}`}</span>
+                </>
+              ) : null}
             </p>
             <p className="movie-tag series-tag">Tv</p>
           </div>

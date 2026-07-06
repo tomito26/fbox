@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   FaExclamationCircle,
   FaHeart,
   FaPlay,
   FaRegHeart,
+  FaShareAlt,
   FaStar,
   FaUser,
 } from "react-icons/fa";
 import { imageUrl } from "../services/tmdb";
 import { useWatchlist } from "../Context/WatchlistContext";
+import { shareNative } from "../utils/share";
 
 // Shared presentational shell for the movie and TV detail pages. Movie.js and
 // TvShowVideos.js fetch + normalize their data, then hand it to this component
@@ -42,6 +45,7 @@ const MediaDetails = ({
   // (facade pattern) — avoids loading YouTube's player + cookies on every visit.
   const [playing, setPlaying] = useState(false);
   const { isSaved, toggleWatchlist } = useWatchlist();
+  const trailerRef = useRef(null);
 
   // Reset back to the facade when navigating to a different title's trailer.
   useEffect(() => {
@@ -51,14 +55,15 @@ const MediaDetails = ({
   if (loading) {
     return (
       <div className="movie-video-container">
-        <div className="trailer trailer-skeleton shimmer" />
-        <div className="movie-items-wrapper">
-          <div className="detail-skeleton-poster shimmer" />
-          <div className="detail-skeleton-lines">
-            <div className="skeleton-line shimmer" />
-            <div className="skeleton-line short shimmer" />
-            <div className="skeleton-line shimmer" />
-            <div className="skeleton-line shimmer" />
+        <div className="detail-hero detail-hero-skeleton">
+          <div className="detail-hero-inner">
+            <div className="detail-skeleton-poster shimmer" />
+            <div className="detail-skeleton-lines">
+              <div className="skeleton-line shimmer" />
+              <div className="skeleton-line short shimmer" />
+              <div className="skeleton-line shimmer" />
+              <div className="skeleton-line shimmer" />
+            </div>
           </div>
         </div>
       </div>
@@ -77,6 +82,7 @@ const MediaDetails = ({
   const isMovie = mediaType === "movie";
   const title = isMovie ? details.title : details.name;
   const releaseDate = isMovie ? details.release_date : details.first_air_date;
+  const year = releaseDate ? releaseDate.split("-")[0] : "";
   const rating =
     details.vote_average != null ? Number(details.vote_average).toFixed(1) : "";
 
@@ -102,6 +108,17 @@ const MediaDetails = ({
 
   const saved = isSaved(details.id);
   const topCast = casts.slice(0, 15);
+  const genres = details.genres || [];
+
+  // Play jumps to and starts the trailer (the site only carries trailers, not
+  // full streams). Guarded so it's a no-op when there's no trailer to show.
+  const handlePlay = () => {
+    setPlaying(true);
+    trailerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  const handleShare = () =>
+    shareNative({ url: window.location.href, text: title || "Watch on fbox.to" });
 
   const infoRow = (label, value) =>
     value ? (
@@ -113,64 +130,74 @@ const MediaDetails = ({
 
   return (
     <div className="movie-video-container">
-      <div
-        className="video-wrapper"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url(${imageUrl(
-            details.backdrop_path,
-            "w1280"
-          )})`,
-        }}
+      {/* Cinematic hero: darkened backdrop art behind poster + title + actions. */}
+      <section
+        className="detail-hero"
+        style={
+          details.backdrop_path
+            ? {
+                backgroundImage: `linear-gradient(to right, rgba(10,13,20,0.96) 0%, rgba(10,13,20,0.78) 45%, rgba(10,13,20,0.45) 100%), linear-gradient(to top, #0a0d14 3%, rgba(10,13,20,0.15) 60%), url(${imageUrl(
+                  details.backdrop_path,
+                  "w1280"
+                )})`,
+              }
+            : undefined
+        }
       >
-        <div className="trailer">
-          {!video ? (
-            <div className="error-message">
-              <FaExclamationCircle
-                style={{ marginRight: "5px", marginBottom: "3px", fontSize: "30px" }}
-              />
-              This video is unavailable
-            </div>
-          ) : playing ? (
-            <iframe
-              src={`https://www.youtube-nocookie.com/embed/${video.key}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
-              title={`${title || "Title"} trailer`}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          ) : (
-            <button
-              className="trailer-facade"
-              onClick={() => setPlaying(true)}
-              aria-label={`Play ${title || "trailer"}`}
-              style={{
-                backgroundImage: `url(https://i.ytimg.com/vi/${video.key}/hqdefault.jpg)`,
-              }}
-            >
-              <span className="trailer-play-btn">
-                <FaPlay />
-              </span>
-              <span className="trailer-label">Play trailer</span>
-            </button>
-          )}
-        </div>
-      </div>
-
-      {extras}
-
-      <div className="movie-items-wrapper">
-        <div className="detail-main">
-        <div className="movie-item-details">
-          <div className="movie-poster">
+        <div className="detail-hero-inner">
+          <div className="detail-hero-poster">
             {details.poster_path ? (
               <img src={imageUrl(details.poster_path, "w500")} alt={title} />
             ) : (
               <div className="movie-poster-fallback">No image</div>
             )}
           </div>
-          <div className="movie-item-info">
-            <div className="movie-title-row">
-              <h3>{title}</h3>
+          <div className="detail-hero-content">
+            <h1 className="detail-title">{title}</h1>
+            <div className="detail-meta">
+              <span className="meta-badge">HD</span>
+              {rating && (
+                <span className="meta-rating">
+                  <FaStar className="star-icon" /> {rating}
+                </span>
+              )}
+              {year && <span>{year}</span>}
+              {runtimeText && <span>{runtimeText}</span>}
+            </div>
+            {genres.length > 0 && (
+              <div className="detail-genres">
+                {genres.map((g) => (
+                  <Link
+                    key={g.id}
+                    className="genre-chip"
+                    to={`/browse?media=${mediaType}&genre=${g.id}&title=${encodeURIComponent(
+                      g.name
+                    )}`}
+                  >
+                    {g.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+            {overview && (
+              <p className="overview-text">
+                {overviewText}{" "}
+                {isLong && (
+                  <button
+                    className="read-more"
+                    onClick={() => setExpanded((prev) => !prev)}
+                  >
+                    {expanded ? "Read less" : "Read more"}
+                  </button>
+                )}
+              </p>
+            )}
+            <div className="detail-actions">
+              {video && (
+                <button className="detail-play-btn" onClick={handlePlay}>
+                  <FaPlay /> Play
+                </button>
+              )}
               {details.id && (
                 <button
                   className={`detail-heart${saved ? " saved" : ""}`}
@@ -184,86 +211,121 @@ const MediaDetails = ({
                   <span>{saved ? "In your list" : "Add to list"}</span>
                 </button>
               )}
-            </div>
-            <div className="movie-details-header">
-              <p>HD</p>
-              {rating && (
-                <p>
-                  <FaStar
-                    className="star-icon"
-                    style={{ marginBottom: "3px", fontSize: "13px" }}
-                  />{" "}
-                  <span>{rating}</span>
-                </p>
-              )}
-              {runtimeText && <p>{runtimeText}</p>}
-            </div>
-            <div className="movie-details-overview">
-              {overview && (
-                <p className="overview-text">
-                  {overviewText}{" "}
-                  {isLong && (
-                    <button
-                      className="read-more"
-                      onClick={() => setExpanded((prev) => !prev)}
-                    >
-                      {expanded ? "Read less" : "Read more"}
-                    </button>
-                  )}
-                </p>
-              )}
-              {infoRow("Country:", names(details.production_countries))}
-              {infoRow("Genre:", names(details.genres))}
-              {infoRow("Release:", releaseDate)}
-              {infoRow("Director:", names(directors))}
-              {infoRow("Production:", names(details.production_companies))}
-
-              {keywords.length > 0 && (
-                <div className="movie-category tags-row">
-                  <h4 className="movie-sub-header">Tags:</h4>
-                  <div className="tag-chips">
-                    {keywords.slice(0, 12).map((kw) => (
-                      <span className="tag-chip" key={kw.id}>
-                        {kw.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <button
+                className="detail-share-btn"
+                onClick={handleShare}
+                aria-label="Share"
+              >
+                <FaShareAlt /> <span>Share</span>
+              </button>
             </div>
           </div>
         </div>
+      </section>
 
-        {topCast.length > 0 && (
-          <div className="cast-section">
-            <h4 className="movie-sub-header">Cast</h4>
-            <div className="cast-strip">
-              {topCast.map((cast) => (
-                <div className="cast-card" key={cast.id}>
-                  {cast.profile_path ? (
-                    <img
-                      src={imageUrl(cast.profile_path, "w185")}
-                      alt={cast.name}
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="cast-avatar-fallback">
-                      <FaUser />
-                    </div>
-                  )}
-                  <p className="cast-name">{cast.name}</p>
-                  {cast.character && (
-                    <p className="cast-character">{cast.character}</p>
-                  )}
-                </div>
-              ))}
+      {extras}
+
+      {/* Trailer moved below the hero into its own section (Play jumps here). */}
+      {video && (
+        <section className="trailer-section" ref={trailerRef}>
+          <h4 className="section-heading">
+            <span>Trailer</span>
+          </h4>
+          <div
+            className="video-wrapper"
+            style={{
+              backgroundImage: `linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url(${imageUrl(
+                details.backdrop_path,
+                "w1280"
+              )})`,
+            }}
+          >
+            <div className="trailer">
+              {playing ? (
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${video.key}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
+                  title={`${title || "Title"} trailer`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <button
+                  className="trailer-facade"
+                  onClick={() => setPlaying(true)}
+                  aria-label={`Play ${title || "trailer"}`}
+                  style={{
+                    backgroundImage: `url(https://i.ytimg.com/vi/${video.key}/hqdefault.jpg)`,
+                  }}
+                >
+                  <span className="trailer-play-btn">
+                    <FaPlay />
+                  </span>
+                  <span className="trailer-label">Play trailer</span>
+                </button>
+              )}
             </div>
           </div>
-        )}
+        </section>
+      )}
+
+      <div className="movie-items-wrapper">
+        <div className="detail-main">
+          <div className="detail-facts">
+            <h4 className="section-heading">
+              <span>Details</span>
+            </h4>
+            {infoRow("Country", names(details.production_countries))}
+            {infoRow("Release", releaseDate)}
+            {infoRow("Director", names(directors))}
+            {infoRow("Production", names(details.production_companies))}
+
+            {keywords.length > 0 && (
+              <div className="movie-category tags-row">
+                <h4 className="movie-sub-header">Tags</h4>
+                <div className="tag-chips">
+                  {keywords.slice(0, 12).map((kw) => (
+                    <span className="tag-chip" key={kw.id}>
+                      {kw.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {topCast.length > 0 && (
+            <div className="cast-section">
+              <h4 className="section-heading">
+                <span>Cast</span>
+              </h4>
+              <div className="cast-strip">
+                {topCast.map((cast) => (
+                  <div className="cast-card" key={cast.id}>
+                    {cast.profile_path ? (
+                      <img
+                        src={imageUrl(cast.profile_path, "w185")}
+                        alt={cast.name}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="cast-avatar-fallback">
+                        <FaUser />
+                      </div>
+                    )}
+                    <p className="cast-name">{cast.name}</p>
+                    {cast.character && (
+                      <p className="cast-character">{cast.character}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="similar-movies-wrapper">
-          <h3>
+          <h3 className="section-heading">
             <span>You may also like</span>
           </h3>
           <div className="similar-movies">{similar.map(renderSimilar)}</div>

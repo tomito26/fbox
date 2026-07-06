@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaPlay, FaCircle, FaHeart, FaRegHeart, FaStar } from "react-icons/fa";
 import { getMovie, imageUrl } from "../services/tmdb";
@@ -12,15 +12,28 @@ const MovieCard = ({ movie }) => {
   const { isSaved, toggleWatchlist } = useWatchlist();
   const saved = isSaved(movie.id);
 
-  useEffect(() => {
-    let active = true;
-    getMovie(movie.id).then(({ data }) => {
-      if (active && data) setMovieDetails(data);
+  // Detail (runtime/genres/country) is only needed for the hover overview, so we
+  // fetch it lazily on first hover instead of on mount. A homepage renders 60-80
+  // cards at once; fetching per card on mount was an N+1 storm of TMDB calls for
+  // data the user often never sees (the overview is CSS-hidden on the home rows).
+  const controllerRef = useRef(null);
+  const requestedRef = useRef(false);
+
+  const loadDetails = () => {
+    if (requestedRef.current) return;
+    requestedRef.current = true;
+    controllerRef.current = new AbortController();
+    getMovie(movie.id, controllerRef.current.signal).then(({ data }) => {
+      if (data) setMovieDetails(data);
     });
-    return () => {
-      active = false;
-    };
-  }, [movie.id]);
+  };
+
+  useEffect(() => () => controllerRef.current?.abort(), []);
+
+  const handleHover = () => {
+    setIsHovering(true);
+    loadDetails();
+  };
 
   const year = movie.release_date ? movie.release_date.split("-")[0] : "";
   const title = movie.title || "";
@@ -29,7 +42,7 @@ const MovieCard = ({ movie }) => {
   return (
     <div
       className="movie-card"
-      onMouseOver={() => setIsHovering(true)}
+      onMouseOver={handleHover}
       onMouseOut={() => setIsHovering(false)}
     >
       <button
@@ -52,8 +65,12 @@ const MovieCard = ({ movie }) => {
           <div className="movie-footer">
             <p className="year">
               <span>{year}</span>
-              <span className="dot"><FaCircle className="dot-circle" /></span>
-              <span>{movieDetails.runtime ? `${movieDetails.runtime} min` : ""}</span>
+              {movieDetails.runtime ? (
+                <>
+                  <span className="dot"><FaCircle className="dot-circle" /></span>
+                  <span>{`${movieDetails.runtime} min`}</span>
+                </>
+              ) : null}
             </p>
             <p className="movie-tag">movie</p>
           </div>

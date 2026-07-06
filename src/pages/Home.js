@@ -57,7 +57,7 @@ const Home = () =>{
                         <span>Requested</span>
                     </h3>
                     <p className="link">
-                        <Link to="/latest-tv-series" className="latest-movies-link">
+                        <Link to="/requested" className="latest-movies-link">
                             <span>View all</span>
                             <FaChevronCircleRight className="view-all-link"/>
                         </Link>
