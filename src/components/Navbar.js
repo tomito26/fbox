@@ -9,6 +9,11 @@ import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { NAV_GENRES, NAV_COUNTRIES } from './categorySection/filterOptions';
+import { searchMulti, imageUrl } from '../services/tmdb';
+
+// Detail-page path for a search/multi item (movies vs TV).
+const suggestPath = (item) =>
+    `/${item.media_type === 'tv' ? 'tvshows' : 'movie'}/${item.id}`;
 
 const Navbar = () =>{
     const[isActive,setIsActive] = useState(false);
@@ -16,33 +21,63 @@ const Navbar = () =>{
     const[searchTerm,setSearchTerm] = useState("");
     const[openNav,setOpenNav] = useState(null); // 'genres' | 'country' | null
     const[menuOpen,setMenuOpen] = useState(false);
+    const[suggestions,setSuggestions] = useState([]);
+    const[showSuggest,setShowSuggest] = useState(false);
     const { user} = useUserAuth();
     const navigate = useNavigate()
     const { pathname } = useLocation()
 
     const toggleNav = (name) => setOpenNav((cur) => (cur === name ? null : name));
 
-    // Close the mobile menu whenever the route changes
+    // Close the mobile menu / dropdowns whenever the route changes
     useEffect(()=>{
         setMenuOpen(false);
         setOpenNav(null);
+        setShowSuggest(false);
     },[pathname])
 
     useEffect(()=>{
         const closeOnOutside = (e) => {
             if(!e.target.closest('.nav-dropdown')) setOpenNav(null);
+            if(!e.target.closest('.search-form')) setShowSuggest(false);
         };
         document.addEventListener('mousedown', closeOnOutside);
         return () => document.removeEventListener('mousedown', closeOnOutside);
     },[])
 
+    // Debounced autosuggest: fetch matching movies/series as the user types.
+    useEffect(()=>{
+        const q = searchTerm.trim();
+        if(q.length < 2){ setSuggestions([]); return; }
+        const controller = new AbortController();
+        const timer = setTimeout(()=>{
+            searchMulti(q, controller.signal).then(({ data })=>{
+                if(controller.signal.aborted) return;
+                const items = (data?.results || [])
+                    .filter(i => (i.media_type === 'movie' || i.media_type === 'tv') && i.poster_path)
+                    .slice(0, 7);
+                setSuggestions(items);
+                setShowSuggest(true);
+            });
+        }, 300);
+        return ()=>{ clearTimeout(timer); controller.abort(); };
+    },[searchTerm])
+
     const handleSearch = (e) =>{
         e.preventDefault();
         const query = searchTerm.trim();
         if(!query) return;
+        setShowSuggest(false);
         navigate(`/search?q=${encodeURIComponent(query)}`);
         setSearchTerm("");
     }
+
+    const selectSuggestion = () =>{
+        setSearchTerm("");
+        setSuggestions([]);
+        setShowSuggest(false);
+        setMenuOpen(false);
+    };
 
     useEffect(()=>{
         if(user){
@@ -135,18 +170,46 @@ const Navbar = () =>{
                 <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300 " :"#ccc" } }} className="nav-link" to="/topImdb">Top IMDb</NavLink></li>
             </ul>
             <form className="search-form" onSubmit={handleSearch} role="search">
+                <button type="submit" className="search-btn" aria-label="Search">
+                    <SearchIcon/>
+                </button>
                 <input
                     type="text"
                     name="searchItem"
                     className='form-control'
                     placeholder='Enter your keywords...'
+                    autoComplete="off"
                     aria-label="Search movies and TV shows"
                     value={searchTerm}
                     onChange={e=>setSearchTerm(e.target.value)}
+                    onFocus={()=>{ if(suggestions.length) setShowSuggest(true); }}
                 />
-                <button type="submit" className="search-btn" aria-label="Search">
-                    <SearchIcon/>
-                </button>
+                { showSuggest && suggestions.length > 0 &&
+                    <div className="search-suggest">
+                        {suggestions.map(item=>{
+                            const title = item.title || item.name;
+                            const date = item.release_date || item.first_air_date || "";
+                            const year = date ? date.split("-")[0] : "";
+                            return (
+                                <Link
+                                    key={`${item.media_type}-${item.id}`}
+                                    to={suggestPath(item)}
+                                    className="suggest-item"
+                                    onClick={selectSuggestion}
+                                >
+                                    <img className="suggest-thumb" src={imageUrl(item.poster_path,"w92")} alt={title}/>
+                                    <span className="suggest-info">
+                                        <span className="suggest-title">{title}</span>
+                                        <span className="suggest-meta">{year}{year && " · "}{item.media_type === "tv" ? "TV" : "Movie"}</span>
+                                    </span>
+                                </Link>
+                            );
+                        })}
+                        <button type="submit" className="suggest-all">
+                            See all results for "{searchTerm.trim()}"
+                        </button>
+                    </div>
+                }
             </form>
             <div className="register">
                 { !user ?

@@ -89,7 +89,8 @@ export const pickTrailer = (results = []) => {
   );
 };
 
-export const searchMulti = (query) => request(`/search/multi`, { query, page: 1 });
+export const searchMulti = (query, signal) =>
+  request(`/search/multi`, { query, page: 1 }, { signal });
 
 // Discover movies or TV shows with filter params (with_genres, sort_by, etc.).
 // `type` is "movie" or "tv".

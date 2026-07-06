@@ -124,15 +124,78 @@ nav ul li .nav-dropdown-toggle{
   margin-left: 30px !important;
 }
 .search-form svg{
-  position: absolute !important;
-  top: 25% !important;
-  left: 38px !important;
   color: #9D9D9D !important;
-  cursor: pointer !important;
+  display: block;
 }
 .search-form .form-control::placeholder{
   font-size: 15px !important;
   color: #ccc !important;
+}
+/* Autosuggest dropdown */
+.search-suggest{
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 30px;
+  width: 300px;
+  max-height: 60vh;
+  overflow-y: auto;
+  background-color: #12161f;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.55);
+  z-index: 90;
+  padding: 6px;
+}
+.suggest-item{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+.suggest-item:hover{
+  background-color: rgba(255,255,255,0.06);
+}
+.suggest-thumb{
+  width: 34px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex: 0 0 auto;
+  background-color: #0b0f17;
+}
+.suggest-info{
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.suggest-title{
+  font-size: 14px;
+  color: #f4f4f4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.suggest-meta{
+  font-size: 12px;
+  color: #8b929c;
+}
+.suggest-all{
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin-top: 4px;
+  padding: 10px 8px 6px;
+  color: var(--accent);
+  font-size: 13px;
+  cursor: pointer;
+}
+.suggest-all:hover{
+  color: #fff;
 }
 /* .register{
   margin-left: 40px !important;
@@ -1779,19 +1842,23 @@ footer p{
 /* // movies page  */
 .movie-page{
   margin-top: 40px;
-  padding: 0 30px;
+  padding: 0 40px;
 }
 .movie-page .movie-header h2{
-  font-size: 30px;
-  color: rgb(164, 173, 189);
-  font-weight: 100;
-  width: 250px;
-  margin: 0 0 30px;
+  width: auto;
+  margin: 0 0 26px;
+}
+/* Gold-accent header to match the homepage section titles. */
+.movie-page .movie-header h2 span{
+  display: inline-block;
+  color: #f4f4f4;
+  font-weight: 600;
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  padding-bottom: 8px;
+  border-bottom: 3px solid #FFC300;
 }
 .movie-page hr{
-  width: 32%;
-  padding: 0;
-  margin: 5px 0;
+  display: none;
 }
 .movie-page .category-section{
   margin-bottom: 30px;
@@ -2068,15 +2135,26 @@ footer p{
   margin-right: 3px;
 }
 
+/* Real clickable magnifier (submit) sitting in the input's left padding —
+   replaces the old 0x0 button whose icon was absolutely positioned. */
 .search-btn{
   background: none;
   border: none;
-  padding: 0;
   margin: 0;
   cursor: pointer;
-  color: inherit;
+  color: #9D9D9D;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 34px;
+  top: 0;
+  height: 40px;
+  padding: 0 8px;
+  z-index: 2;
+}
+.search-btn:hover{
+  color: #fff;
 }
 
 /* Buttons that replaced dead <a href="#"> links — reset to look like text/links. */
@@ -2431,8 +2509,13 @@ button.menu-link{
     margin-left: 0 !important;
     box-sizing: border-box;
   }
-  .search-form svg{
-    left: 14px !important;
+  /* Full-width input on mobile: move the magnifier and align the dropdown. */
+  .search-btn{
+    left: 8px;
+  }
+  .search-suggest{
+    left: 0;
+    width: 100%;
   }
   .register{
     width: 100%;
