@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import Imdb from "./Imdb";
+import MovieCard from "../../components/MovieCard";
+import SeriesCard from "../../components/SeriesCard";
 import DropdownMenus from "../../components/categorySection/DropdownMenus";
 import SkeletonGrid from "../../components/SkeletonGrid";
 import { getList } from "../../services/tmdb";
@@ -39,9 +40,15 @@ const TopImdb = () => {
       )}
       {status === "ready" && (
         <div className="movie-wrapper">
-          {trendings.map((trending) => (
-            <Imdb trending={trending} key={`${trending.media_type}-${trending.id}`} />
-          ))}
+          {trendings
+            .filter((t) => t.media_type === "movie" || t.media_type === "tv")
+            .map((t) =>
+              t.media_type === "tv" ? (
+                <SeriesCard tvShow={t} key={`tv-${t.id}`} />
+              ) : (
+                <MovieCard movie={t} key={`movie-${t.id}`} />
+              )
+            )}
         </div>
       )}
     </div>

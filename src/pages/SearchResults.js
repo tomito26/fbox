@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import Imdb from "./imdb/Imdb";
+import MovieCard from "../components/MovieCard";
+import SeriesCard from "../components/SeriesCard";
 import SkeletonGrid from "../components/SkeletonGrid";
 import { searchMulti } from "../services/tmdb";
 
@@ -10,8 +11,8 @@ const TABS = [
   { value: "tv", label: "TV Shows" },
 ];
 
-// Search results page. Reuses the Imdb card because it already handles both
-// movie and TV `media_type` results, which is exactly what search/multi returns.
+// Search results page. search/multi returns mixed movie/TV results, so we render
+// the unified MovieCard/SeriesCard by media_type (same cards as the homepage).
 const SearchResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
@@ -158,9 +159,13 @@ const SearchResults = () => {
         </p>
       )}
       <div className="movie-wrapper">
-        {visible.map((item) => (
-          <Imdb trending={item} key={`${item.media_type}-${item.id}`} />
-        ))}
+        {visible.map((item) =>
+          item.media_type === "tv" ? (
+            <SeriesCard tvShow={item} key={`tv-${item.id}`} />
+          ) : (
+            <MovieCard movie={item} key={`movie-${item.id}`} />
+          )
+        )}
       </div>
       {status === "ready" && page < totalPages && (
         <div className="load-more-wrapper">

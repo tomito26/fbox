@@ -123,13 +123,8 @@ nav ul li .nav-dropdown-toggle{
   margin-bottom: 5px !important;
   margin-left: 30px !important;
 }
-.search-form .search-btn svg{
-  position: absolute !important;
-  top: 25% !important;
-  left: 38px !important;
-  color: #9D9D9D !important;
-  cursor: pointer !important;
-}
+/* The magnifier icon flows inside the absolutely-positioned .search-btn
+   (see the "Real clickable magnifier" block further down). */
 .search-form .form-control::placeholder{
   font-size: 15px !important;
   color: #ccc !important;
@@ -1779,19 +1774,23 @@ footer p{
 /* // movies page  */
 .movie-page{
   margin-top: 40px;
-  padding: 0 30px;
+  padding: 0 40px;
 }
 .movie-page .movie-header h2{
-  font-size: 30px;
-  color: rgb(164, 173, 189);
-  font-weight: 100;
-  width: 250px;
-  margin: 0 0 30px;
+  width: auto;
+  margin: 0 0 26px;
+}
+/* Gold-accent header to match the homepage section titles. */
+.movie-page .movie-header h2 span{
+  display: inline-block;
+  color: #f4f4f4;
+  font-weight: 600;
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  padding-bottom: 8px;
+  border-bottom: 3px solid #FFC300;
 }
 .movie-page hr{
-  width: 32%;
-  padding: 0;
-  margin: 5px 0;
+  display: none;
 }
 .movie-page .category-section{
   margin-bottom: 30px;
@@ -2068,15 +2067,26 @@ footer p{
   margin-right: 3px;
 }
 
+/* Real clickable magnifier (submit) sitting in the input's left padding —
+   replaces the old 0x0 button whose icon was absolutely positioned. */
 .search-btn{
   background: none;
   border: none;
-  padding: 0;
   margin: 0;
   cursor: pointer;
-  color: inherit;
+  color: #9D9D9D;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 34px;
+  top: 0;
+  height: 40px;
+  padding: 0 8px;
+  z-index: 2;
+}
+.search-btn:hover{
+  color: #fff;
 }
 
 /* Buttons that replaced dead <a href="#"> links — reset to look like text/links. */
@@ -2431,8 +2441,9 @@ button.menu-link{
     margin-left: 0 !important;
     box-sizing: border-box;
   }
-  .search-form .search-btn svg{
-    left: 14px !important;
+  /* Full-width input on mobile (margin-left drops to 0): move the magnifier. */
+  .search-btn{
+    left: 8px;
   }
   .register{
     width: 100%;
