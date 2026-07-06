@@ -37,7 +37,12 @@ const Navbar = () =>{
 
     useEffect(()=>{
         if(user){
-            const unsub = onSnapshot(doc(database,"users",auth.currentUser?.uid),snap=>setUserData(snap.data()))
+            // snap.data() is undefined until the register-page profile write lands
+            const unsub = onSnapshot(
+                doc(database,"users",auth.currentUser?.uid),
+                snap=>setUserData(snap.data() || {}),
+                (err)=>console.error("user profile listener:",err)
+            )
             return () => unsub()
         }
     },[user])

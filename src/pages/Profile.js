@@ -15,7 +15,7 @@ const Profile = () =>{
 
   useEffect(()=>{
     if(user){
-        const unsub = onSnapshot(doc(database,"users",auth.currentUser?.uid),snap=>setUserData(snap.data()))
+        const unsub = onSnapshot(doc(database,"users",auth.currentUser?.uid),snap=>setUserData(snap.data() || {}))
         return () => unsub()
     }
   },[user])
