@@ -552,65 +552,6 @@ form{
   color: #F0A500;
 }
 
-/* about page  */
-/* SEO/marketing block: now lives at the bottom of the home page (out of the
-   browse flow), styled as a quiet footer-ish band. */
-.about{
-  margin: 60px 30px 0;
-  padding-top: 28px;
-  border-top: 1px solid rgba(255,255,255,0.07);
-}
-.about h2{
-  font-size: 18px !important;
-  color: #b7bcc4;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-.about p{
-  color: #7f838b;
-  font-size: 14px;
-  line-height: 1.6;
-  max-width: 900px;
-}
-.share-socials{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 18px 0 4px;
-}
-/* Uniform, theme-matching share buttons (was six clashing brand colours). */
-.facebook,
-.twitter,
-.email,
-.pinterest,
-.whatsapp,.telegram{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  font-size: 13px;
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 20px;
-  outline: none;
-  cursor: pointer;
-  color: #cfd3da;
-  background-color: rgba(255,255,255,0.04);
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
-.facebook:hover,
-.twitter:hover,
-.email:hover,
-.pinterest:hover,
-.whatsapp:hover,
-.telegram:hover{
-  background-color: #FFC300;
-  border-color: #FFC300;
-  color: #041C32;
-}
-.social-icon{
-  margin-bottom: 1px;
-}
-
 /* recommend movies section  */
 .recommend-movies{
   margin-top: 20px;

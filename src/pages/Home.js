@@ -1,6 +1,5 @@
 import { FaChartLine, FaChevronCircleRight,FaListUl, FaPlayCircle } from "react-icons/fa";
 import CarouselsContainer from "../components/CarouselsContainer";
-import About from "./About";
 import { NavLink, Outlet,Link } from 'react-router-dom';
 import LatestMovies from "../components/LatestMovies";
 import LatestTvSeries from "../components/LatestTvSeries";
@@ -65,7 +64,6 @@ const Home = () =>{
                 </div>
                 <RequestedMovieShows/>
             </div>
-            <About/>
         </div>
     );
 };
