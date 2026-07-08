@@ -48,7 +48,13 @@ export async function getList(path, { pages = 1, startPage = 1, params = {} } = 
     seen.add(key);
     return true;
   });
-  return { data: deduped, error };
+  // Expose the catalogue depth so paginated grids know when to stop offering
+  // "Load more" (TMDB caps discover at 500 pages).
+  const totalPages = responses.reduce(
+    (max, r) => Math.max(max, r.data?.total_pages || 0),
+    0
+  ) || 1;
+  return { data: deduped, error, totalPages };
 }
 
 // Detail-page getters accept an optional AbortSignal so a component can cancel
@@ -96,5 +102,5 @@ export const searchMulti = (query, page = 1, signal) =>
 
 // Discover movies or TV shows with filter params (with_genres, sort_by, etc.).
 // `type` is "movie" or "tv".
-export const discover = (type, params = {}, pages = 2) =>
-  getList(`/discover/${type}`, { pages, params });
+export const discover = (type, params = {}, pages = 2, startPage = 1) =>
+  getList(`/discover/${type}`, { pages, params, startPage });
