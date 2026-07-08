@@ -122,6 +122,7 @@ const TvShowVideos = () => {
       similar={state.similar}
       keywords={state.keywords}
       extras={extras}
+      streamSeason={Number(selectedSeason.seasonNumber) || 1}
       renderSimilar={(similarTvShow) => (
         <SimilarTvShow key={similarTvShow.id} similarTvShow={similarTvShow} />
       )}

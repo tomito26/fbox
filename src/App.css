@@ -1401,6 +1401,25 @@ form{
   background-color: rgba(255,255,255,0.1);
   border-color: rgba(255,255,255,0.4);
 }
+/* Secondary "Trailer" button — outline style, sits next to the gold Watch Now. */
+.detail-trailer-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 22px;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 30px;
+  background: transparent;
+  color: #e6e6e6;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+.detail-trailer-btn:hover{
+  background-color: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.4);
+}
 
 /* Shared section heading: bold near-white title with a gold underline. */
 .section-heading{

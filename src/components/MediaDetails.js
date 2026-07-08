@@ -12,6 +12,7 @@ import {
 import { imageUrl } from "../services/tmdb";
 import { useWatchlist } from "../Context/WatchlistContext";
 import { shareNative } from "../utils/share";
+import StreamPlayer from "./StreamPlayer";
 
 // Shared presentational shell for the movie and TV detail pages. Movie.js and
 // TvShowVideos.js fetch + normalize their data, then hand it to this component
@@ -39,18 +40,28 @@ const MediaDetails = ({
   error,
   renderSimilar,
   extras,
+  streamSeason = 1,
+  streamEpisode = 1,
 }) => {
   const [expanded, setExpanded] = useState(false);
   // Only mount the heavy YouTube iframe once the user actually clicks play
   // (facade pattern) — avoids loading YouTube's player + cookies on every visit.
   const [playing, setPlaying] = useState(false);
+  // Same facade approach for the full-stream (Vidking) player.
+  const [watching, setWatching] = useState(false);
   const { isSaved, toggleWatchlist } = useWatchlist();
   const trailerRef = useRef(null);
+  const streamRef = useRef(null);
 
   // Reset back to the facade when navigating to a different title's trailer.
   useEffect(() => {
     setPlaying(false);
   }, [video?.key]);
+
+  // Collapse the stream player when the title changes.
+  useEffect(() => {
+    setWatching(false);
+  }, [details.id]);
 
   if (loading) {
     return (
@@ -115,6 +126,12 @@ const MediaDetails = ({
   const handlePlay = () => {
     setPlaying(true);
     trailerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  // Watch Now reveals + scrolls to the full-stream (Vidking) player.
+  const handleWatch = () => {
+    setWatching(true);
+    streamRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
   const handleShare = () =>
@@ -193,9 +210,14 @@ const MediaDetails = ({
               </p>
             )}
             <div className="detail-actions">
+              {details.id && (
+                <button className="detail-play-btn" onClick={handleWatch}>
+                  <FaPlay /> Watch Now
+                </button>
+              )}
               {video && (
-                <button className="detail-play-btn" onClick={handlePlay}>
-                  <FaPlay /> Play
+                <button className="detail-trailer-btn" onClick={handlePlay}>
+                  <FaPlay /> Trailer
                 </button>
               )}
               {details.id && (
@@ -222,6 +244,48 @@ const MediaDetails = ({
           </div>
         </div>
       </section>
+
+      {/* Full-stream player (Vidking). Facade until the user clicks Watch Now so
+          the embed isn't loaded on every visit. */}
+      {details.id && (
+        <section className="trailer-section stream-section" ref={streamRef}>
+          <h4 className="section-heading">
+            <span>{isMovie ? "Watch Movie" : "Watch Episode"}</span>
+          </h4>
+          <div
+            className="video-wrapper"
+            style={{
+              backgroundImage: `linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url(${imageUrl(
+                details.backdrop_path,
+                "w1280"
+              )})`,
+            }}
+          >
+            <div className="trailer">
+              {watching ? (
+                <StreamPlayer
+                  mediaType={mediaType}
+                  id={details.id}
+                  season={streamSeason}
+                  episode={streamEpisode}
+                  title={title}
+                />
+              ) : (
+                <button
+                  className="trailer-facade"
+                  onClick={handleWatch}
+                  aria-label={`Watch ${title || "now"}`}
+                >
+                  <span className="trailer-play-btn">
+                    <FaPlay />
+                  </span>
+                  <span className="trailer-label">Watch Now</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {extras}
 
