@@ -221,7 +221,7 @@ const SearchBox = () => {
         aria-label="Search movies and TV shows"
         role="combobox"
         aria-expanded={hasPanel}
-        aria-controls="search-listbox"
+        aria-controls={hasPanel ? "search-listbox" : undefined}
         aria-activedescendant={highlight >= 0 ? `search-option-${highlight}` : undefined}
         aria-autocomplete="list"
         autoComplete="off"
