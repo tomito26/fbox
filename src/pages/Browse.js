@@ -18,9 +18,8 @@ const Browse = () => {
   const country = searchParams.get("country");
   const title = searchParams.get("title") || "Browse";
 
-  // Refinement applied via the filter bar (params only — the media type stays
-  // whatever the nav entry point set, so a "Korea TV" page can't flip to movies).
-  const [filterParams, setFilterParams] = useState(null);
+  // Refinement applied via the filter bar ({ type, params }); null until used.
+  const [filter, setFilter] = useState(null);
 
   const fetchPage = useCallback(
     (startPage, pages) => {
@@ -28,19 +27,21 @@ const Browse = () => {
       if (genre) baseParams.with_genres = genre;
       if (country) baseParams.with_origin_country = country;
       // Filter-bar selections override the URL defaults where they overlap.
-      const params = filterParams ? { ...baseParams, ...filterParams } : baseParams;
-      return discover(media, params, pages, startPage);
+      const type = filter?.type || media;
+      const params = filter ? { ...baseParams, ...filter.params } : baseParams;
+      return discover(type, params, pages, startPage);
     },
-    [media, genre, country, filterParams]
+    [media, genre, country, filter]
   );
 
   const { items, status, loadMore, loadingMore, hasMore } = usePagedList(
     fetchPage,
-    [media, genre, country, filterParams]
+    [media, genre, country, filter]
   );
 
+  const activeType = filter?.type || media;
   const renderCard = (item) =>
-    media === "tv" ? (
+    activeType === "tv" ? (
       <SeriesCard tvShow={item} key={item.id} />
     ) : (
       <MovieCard movie={item} key={item.id} />
@@ -53,7 +54,10 @@ const Browse = () => {
           <span>{title}</span>
           <hr />
         </h2>
-        <DropdownMenus onFilter={(type, params) => setFilterParams(params)} />
+        <DropdownMenus
+          onFilter={(type, params) => setFilter({ type, params })}
+          initialType={media}
+        />
       </div>
       {status === "loading" && <SkeletonGrid />}
       {status === "error" && (

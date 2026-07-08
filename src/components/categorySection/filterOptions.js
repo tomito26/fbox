@@ -1,87 +1,11 @@
-// Maps the (static) dropdown menu labels to TMDB `discover` query values, plus a
-// helper that turns the selected filter state into a { type, params } request.
-// Only options that map cleanly to TMDB are wired; anything unmapped (e.g. the
-// "Quality" menu, or genres like Costume/Kungfu that TMDB has no id for) is
-// simply ignored so it never breaks a query.
+// Single source of truth for the discover filter bar (Genre / Type / Country /
+// Year / Sort). DropdownMenus renders straight from these arrays, and
+// buildDiscoverParams turns the selected filter state into a TMDB /discover query.
 
-// Checkbox id -> TMDB movie genre id.
-export const GENRE_IDS = {
-  action: 28,
-  adventure: 12,
-  animation: 16,
-  biography: 36, // closest TMDB match: History
-  comedy: 35,
-  crime: 80,
-  documentary: 99,
-  drama: 18,
-  family: 10751,
-  fantasy: 14,
-  history: 36,
-  horror: 27,
-  music: 10402,
-  mystery: 9648,
-  romance: 10749,
-  "sci-fi": 878,
-  thriller: 53,
-  war: 10752,
-  western: 37,
-};
-
-// Checkbox id -> ISO 3166-1 country code.
-export const COUNTRY_CODES = {
-  argentina: "AR",
-  australia: "AU",
-  austria: "AT",
-  belgium: "BE",
-  brazil: "BR",
-  canada: "CA",
-  china: "CN",
-  "czech-republic": "CZ",
-  denmark: "DK",
-  finland: "FI",
-  france: "FR",
-  germany: "DE",
-  hongkong: "HK",
-  hungary: "HU",
-  india: "IN",
-  ireland: "IE",
-  israel: "IL",
-  italy: "IT",
-  japan: "JP",
-  mexico: "MX",
-  netherland: "NL",
-  "new-zealand": "NZ",
-  norway: "NO",
-  philippines: "PH",
-  poland: "PL",
-  romania: "RO",
-  russia: "RU",
-  "south-africa": "ZA",
-  southafrica: "ZA",
-  "south-korea": "KR",
-  spain: "ES",
-  sweden: "SE",
-  switzerland: "CH",
-  "united-kingdom": "GB",
-  "united-states": "US",
-};
-
-// Radio id -> TMDB sort_by value.
-export const SORT_VALUES = {
-  default: "popularity.desc",
-  "recently-added": "primary_release_date.desc",
-  "most-watched": "popularity.desc",
-  name: "original_title.asc",
-  imdb: "vote_average.desc",
-  "release-date": "primary_release_date.desc",
-  "site-rating": "vote_count.desc",
-};
-
-// Curated lists for the navbar Genres / Country dropdowns. These are the single
-// source for those menus; each links to /browse with the corresponding TMDB value.
-// `id` is the movie genre id; `tvId` is the closest TMDB *TV* genre id (they use a
-// separate list). Genres without a `tvId` have no clean TV equivalent and are
-// hidden when the dropdown's Movies/TV toggle is set to TV.
+// Curated genre list shared by the navbar dropdown, the footer and the filter
+// bar. `id` is the TMDB *movie* genre id; `tvId` is the closest TMDB *TV* genre
+// id (a separate list). Genres without a `tvId` have no clean TV equivalent and
+// are hidden when the current media type is TV.
 export const NAV_GENRES = [
   { label: "Action", id: 28, tvId: 10759 },      // TV: Action & Adventure
   { label: "Adventure", id: 12, tvId: 10759 },   // TV: Action & Adventure
@@ -118,44 +42,78 @@ export const NAV_COUNTRIES = [
   { label: "Australia", code: "AU" },
 ];
 
+// Aliases the filter bar reads from (same data, intent-revealing names).
+export const GENRES = NAV_GENRES;
+export const COUNTRIES = NAV_COUNTRIES;
+
+// Year filter (single-select): recent individual years + older decades. A decade
+// id like "1990s" is expanded to a date range by yearToDateRange below.
+const RECENT_YEARS = Array.from({ length: 17 }, (_, i) => `${2026 - i}`); // 2026..2010
+const DECADES = ["2000s", "1990s", "1980s", "1970s", "1960s"];
+export const YEARS = [...RECENT_YEARS, ...DECADES].map((id) => ({ id, label: id }));
+
+// Sort options (single-select). Limited to choices that work for both movie and
+// TV discover; the exact sort_by string is resolved per media type below.
+export const SORTS = [
+  { id: "default", label: "Popularity" },
+  { id: "rating", label: "Rating" },
+  { id: "newest", label: "Newest" },
+];
+
 // The empty selection state shared by the filter UI.
 export const emptyFilters = {
-  genres: [],       // checkbox ids
-  includeAll: false, // AND vs OR for multiple genres
   type: "movie",     // "movie" | "tv"
-  years: [],         // checkbox ids (e.g. "2020", "1990s")
-  countries: [],     // checkbox ids
-  sortBy: "default", // radio id
+  genres: [],        // genre labels (see NAV_GENRES)
+  includeAll: false, // AND (all) vs OR (any) when multiple genres are picked
+  country: "",       // ISO 3166-1 code, "" = any
+  year: "",          // year id (e.g. "2020" or "1990s"), "" = any
+  sortBy: "default", // SORTS id
 };
 
 const yearToDateRange = (id) => {
   // "2020" -> single year; "1990s" -> decade range.
   if (/^\d{4}$/.test(id)) return { year: id };
-  const decade = parseInt(id, 10); // "1990s" -> 1990, "2000s" -> 2000
+  const decade = parseInt(id, 10); // "1990s" -> 1990
   if (Number.isNaN(decade)) return {};
   return { gte: `${decade}-01-01`, lte: `${decade + 9}-12-31` };
 };
 
-// Build the { type, params } object passed to tmdb.discover().
+// Build the { type, params } object passed to tmdb.discover(). Media-aware:
+// genres map to TV ids on TV, and the year/sort keys switch to the TV variants.
 export const buildDiscoverParams = (filters) => {
   const type = filters.type === "tv" ? "tv" : "movie";
-  const params = { sort_by: SORT_VALUES[filters.sortBy] || SORT_VALUES.default };
+  const params = {};
 
-  const genreIds = filters.genres.map((id) => GENRE_IDS[id]).filter(Boolean);
+  // Sort
+  if (filters.sortBy === "rating") {
+    params.sort_by = "vote_average.desc";
+    // Ignore obscure titles with only a handful of votes when sorting by rating.
+    params["vote_count.gte"] = 200;
+  } else if (filters.sortBy === "newest") {
+    params.sort_by = type === "tv" ? "first_air_date.desc" : "primary_release_date.desc";
+  } else {
+    params.sort_by = "popularity.desc";
+  }
+
+  // Genres — map each selected label to the id for the current media type. TV
+  // genres with no clean equivalent resolve to undefined and drop out.
+  const genreIds = filters.genres
+    .map((label) => {
+      const g = NAV_GENRES.find((x) => x.label === label);
+      return g ? (type === "tv" ? g.tvId : g.id) : null;
+    })
+    .filter(Boolean);
   if (genreIds.length) {
     // comma = AND (all), pipe = OR (any).
     params.with_genres = genreIds.join(filters.includeAll ? "," : "|");
   }
 
-  const countryCodes = filters.countries.map((id) => COUNTRY_CODES[id]).filter(Boolean);
-  if (countryCodes.length) {
-    params.with_origin_country = countryCodes.join("|");
-  }
+  // Country
+  if (filters.country) params.with_origin_country = filters.country;
 
-  // Only a single year/range can be applied; use the first selection.
-  const firstYear = filters.years[0];
-  if (firstYear) {
-    const range = yearToDateRange(firstYear);
+  // Year (single)
+  if (filters.year) {
+    const range = yearToDateRange(filters.year);
     const dateKey = type === "tv" ? "first_air_date" : "primary_release_date";
     if (range.year) {
       params[type === "tv" ? "first_air_date_year" : "primary_release_year"] = range.year;
