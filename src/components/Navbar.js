@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Img from '../logo.png';
 import SearchBox from './SearchBox';
+import SearchIcon from './SearchIcon';
 import ProfileIcon from './ProfileIcon';
 import { useUserAuth } from '../Context/UserAuthContext';
 import { FaBars, FaTimes, FaCaretDown, FaHeart, FaSignOutAlt, FaUserCircle } from 'react-icons/fa'
@@ -44,9 +45,29 @@ const Navbar = () =>{
     const[countryMedia,setCountryMedia] = useState('movie');
     const { user} = useUserAuth();
     const navigate = useNavigate()
-    const { pathname } = useLocation()
+    const { pathname, search } = useLocation()
 
     const isHero = HERO_PATHS.has(pathname);
+
+    // Highlight the Genres / Country toggles when the current /browse page was
+    // reached through them, so those menus get the same "you are here" cue the
+    // plain nav links get from NavLink.
+    const browseParams = new URLSearchParams(search);
+    const genresActive = pathname === '/browse' && browseParams.has('genre');
+    const countryActive = pathname === '/browse' && browseParams.has('country');
+
+    // Mobile: the persistent top-bar search icon opens the menu and drops focus
+    // straight into the search field (which CSS floats to the top on mobile).
+    const openMobileSearch = () => {
+        setMenuOpen(true);
+        // Focus once the collapsed panel is laid out. RAF covers the fast path;
+        // the timeout is a fallback for slower devices where the panel isn't
+        // measurable on the next frame yet.
+        const focusSearch = () =>
+            document.querySelector('.nav-collapse .search-form .form-control')?.focus();
+        requestAnimationFrame(focusSearch);
+        setTimeout(focusSearch, 120);
+    };
 
     // Refs so Escape can hand focus back to the control that opened a layer
     // (WCAG 2.4.3 / keyboard parity with the search combobox).
@@ -69,7 +90,8 @@ const Navbar = () =>{
     const displayName =
         userData.username ||
         auth.currentUser?.displayName ||
-        (auth.currentUser?.email || user?.email || '').split('@')[0];
+        (auth.currentUser?.email || user?.email || '').split('@')[0] ||
+        'Account';
 
     // Close the mobile menu / dropdowns whenever the route changes
     useEffect(()=>{
@@ -119,26 +141,35 @@ const Navbar = () =>{
     },[openNav,isActive,menuOpen])
 
     useEffect(()=>{
-        if(user){
-            // snap.data() is undefined until the register-page profile write lands
-            const unsub = onSnapshot(
-                doc(database,"users",auth.currentUser?.uid),
-                snap=>setUserData(snap.data() || {}),
-                (err)=>console.error("user profile listener:",err)
-            )
-            return () => unsub()
-        }
+        // Guard against the brief window where context `user` is set but
+        // auth.currentUser hasn't rehydrated yet — doc(..., undefined) throws.
+        const uid = auth.currentUser?.uid
+        if(!user || !uid) return
+        // snap.data() is undefined until the register-page profile write lands
+        const unsub = onSnapshot(
+            doc(database,"users",uid),
+            snap=>setUserData(snap.data() || {}),
+            (err)=>console.error("user profile listener:",err)
+        )
+        return () => unsub()
     },[user])
 
     const handleLogOut = async () =>{
-        const docRef = doc(database,"users",auth.currentUser.uid)
-        const payload = {
-            isOnline:false
+        try {
+            // Best-effort presence update; a failure here (offline/rules) must not
+            // block the actual sign-out below.
+            const uid = auth.currentUser?.uid
+            if(uid){
+                await updateDoc(doc(database,"users",uid),{ isOnline:false }).catch(
+                    (err)=>console.error("presence update on logout failed:",err)
+                )
+            }
+            await signOut(auth)
+            setIsActive(false)
+            navigate("/login")
+        } catch(err){
+            console.error("logout failed:",err)
         }
-        await updateDoc(docRef,payload)
-        await signOut(auth)
-        setIsActive(false)
-        navigate("/login")
     }
 
     const navClass = [
@@ -157,6 +188,14 @@ const Navbar = () =>{
             </Link>
             <button
                 type='button'
+                className='nav-search-toggle'
+                aria-label='Search'
+                onClick={openMobileSearch}
+            >
+                <SearchIcon/>
+            </button>
+            <button
+                type='button'
                 className='nav-toggle'
                 aria-label='Toggle navigation menu'
                 aria-expanded={menuOpen}
@@ -167,12 +206,11 @@ const Navbar = () =>{
             </button>
             <div className={`nav-collapse${menuOpen ? ' open' : ''}`}>
             <ul>
-                <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300 " :"#ccc" } }}  className="site-nav-link" to="/">Home</NavLink></li>
+                <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }}  className="site-nav-link" to="/">Home</NavLink></li>
                 <li className='nav-dropdown'>
                     <button
                         type='button'
-                        className='site-nav-link nav-dropdown-toggle'
-                        aria-haspopup='true'
+                        className={`site-nav-link nav-dropdown-toggle${genresActive ? ' active' : ''}`}
                         aria-expanded={openNav === 'genres'}
                         onClick={()=>toggleNav('genres')}
                         ref={genresToggleRef}
@@ -197,8 +235,7 @@ const Navbar = () =>{
                 <li className='nav-dropdown'>
                     <button
                         type='button'
-                        className='site-nav-link nav-dropdown-toggle'
-                        aria-haspopup='true'
+                        className={`site-nav-link nav-dropdown-toggle${countryActive ? ' active' : ''}`}
                         aria-expanded={openNav === 'country'}
                         onClick={()=>toggleNav('country')}
                         ref={countryToggleRef}
@@ -222,7 +259,7 @@ const Navbar = () =>{
                 </li>
                 <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="site-nav-link" to="/movies">Movies</NavLink></li>
                 <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="site-nav-link" to="/tvSeries">TV-Series</NavLink></li>
-                <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300 " :"#ccc" } }} className="site-nav-link" to="/topImdb">Top IMDb</NavLink></li>
+                <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="site-nav-link" to="/topImdb">Top IMDb</NavLink></li>
             </ul>
             <SearchBox/>
             <div className="register">
@@ -237,7 +274,6 @@ const Navbar = () =>{
                             type='button'
                             className='dropdown-button'
                             onClick={()=>setIsActive(!isActive)}
-                            aria-haspopup='true'
                             aria-expanded={isActive}
                             ref={userToggleRef}
                         >

@@ -49,15 +49,17 @@ body{
               backdrop-filter 0.3s ease;
 }
 
-/* Hero pages: the bar overlays the full-bleed backdrop, transparent at rest with
-   a dark scrim so the links stay legible. Fixed (not absolute) so it stays put. */
+/* Hero pages: the bar overlays the full-bleed backdrop, fully transparent at
+   rest. Legibility comes from the hero's own top scrim (.hero-scrim); the bar
+   deliberately paints NO gradient of its own — a second scrim fading out at the
+   bar's bottom edge created a brightness kink there that read as a horizontal
+   line across the hero. Fixed (not absolute) so it stays put. */
 .site-nav--hero{
   position: fixed;
   left: 0;
   right: 0;
   background-color: transparent;
-  background-image: linear-gradient(to bottom,
-    rgba(10,13,20,0.9) 0%, rgba(10,13,20,0.5) 55%, rgba(10,13,20,0) 100%);
+  background-image: none;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   border-bottom-color: transparent;
@@ -104,13 +106,16 @@ nav .logo .text{
 }
 
 nav ul {
-  display: block !important;
+  display: flex !important;
+  align-items: center;
+  /* Comfortable, even spacing between the primary links (was a cramped 6px
+     inline-block margin). Netflix/Max sit around 18–24px. */
+  gap: 22px;
   list-style: none;
 }
 nav ul li{
   display: inline-block !important;
-  
-  margin-left: 6px !important;
+  margin-left: 0 !important;
 }
 nav ul li .site-nav-link{
   text-decoration: none;
@@ -678,10 +683,12 @@ form{
 .latest-movies .movie-wrapper .movie-img{
   height: 264px;
 }
-/* Disable the escaping 280px popup on the carousels; the card lift + poster
-   zoom/darken (defined later) is the hover affordance here. */
-.recommend-movies .movie-overview,
-.latest-movies .movie-overview{
+/* The escaping 280px detail popup is disabled on every listing. On the home
+   carousels it couldn't live in a scroll container; on the Movies / TV-Series /
+   Browse (genre & country) grids it overflowed the grid and read as broken.
+   Everywhere the hover affordance is now the in-place card lift + poster
+   zoom/darken (defined later), so cards behave identically across the site. */
+.movie-overview{
   display: none !important;
 }
 .movie-card{
@@ -2731,10 +2738,57 @@ button.menu-link{
   height: 44px;
   padding: 0;
 }
+/* Persistent mobile search entry point — hidden on desktop (the full search box
+   lives inline in the bar there), shown next to the hamburger at <=992px. */
+.nav-search-toggle{
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--accent);
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  margin-left: auto;
+}
 /* Desktop: wrapper is transparent so its children lay out in the nav flex row
    exactly as before (logo / links / search / register spaced apart). */
 .nav-collapse{
   display: contents;
+}
+
+/* Keyboard focus: a single accent ring across every interactive nav control.
+   :focus-visible keeps it off mouse clicks, so it never fights the hover styles. */
+.site-nav-link:focus-visible,
+.nav-dropdown-toggle:focus-visible,
+.nav-toggle:focus-visible,
+.nav-search-toggle:focus-visible,
+.nav-media-toggle button:focus-visible,
+.nav-dropdown-menu a:focus-visible,
+.search-form .form-control:focus-visible,
+.search-btn:focus-visible,
+.search-clear:focus-visible,
+.search-suggestion:focus-visible,
+.register a:focus-visible{
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Hero pages: the bar sits over bright artwork before it condenses, so the grey
+   links can brush the low-opacity tail of the scrim. A soft shadow guarantees
+   legibility until the solid/scrolled bar takes over (then it's redundant). */
+.site-nav--hero .site-nav-link,
+.site-nav--hero .nav-dropdown-toggle,
+.site-nav--hero .logo .text{
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+}
+.site-nav--hero.site-nav--scrolled .site-nav-link,
+.site-nav--hero.site-nav--scrolled .nav-dropdown-toggle,
+.site-nav--hero.site-nav--scrolled .logo .text{
+  text-shadow: none;
 }
 
 /* Navbar Genres / Country dropdowns */
@@ -2753,11 +2807,28 @@ button.menu-link{
   padding: 0;
 }
 .nav-dropdown-toggle:hover,
-.nav-dropdown-toggle[aria-expanded="true"]{
+.nav-dropdown-toggle[aria-expanded="true"],
+.nav-dropdown-toggle.active{
   color: var(--accent);
 }
 .nav-caret{
   font-size: 12px;
+}
+
+/* Desktop/tablet: anchor logo + primary links together on the left and push
+   search + account to the right (streaming-standard grouping), instead of
+   spreading all four groups evenly across the bar with a dead gap after the
+   logo. margin-left:auto collapses gracefully to 0 if the row gets tight. */
+@media (min-width: 993px){
+  .site-nav{
+    justify-content: flex-start;
+  }
+  .site-nav ul{
+    margin-left: 26px;
+  }
+  .search-form{
+    margin-left: auto;
+  }
 }
 .nav-dropdown-menu{
   position: absolute;
@@ -2767,11 +2838,14 @@ button.menu-link{
   max-width: calc(100vw - 32px);
   max-height: 320px;
   overflow-y: auto;
-  background-color: #2C394B;
+  /* Match the cinematic near-black chrome (was a leftover bright navy #2C394B). */
+  background-color: rgba(16, 20, 28, 0.97);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 6px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
 }
 /* Two-column list of genre/country links (the panel itself is a flow container
    so the Movies/TV toggle can sit above the grid). */
@@ -2864,6 +2938,19 @@ button.menu-link{
   100% { background-position: -200% 0; }
 }
 
+/* Respect users who ask for less motion: neutralise the scroll-linked nav
+   transition, card zooms, shimmer loaders and spinners. */
+@media (prefers-reduced-motion: reduce){
+  *,
+  *::before,
+  *::after{
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* ---- Responsive breakpoints ---- */
 
 /* Mid-range (≈993–1200px): keep the full horizontal bar but condense it — a
@@ -2875,8 +2962,8 @@ button.menu-link{
     padding: 8px 16px;
     gap: 10px;
   }
-  nav ul li{
-    margin-left: 2px !important;
+  nav ul{
+    gap: 14px;
   }
   nav ul li .site-nav-link{
     font-size: 15px;
@@ -2884,6 +2971,17 @@ button.menu-link{
   .search-form .form-control{
     width: 200px !important;
     margin-left: 12px !important;
+  }
+  /* Keep the autocomplete panel flush with the narrowed input (defaults are
+     tuned to the 300px/30px desktop field). */
+  .search-suggestions{
+    left: 12px;
+    width: 200px;
+  }
+  /* Re-seat the magnifier for the reduced margin so it doesn't creep over the
+     placeholder text (input margin-left drops 30px -> 12px here). */
+  .search-btn{
+    left: 16px;
   }
 }
 
@@ -2905,8 +3003,11 @@ button.menu-link{
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
-  /* Show the hamburger, keep the top row to just logo + toggle */
+  /* Show the hamburger + persistent search icon in the top row */
   .nav-toggle{
+    display: inline-flex;
+  }
+  .nav-search-toggle{
     display: inline-flex;
   }
   /* Collapsible panel: full-width vertical stack, hidden until .open */
@@ -2963,15 +3064,23 @@ button.menu-link{
     max-width: 100%;
     margin: 0;
     box-sizing: border-box;
+    /* Float to the top of the collapsed menu so the top-bar search icon lands
+       the user right on it instead of below every link. */
+    order: -1;
   }
   .search-form .form-control{
     width: 100% !important;
     margin-left: 0 !important;
     box-sizing: border-box;
   }
-  /* Full-width input on mobile (margin-left drops to 0): move the magnifier. */
+  /* Full-width input on mobile (margin-left drops to 0): move the magnifier and
+     stretch the autocomplete panel to match. */
   .search-btn{
     left: 8px;
+  }
+  .search-suggestions{
+    left: 0;
+    width: 100%;
   }
   .register{
     width: 100%;

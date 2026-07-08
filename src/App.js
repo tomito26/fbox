@@ -31,8 +31,11 @@ import Season from './components/Season';
 function App() {
   return (
     <UserAuthContextProvider>
-      <WatchlistProvider>
       <Router>
+      {/* Watchlist context lives inside the Router so it can redirect guests to
+          /login when they try to save — auth is only required for that action
+          and the account pages, not for browsing. */}
+      <WatchlistProvider>
         <ErrorBoundary>
         <Navbar/>
         <Routes>
@@ -41,31 +44,33 @@ function App() {
           <Route path='/terms' element={<Placeholder title="Terms of Service"/>}/>
           <Route path='/privacy' element={<Placeholder title="Privacy Policy"/>}/>
           <Route path='/dmca' element={<Placeholder title="DMCA"/>}/>
-          <Route path='/' element={<PrivateLink><Home/></PrivateLink>}>
+          {/* Public: the whole catalogue is browsable without an account. */}
+          <Route path='/' element={<Home/>}>
             <Route path='/' element={<RecommendedMovies/>}/>
             <Route path='tvshows' element={<TvShows/>}/>
             <Route path='trendings' element={<Trendings/>}/>
           </Route>
-          <Route path='/movies' element={<PrivateLink><Movies/></PrivateLink>}/>
-          <Route path="/tvSeries" element={<PrivateLink><TvSeries/></PrivateLink>}/>
-          <Route path='topImdb' element={<PrivateLink><TopImdb/></PrivateLink>}/>
-          <Route path='/search' element={<PrivateLink><SearchResults/></PrivateLink>}/>
-          <Route path='/browse' element={<PrivateLink><Browse/></PrivateLink>}/>
-          <Route path='/latest-movies' element={<PrivateLink><LatestListing kind="movies"/></PrivateLink>}/>
-          <Route path='/latest-tv-series' element={<PrivateLink><LatestListing kind="series"/></PrivateLink>}/>
-          <Route path='/requested' element={<PrivateLink><LatestListing kind="trending"/></PrivateLink>}/>
-          <Route path='/watchlist' element={<PrivateLink><Watchlist/></PrivateLink>}/>
-          <Route path='/profile' element={<PrivateLink><Profile/></PrivateLink>}/>
-          <Route path='/movie/:movieId' element={<PrivateLink><Movie/></PrivateLink>}/>
-          <Route path='/tvshows/:tvshowId' element={<PrivateLink><TvShowVideos/></PrivateLink>}>
+          <Route path='/movies' element={<Movies/>}/>
+          <Route path="/tvSeries" element={<TvSeries/>}/>
+          <Route path='topImdb' element={<TopImdb/>}/>
+          <Route path='/search' element={<SearchResults/>}/>
+          <Route path='/browse' element={<Browse/>}/>
+          <Route path='/latest-movies' element={<LatestListing kind="movies"/>}/>
+          <Route path='/latest-tv-series' element={<LatestListing kind="series"/>}/>
+          <Route path='/requested' element={<LatestListing kind="trending"/>}/>
+          <Route path='/movie/:movieId' element={<Movie/>}/>
+          <Route path='/tvshows/:tvshowId' element={<TvShowVideos/>}>
             <Route path='/tvshows/:tvshowId/' element={<SeasonOne/>}/>
             <Route  path='/tvshows/:tvshowId/:seasonNumber' element={<Season/>}/>
           </Route>
+          {/* Auth-gated: personal to the signed-in user. */}
+          <Route path='/watchlist' element={<PrivateLink><Watchlist/></PrivateLink>}/>
+          <Route path='/profile' element={<PrivateLink><Profile/></PrivateLink>}/>
         </Routes>
         <Footer/>
         </ErrorBoundary>
-      </Router>
       </WatchlistProvider>
+      </Router>
     </UserAuthContextProvider>
   );
 }
