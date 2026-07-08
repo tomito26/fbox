@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { database } from "../firebase-config";
 import { useUserAuth } from "./UserAuthContext";
@@ -34,6 +35,7 @@ const normalize = (item) => {
 
 export const WatchlistProvider = ({ children }) => {
   const { user } = useUserAuth();
+  const navigate = useNavigate();
   const [watchlist, setWatchlist] = useState([]);
 
   useEffect(() => {
@@ -51,7 +53,12 @@ export const WatchlistProvider = ({ children }) => {
   const isSaved = (id) => watchlist.some((item) => item.id === id);
 
   const toggleWatchlist = async (item) => {
-    if (!user) return;
+    // Saving is the point where an account becomes necessary — send guests to
+    // login rather than silently dropping the action.
+    if (!user) {
+      navigate("/login");
+      return;
+    }
     const next = isSaved(item.id)
       ? watchlist.filter((w) => w.id !== item.id)
       : [...watchlist, normalize(item)];
