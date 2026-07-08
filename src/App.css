@@ -1421,6 +1421,53 @@ form{
   border-color: rgba(255,255,255,0.4);
 }
 
+/* Episode buttons under the TV stream player. */
+.episode-picker{
+  max-width: 1100px;
+  margin: 14px auto 0;
+}
+.episode-picker-head{
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.episode-picker-title{
+  font-weight: 700;
+  color: #f4f4f4;
+  font-size: 15px;
+}
+.episode-picker-count{
+  font-size: 13px;
+  color: var(--muted);
+}
+.episode-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+  gap: 8px;
+}
+.episode-btn{
+  height: 42px;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  background-color: #1a2130;
+  color: #cbd2dc;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.episode-btn:hover{
+  background-color: #222b3d;
+  color: #fff;
+  border-color: rgba(255,255,255,0.28);
+}
+.episode-btn.active{
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #12161f;
+}
+
 /* Shared section heading: bold near-white title with a gold underline. */
 .section-heading{
   color: #f4f4f4;

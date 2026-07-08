@@ -9,11 +9,17 @@ import { useEffect, useRef } from "react";
 const VIDKING = "https://www.vidking.net/embed";
 const ACCENT = "FFC300"; // site accent, hex without '#'
 
-const storageKey = (mediaType, id) => `vidking_progress_${mediaType}_${id}`;
+// Progress is keyed per-episode for TV so each episode resumes independently.
+const storageKey = (mediaType, id, season, episode) =>
+  mediaType === "tv"
+    ? `vidking_progress_tv_${id}_s${season}e${episode}`
+    : `vidking_progress_movie_${id}`;
 
-const readResume = (mediaType, id) => {
+const readResume = (mediaType, id, season, episode) => {
   try {
-    const saved = JSON.parse(localStorage.getItem(storageKey(mediaType, id)) || "null");
+    const saved = JSON.parse(
+      localStorage.getItem(storageKey(mediaType, id, season, episode)) || "null"
+    );
     return saved?.currentTime ? Math.floor(saved.currentTime) : 0;
   } catch {
     return 0;
@@ -24,7 +30,7 @@ const StreamPlayer = ({ mediaType, id, season = 1, episode = 1, title }) => {
   // Throttle the continuous `timeupdate` writes so we don't hammer localStorage.
   const lastSave = useRef(0);
 
-  const resume = readResume(mediaType, id);
+  const resume = readResume(mediaType, id, season, episode);
   const params = new URLSearchParams({ color: ACCENT, autoPlay: "true" });
   if (mediaType === "tv") {
     params.set("nextEpisode", "true");
@@ -49,7 +55,7 @@ const StreamPlayer = ({ mediaType, id, season = 1, episode = 1, title }) => {
       lastSave.current = Date.now();
       try {
         localStorage.setItem(
-          storageKey(mediaType, id),
+          storageKey(mediaType, id, season, episode),
           JSON.stringify({
             id,
             mediaType,
@@ -68,7 +74,7 @@ const StreamPlayer = ({ mediaType, id, season = 1, episode = 1, title }) => {
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [mediaType, id]);
+  }, [mediaType, id, season, episode]);
 
   return (
     <iframe

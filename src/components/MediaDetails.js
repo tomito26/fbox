@@ -49,6 +49,8 @@ const MediaDetails = ({
   const [playing, setPlaying] = useState(false);
   // Same facade approach for the full-stream (Vidking) player.
   const [watching, setWatching] = useState(false);
+  // Which episode the TV player is on (movies ignore this).
+  const [currentEpisode, setCurrentEpisode] = useState(streamEpisode);
   const { isSaved, toggleWatchlist } = useWatchlist();
   const trailerRef = useRef(null);
   const streamRef = useRef(null);
@@ -62,6 +64,11 @@ const MediaDetails = ({
   useEffect(() => {
     setWatching(false);
   }, [details.id]);
+
+  // Reset to episode 1 when the title or the selected season changes.
+  useEffect(() => {
+    setCurrentEpisode(1);
+  }, [details.id, streamSeason]);
 
   if (loading) {
     return (
@@ -120,6 +127,20 @@ const MediaDetails = ({
   const saved = isSaved(details.id);
   const topCast = casts.slice(0, 15);
   const genres = details.genres || [];
+
+  // Episode count for the currently selected season (drives the episode buttons
+  // under the TV player). 0 for movies or when the season data is missing.
+  const seasonEpisodeCount = isMovie
+    ? 0
+    : (details.seasons || []).find((s) => s.season_number === streamSeason)
+        ?.episode_count || 0;
+
+  // Jump straight to a specific episode: switch the player and start it.
+  const playEpisode = (ep) => {
+    setCurrentEpisode(ep);
+    setWatching(true);
+    streamRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   // Play jumps to and starts the trailer (the site only carries trailers, not
   // full streams). Guarded so it's a no-op when there's no trailer to show.
@@ -267,7 +288,7 @@ const MediaDetails = ({
                   mediaType={mediaType}
                   id={details.id}
                   season={streamSeason}
-                  episode={streamEpisode}
+                  episode={currentEpisode}
                   title={title}
                 />
               ) : (
@@ -284,6 +305,33 @@ const MediaDetails = ({
               )}
             </div>
           </div>
+
+          {/* Episode buttons for the selected season (TV only). */}
+          {seasonEpisodeCount > 0 && (
+            <div className="episode-picker">
+              <div className="episode-picker-head">
+                <span className="episode-picker-title">Season {streamSeason}</span>
+                <span className="episode-picker-count">
+                  {seasonEpisodeCount} episode{seasonEpisodeCount > 1 ? "s" : ""}
+                </span>
+              </div>
+              <div className="episode-grid">
+                {Array.from({ length: seasonEpisodeCount }, (_, i) => i + 1).map((ep) => (
+                  <button
+                    key={ep}
+                    className={`episode-btn${
+                      watching && ep === currentEpisode ? " active" : ""
+                    }`}
+                    onClick={() => playEpisode(ep)}
+                    aria-label={`Play episode ${ep}`}
+                    aria-pressed={watching && ep === currentEpisode}
+                  >
+                    {ep}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
       )}
 
