@@ -79,23 +79,26 @@ export const SORT_VALUES = {
 
 // Curated lists for the navbar Genres / Country dropdowns. These are the single
 // source for those menus; each links to /browse with the corresponding TMDB value.
+// `id` is the movie genre id; `tvId` is the closest TMDB *TV* genre id (they use a
+// separate list). Genres without a `tvId` have no clean TV equivalent and are
+// hidden when the dropdown's Movies/TV toggle is set to TV.
 export const NAV_GENRES = [
-  { label: "Action", id: 28 },
-  { label: "Adventure", id: 12 },
-  { label: "Animation", id: 16 },
-  { label: "Comedy", id: 35 },
-  { label: "Crime", id: 80 },
-  { label: "Documentary", id: 99 },
-  { label: "Drama", id: 18 },
-  { label: "Family", id: 10751 },
-  { label: "Fantasy", id: 14 },
-  { label: "Horror", id: 27 },
-  { label: "Mystery", id: 9648 },
-  { label: "Romance", id: 10749 },
-  { label: "Sci-Fi", id: 878 },
-  { label: "Thriller", id: 53 },
-  { label: "War", id: 10752 },
-  { label: "Western", id: 37 },
+  { label: "Action", id: 28, tvId: 10759 },      // TV: Action & Adventure
+  { label: "Adventure", id: 12, tvId: 10759 },   // TV: Action & Adventure
+  { label: "Animation", id: 16, tvId: 16 },
+  { label: "Comedy", id: 35, tvId: 35 },
+  { label: "Crime", id: 80, tvId: 80 },
+  { label: "Documentary", id: 99, tvId: 99 },
+  { label: "Drama", id: 18, tvId: 18 },
+  { label: "Family", id: 10751, tvId: 10751 },
+  { label: "Fantasy", id: 14, tvId: 10765 },     // TV: Sci-Fi & Fantasy
+  { label: "Horror", id: 27 },                   // no TV genre
+  { label: "Mystery", id: 9648, tvId: 9648 },
+  { label: "Romance", id: 10749 },               // no TV genre
+  { label: "Sci-Fi", id: 878, tvId: 10765 },     // TV: Sci-Fi & Fantasy
+  { label: "Thriller", id: 53 },                 // no TV genre
+  { label: "War", id: 10752, tvId: 10768 },      // TV: War & Politics
+  { label: "Western", id: 37, tvId: 37 },
 ];
 
 export const NAV_COUNTRIES = [

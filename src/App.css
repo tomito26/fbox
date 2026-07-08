@@ -25,33 +25,60 @@ body{
   position: relative;
 }
 
-.nav{
-  display: flex !important;
-  justify-content: space-between !important;
-  background-color: #2C394B ;
-  padding: 10px 20px  !important;
-  
+/* Site navigation. Renamed off Bootstrap's .navbar/.nav/.nav-link so those
+   framework rules no longer collide — which is why this whole block is free of
+   the !important flags the old names required. */
+.site-nav{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 24px;
+  /* Sticky on every page so the bar never scrolls away (Netflix/Max behaviour).
+     Above the fade-carousel's active item (Bootstrap gives it z-index:1). */
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: rgba(10, 13, 20, 0.92);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background-color 0.3s ease, padding 0.25s ease,
+              border-color 0.3s ease, -webkit-backdrop-filter 0.3s ease,
+              backdrop-filter 0.3s ease;
 }
 
-.navbar{
-  width: 100%;
-  display: flex !important;
-  justify-content: space-between !important;
-  padding: 7px 30px  !important;
-  position: absolute !important;
-  top: 0;
+/* Hero pages: the bar overlays the full-bleed backdrop, transparent at rest with
+   a dark scrim so the links stay legible. Fixed (not absolute) so it stays put. */
+.site-nav--hero{
+  position: fixed;
   left: 0;
-  right: 20px !important;
-  /* Above the fade-carousel's active item (Bootstrap gives it z-index:1) so the
-     hero can't paint over the navbar. */
-  z-index: 20;
+  right: 0;
+  background-color: transparent;
+  background-image: linear-gradient(to bottom,
+    rgba(10,13,20,0.9) 0%, rgba(10,13,20,0.5) 55%, rgba(10,13,20,0) 100%);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom-color: transparent;
+  padding-bottom: 22px;
+}
 
+/* Scroll-linked: once past the hero the transparent bar condenses into the solid
+   blurred bar — the signature streaming-platform nav transition. */
+.site-nav--hero.site-nav--scrolled{
+  background-color: rgba(10, 13, 20, 0.92);
+  background-image: none;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+  padding-bottom: 10px;
 }
 nav .logo{
   display: flex !important;
-
-
- 
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
 }
 
 nav .logo .image{
@@ -85,24 +112,22 @@ nav ul li{
   
   margin-left: 6px !important;
 }
-nav ul li .nav-link{
-  text-decoration: none !important;
-  /* color: #ccc !important; */
+nav ul li .site-nav-link{
+  text-decoration: none;
   font-weight: 400;
-  font-family: "Lato",sans-serif !important;
-  font-size: 16px !important;
-  cursor: pointer !important;
-  line-height: 20px !important;
+  font-family: "Lato",sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 20px;
 }
 nav ul li span{
-  color: #ccc !important;
+  color: #ccc;
 }
-nav ul li .nav-link:hover{
-  color: #FFC300 !important;
+nav ul li .site-nav-link:hover{
+  color: #FFC300;
 }
-/* Genres / Country are <button>s, so Bootstrap's .nav-link paints them blue.
-   The plain links set #ccc via inline style; match that here so the dropdown
-   toggles look identical (grey at rest, gold on hover via the rule above). */
+/* Genres / Country toggles are <button>s; the plain links set #ccc via inline
+   style, so match that here (grey at rest, gold on hover via the rule above). */
 nav ul li .nav-dropdown-toggle{
   color: #ccc;
 }
@@ -156,12 +181,18 @@ nav ul li .nav-dropdown-toggle{
   gap: 8px;
   height: 40px;
   padding: 0 14px 0 6px;
+  border: none;
+  font: inherit;
   border-radius: 100px;
   background-color: #FFC300;
   color: #1a1d24;
   cursor: pointer;
   max-width: 200px;
   transition: background-color 0.15s ease;
+}
+.dropdown-button:focus-visible{
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 .dropdown-button:hover{
   background-color: #F0A500;
@@ -2606,26 +2637,8 @@ button.menu-link{
 }
 
 /* ================= Design polish ================= */
-
-/* Sticky, translucent navbar with blur (the standard bar shown off the hero).
-   Near-black to match the cinematic palette (was a bluish #2C394B). */
-.nav{
-  position: sticky !important;
-  top: 0;
-  z-index: 50;
-  background-color: rgba(10, 13, 20, 0.85) !important;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  align-items: center !important;
-}
-/* Dark cinematic scrim: fades from near-black at the top to transparent, so the
-   nav reads over the hero and matches the deepened homepage palette. */
-.navbar{
-  background: linear-gradient(to bottom, rgba(10,13,20,0.95) 0%, rgba(10,13,20,0.6) 55%, rgba(10,13,20,0) 100%);
-  padding-bottom: 24px !important;
-  align-items: center !important;
-}
+/* (The navbar's sticky/scroll-linked/hero styling now lives in the unified
+   .site-nav block near the top of this file.) */
 
 /* Card hover: lift + poster zoom + shadow */
 .movie-card{
@@ -2759,6 +2772,10 @@ button.menu-link{
   border-radius: 8px;
   padding: 6px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+/* Two-column list of genre/country links (the panel itself is a flow container
+   so the Movies/TV toggle can sit above the grid). */
+.nav-dropdown-grid{
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2px;
@@ -2770,10 +2787,40 @@ button.menu-link{
   padding: 7px 10px;
   border-radius: 6px;
   white-space: nowrap;
+  display: block;
 }
 .nav-dropdown-menu a:hover{
   background-color: rgba(255, 255, 255, 0.08);
   color: var(--accent);
+}
+/* Movies / TV segmented switch inside the Genres & Country dropdowns. */
+.nav-media-toggle{
+  display: flex;
+  gap: 4px;
+  padding: 2px;
+  margin-bottom: 6px;
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+}
+.nav-media-toggle button{
+  flex: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #cbd2dc;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.nav-media-toggle button:hover{
+  color: #fff;
+}
+.nav-media-toggle button.active{
+  background-color: var(--accent);
+  color: #12161f;
+  font-weight: 700;
 }
 
 /* Section headers: tighter, clearer hierarchy */
@@ -2818,22 +2865,45 @@ button.menu-link{
 }
 
 /* ---- Responsive breakpoints ---- */
-@media (max-width: 992px){
+
+/* Mid-range (≈993–1200px): keep the full horizontal bar but condense it — a
+   narrower search field and tighter link spacing — so it survives on small
+   laptops instead of collapsing to a hamburger as early as it used to (1199px).
+   This buys the horizontal layout down to the 992px breakpoint below. */
+@media (min-width: 993px) and (max-width: 1200px){
+  .site-nav{
+    padding: 8px 16px;
+    gap: 10px;
+  }
+  nav ul li{
+    margin-left: 2px !important;
+  }
+  nav ul li .site-nav-link{
+    font-size: 15px;
+  }
   .search-form .form-control{
-    width: 100%;
+    width: 200px !important;
+    margin-left: 12px !important;
   }
 }
 
-/* Collapse the nav into the hamburger on tablets/small laptops too: the full
-   horizontal bar (menu + search + profile) only fits one row above ~1150px;
-   below that the search + profile wrapped to an awkward second row. */
-@media (max-width: 1199px){
-  .nav,
-  .navbar{
+/* Collapse the nav into the hamburger at ≤992px, where the horizontal bar
+   (menu + search + profile) can no longer share one row. */
+@media (max-width: 992px){
+  .site-nav,
+  .site-nav--hero{
+    position: sticky;
+    top: 0;
     flex-wrap: wrap;
     gap: 10px;
-    padding: 10px 16px !important;
-    position: static !important;
+    padding: 10px 16px;
+    /* Always solid on mobile (even on hero pages) so the wrapped, stacked panel
+       stays readable over whatever artwork is behind it. */
+    background-color: rgba(10, 13, 20, 0.96);
+    background-image: none;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
   /* Show the hamburger, keep the top row to just logo + toggle */
   .nav-toggle{
@@ -2850,6 +2920,9 @@ button.menu-link{
   }
   .nav-collapse.open{
     display: flex;
+    /* Body scroll is locked while open, so let a long menu scroll internally. */
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
   }
   .nav-collapse ul{
     display: flex !important;
@@ -2863,7 +2936,7 @@ button.menu-link{
     margin-left: 0 !important;
     width: 100%;
   }
-  .nav-collapse ul li .nav-link,
+  .nav-collapse ul li .site-nav-link,
   .nav-collapse ul li .nav-dropdown-toggle{
     display: block;
     width: 100%;
@@ -2881,7 +2954,6 @@ button.menu-link{
   /* Dropdowns expand inline within the panel rather than overlapping */
   .nav-collapse.open .nav-dropdown-menu{
     position: static;
-    grid-template-columns: 1fr 1fr;
     max-width: 100%;
     box-shadow: none;
     margin-top: 4px;
