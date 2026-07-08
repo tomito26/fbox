@@ -4,114 +4,96 @@ import MovieGenre from './MovieGenre';
 import CategoryType from './CategoryType';
 import CountriesMenu from './CountriesMenu';
 import Quality from './Quality';
-import SortMenu from './SortMenu'
-import ReleaseYear from './ReleaseYear'
-const DropdownMenus = () => {
-    const [categoryIsActive,setCategoryIsActive] = useState(false);
-    const[typeIsActive,setTypeIsActive] = useState(false);
-    const[countryIsActive,setCountryIsActive] = useState(false);
-    const[yearMenuIsActive,setYearMenuIsActive] = useState(false);
-    const[qualityMenuIsActive,setQualityMenuIsActive] = useState(false);
-    const[sortMenuIsActive,setSortMenuIsActive] = useState(false);
+import SortMenu from './SortMenu';
+import ReleaseYear from './ReleaseYear';
+import { emptyFilters, buildDiscoverParams } from './filterOptions';
 
-    const categoryToggleBtn = () => {
-        setTypeIsActive(false);
-        setCountryIsActive(false);
-        setYearMenuIsActive(false);
-        setQualityMenuIsActive(false)
-        setSortMenuIsActive(false)
-        return categoryIsActive ? setCategoryIsActive(false) : setCategoryIsActive(true);
-    }
-    const typeDropdownMenuBtn = () =>{
-        setCategoryIsActive(false);
-        setCountryIsActive(false);
-        setYearMenuIsActive(false);
-        setQualityMenuIsActive(false)
-        setSortMenuIsActive(false)
-        return typeIsActive ? setTypeIsActive(false) : setTypeIsActive(true);
-    }
-    const countriesDropdownMenu = () =>{
-        setCategoryIsActive(false);
-        setTypeIsActive(false);
-        setYearMenuIsActive(false);
-        setQualityMenuIsActive(false);
-        setSortMenuIsActive(false)
-        return countryIsActive ? setCountryIsActive(false) : setCountryIsActive(true);
-    }
-    const yearDropdownMenu = () =>{
-        setCategoryIsActive(false);
-        setCountryIsActive(false);
-        setTypeIsActive(false);
-        setQualityMenuIsActive(false)
-        setSortMenuIsActive(false)
-        return yearMenuIsActive ? setYearMenuIsActive(false) : setYearMenuIsActive(true);
-    }
-    const qualityDropdownMenu = () =>{
-        setCategoryIsActive(false);
-        setCountryIsActive(false);
-        setTypeIsActive(false);
-        setYearMenuIsActive(false);
-        setSortMenuIsActive(false)
-        return qualityMenuIsActive ? setQualityMenuIsActive(false) : setQualityMenuIsActive(true);
-    }
+// `onFilter(type, params)` is called when the Filter button is pressed. When it
+// is not provided (e.g. on pages that don't support discovery) the button is a
+// no-op, matching the previous behaviour.
+const DropdownMenus = ({ onFilter }) => {
+    // Only one dropdown open at a time — replaces six near-identical toggles.
+    const [openMenu, setOpenMenu] = useState(null);
+    const toggleMenu = (name) => setOpenMenu((current) => (current === name ? null : name));
 
-    const sortDropdownMenu = () =>{
-        setCategoryIsActive(false);
-        setCountryIsActive(false);
-        setTypeIsActive(false);
-        setYearMenuIsActive(false);
-        setQualityMenuIsActive(false);
-        return sortMenuIsActive ? setSortMenuIsActive(false) :setSortMenuIsActive(true);  
-    }
-    return(
-        
+    const [filters, setFilters] = useState(emptyFilters);
+
+    // Add/remove an id from one of the array-valued filter fields.
+    const toggleValue = (field, id, checked) =>
+        setFilters((prev) => ({
+            ...prev,
+            [field]: checked ? [...prev[field], id] : prev[field].filter((v) => v !== id),
+        }));
+
+    const handleGenreChange = (e) => {
+        if (e.target.id === "includeall") {
+            setFilters((prev) => ({ ...prev, includeAll: e.target.checked }));
+        } else {
+            toggleValue("genres", e.target.id, e.target.checked);
+        }
+    };
+    const handleTypeChange = (e) =>
+        setFilters((prev) => ({ ...prev, type: e.target.id === "series" ? "tv" : "movie" }));
+    const handleCountryChange = (e) => toggleValue("countries", e.target.id, e.target.checked);
+    const handleYearChange = (e) => toggleValue("years", e.target.id, e.target.checked);
+    const handleSortChange = (e) => setFilters((prev) => ({ ...prev, sortBy: e.target.id }));
+
+    const applyFilters = () => {
+        setOpenMenu(null);
+        if (onFilter) {
+            const { type, params } = buildDiscoverParams(filters);
+            onFilter(type, params);
+        }
+    };
+
+    return (
         <div className="category-section">
             <div className="dropdown-category">
-                <div className="category-dropdownBtn" onClick={categoryToggleBtn}>
+                <div className="category-dropdownBtn" onClick={() => toggleMenu("genre")}>
                     <FaFolderOpen style={{marginRight:"5px",marginBottom:"2px"}}/>
                     Genre All
                 </div>
-                {categoryIsActive && <MovieGenre/>}               
+                {openMenu === "genre" && <MovieGenre onChange={handleGenreChange} />}
             </div>
             <div className="menu-type">
-                <div className="menu-type-btn" onClick={typeDropdownMenuBtn}>
+                <div className="menu-type-btn" onClick={() => toggleMenu("type")}>
                     <FaClone style={{marginRight:"5px",marginBottom:"2px"}} />
                     Type Movie
                 </div>
-                { typeIsActive && <CategoryType/> }
+                {openMenu === "type" && <CategoryType onChange={handleTypeChange} />}
             </div>
             <div className="country-dropdown-menu">
-                <div className="country-btn" onClick={countriesDropdownMenu}>
+                <div className="country-btn" onClick={() => toggleMenu("country")}>
                     <FaGlobeAmericas style={{marginRight:"5px",marginBottom:"2px"}}/>
                     Country All
                 </div>
-                { countryIsActive && <CountriesMenu/>  }                      
+                {openMenu === "country" && <CountriesMenu onChange={handleCountryChange} />}
             </div>
             <div className="yearDropdownMenu">
-                <div className="yearDropdownBtn" onClick={yearDropdownMenu}>
+                <div className="yearDropdownBtn" onClick={() => toggleMenu("year")}>
                     <FaCalendarAlt style={{marginRight:"5px",marginBottom:"2px"}}/>
                     Year All
                 </div>
-                { yearMenuIsActive && <ReleaseYear/> }
+                {openMenu === "year" && <ReleaseYear onChange={handleYearChange} />}
             </div>
             <div className="quality">
-                <div className="qualityBtn" onClick={qualityDropdownMenu}>
+                <div className="qualityBtn" onClick={() => toggleMenu("quality")}>
                     <FaCube style={{marginRight:"5px",marginBottom:"2px"}} />
                     Quality All
                 </div>
-                { qualityMenuIsActive &&  <Quality/>}
+                {openMenu === "quality" && <Quality />}
             </div>
             <div className="sortMenu">
-                <div className="sortBtn" onClick={sortDropdownMenu}>
+                <div className="sortBtn" onClick={() => toggleMenu("sort")}>
                     <span style={{marginRight:"5px"}}>
                         <FaCaretUp style={{margin:"0",padding:"0"}}/>
                         <FaCaretDown style={{margin:"0",padding:"0"}}/>
                     </span>
                     <span>Sort Default</span>
                 </div>
-                { sortMenuIsActive && <SortMenu/>   }
+                {openMenu === "sort" && <SortMenu onChange={handleSortChange} />}
             </div>
-            <button className="filterBtn"><FaFilter style={{marginRight:"5px"}}/>Filter</button>
+            <button className="filterBtn" onClick={applyFilters}><FaFilter style={{marginRight:"5px"}}/>Filter</button>
         </div>
     );
 }

@@ -1,70 +1,49 @@
-# Getting Started with Create React App
+# fbox
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A movie & TV browsing UI built with **Create React App (React 17)**. Data comes
+from [TMDB](https://www.themoviedb.org/), and authentication / user data is
+handled by **Firebase** (Auth + Firestore).
 
-## Available Scripts
+## Getting started
 
-In the project directory, you can run:
+```bash
+npm install
+cp .env.example .env   # then fill in your own keys (see below)
+npm start              # http://localhost:3000
+```
 
-### `npm start`
+Other scripts: `npm test`, `npm run build`.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Environment variables
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Copy `.env.example` to `.env` and provide your own Firebase and TMDB
+credentials. Required keys are listed in `.env.example`.
 
-### `npm test`
+> ⚠️ **These values are not secret.** Create React App inlines every
+> `REACT_APP_*` variable into the client bundle, so anyone using the site can
+> read them. Do not rely on hiding them:
+> - **TMDB** – restrict and rotate the key from your TMDB account settings.
+> - **Firebase** – web API keys are public by design; protect your data with
+>   [Firestore Security Rules](https://firebase.google.com/docs/firestore/security/get-started),
+>   not by hiding the key.
+>
+> `.env` was previously committed to this repository. It is now git-ignored, but
+> the old keys still exist in git history — **rotate them**.
+>
+> Note: the previous `.env` had a typo (`REAct_APP_MESSAGING_SENDER_ID`). The
+> correct name is `REACT_APP_MESSAGING_SENDER_ID`, as used in
+> `src/firebase-config.js`.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Project structure
 
-### `npm run build`
+```
+src/
+  services/tmdb.js        # Central TMDB client (fetching, image URLs, errors)
+  components/             # Reusable UI (MovieCard, SeriesCard, Navbar, ...)
+  pages/                  # Route-level pages (movies, tvSeries, imdb, search, ...)
+  Context/                # Auth context (Firebase onAuthStateChanged)
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Movie and TV cards are rendered by the shared `MovieCard` / `SeriesCard`
+components. Data fetching goes through `src/services/tmdb.js` — add new
+endpoints there rather than calling `fetch` directly in components.

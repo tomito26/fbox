@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+// Until Firebase auth resolves, the auth provider renders the Loading state.
+// This smoke test just verifies the app mounts without crashing.
+test('renders without crashing and shows the loading state', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  expect(screen.getByText(/loading/i)).toBeInTheDocument();
 });

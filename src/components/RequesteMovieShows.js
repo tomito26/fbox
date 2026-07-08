@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
-import MovieShow from "./MovieShow";
+import MovieCard from "./MovieCard";
+import SeriesCard from "./SeriesCard";
 
 const RequestedMovieShows = () =>{
     const[requestedMovieShows,setRequestedMovieShow] = useState([]);
@@ -15,7 +16,11 @@ const RequestedMovieShows = () =>{
     }
     return(
         <div className="movie-wrapper">
-            {requestedMovieShows.map(movieShow=> <MovieShow key={movieShow.id} movieShow={movieShow}/>)}
+            {requestedMovieShows
+                .filter(item => item.media_type === "movie" || item.media_type === "tv")
+                .map(item => item.media_type === "tv"
+                    ? <SeriesCard key={item.id} tvShow={item}/>
+                    : <MovieCard key={item.id} movie={item}/>)}
         </div>
     )
 }

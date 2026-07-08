@@ -1,33 +1,34 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaCircle,FaPlay, FaRegHeart, FaStar } from "react-icons/fa";
+import { FaCircle,FaHeart,FaPlay, FaRegHeart, FaStar } from "react-icons/fa";
+import { getMovie, imageUrl } from "../services/tmdb";
+import { useWatchlist } from "../Context/WatchlistContext";
 
 const SimilarMovies = ({ similarMovie }) =>{
     const [similarMovieDetail,setSimilarMovieDetail] = useState({});
     const [isHovering,setIsHovering] = useState(-1);
+    const { isSaved, toggleWatchlist } = useWatchlist();
+    const saved = isSaved(similarMovie.id);
     useEffect(()=>{
         const abortCont = new AbortController();
-        const getSimilarMovieDetails = async () =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/movie/${similarMovie.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`,{signal:abortCont.signal});
-            const data = await rest.json();
-            setSimilarMovieDetail(data)
-        }
-        getSimilarMovieDetails();
+        getMovie(similarMovie.id, abortCont.signal).then(({ data }) => {
+            if (data) setSimilarMovieDetail(data);
+        });
 
         return () => abortCont.abort();
-    },[])
-    const baseUrl = "https://image.tmdb.org/t/p/original/";
-    const releaseDate = similarMovie.release_date;
+    },[similarMovie.id])
+    const releaseDate = similarMovie.release_date || "";
     const year = releaseDate.split("-");
    
     return(
         <div className="similar-movie-container" onMouseOver={e =>setIsHovering(similarMovieDetail.id)} onMouseOut={()=>setIsHovering(-1)}>
             <Link className="similar-movie-link" to={`/movie/${similarMovie.id}`}>
                 <div className="similar-movie-poster">
-                    <img 
-                        src={`${baseUrl}/${similarMovie.poster_path}`} 
+                    <img
+                        src={imageUrl(similarMovie.poster_path, "w342")}
                         alt={similarMovie.title}
-                        style={{filter:isHovering < 0 ? "brightness(100%)" : "brightness(50%)"}} 
+                        loading="lazy"
+                        style={{filter:isHovering < 0 ? "brightness(100%)" : "brightness(50%)"}}
                     />
                 </div>
                 <div className="similar-movie-footer">
@@ -73,7 +74,14 @@ const SimilarMovies = ({ similarMovie }) =>{
                             <FaPlay className="similar-movies-play"/>
                             Watch Now
                         </Link>
-                        <button className="add-to-list"><FaRegHeart className="heart"/></button>
+                        <button
+                            className={`add-to-list${saved ? " saved" : ""}`}
+                            aria-label={saved ? "Remove from watchlist" : "Add to watchlist"}
+                            aria-pressed={saved}
+                            onClick={() => toggleWatchlist({ ...similarMovie, media_type: "movie" })}
+                        >
+                            {saved ? <FaHeart className="heart"/> : <FaRegHeart className="heart"/>}
+                        </button>
                     </div>
                 </div>
             </div>

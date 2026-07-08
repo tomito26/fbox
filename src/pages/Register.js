@@ -12,16 +12,19 @@ const Register = () =>{
         password:"",
         error:null
     });
+    const [submitting,setSubmitting] = useState(false);
     const navigate = useNavigate()
 
     const { username,email,password,error } = userData;
 
     const register = async (e) =>{
        e.preventDefault();
+       if(submitting) return
        if(!username || !email || !password ){
             setUserData({...userData,error:"Please fill all the required fields"})
             return
        }
+       setSubmitting(true)
        try{
            const result = await createUserWithEmailAndPassword(auth,email,password);
            const docRef = doc(database,"users",result.user.uid);
@@ -31,18 +34,13 @@ const Register = () =>{
                createdAt: Timestamp.fromDate(new Date()),
                isOnline:true
            }
-           await setDoc(docRef,payload)
-           setUserData({
-                username:"",
-                email:"",
-                password:"",
-                error:null
-           });
+           // don't hold the redirect on this write — the account already exists
+           setDoc(docRef,payload).catch((err)=>console.error("profile write failed:",err))
            navigate("/");
 
        }catch(err){
            setUserData({...userData,error:err.message})
-
+           setSubmitting(false)
        }
 
     }
@@ -90,7 +88,7 @@ const Register = () =>{
                     </div>
 
                     <div className="button">
-                        <button className="btn" onClick={register}>Register</button>
+                        <button className="btn" onClick={register} disabled={submitting}>{submitting ? "Creating account..." : "Register"}</button>
                     </div>
                     <div className="form-link">
                         <p>Already have an account?<NavLink className="form-reg-link" to="/login">Sign in</NavLink></p>

@@ -1,6 +1,5 @@
 import { FaChartLine, FaChevronCircleRight,FaListUl, FaPlayCircle } from "react-icons/fa";
 import CarouselsContainer from "../components/CarouselsContainer";
-import About from "./About";
 import { NavLink, Outlet,Link } from 'react-router-dom';
 import LatestMovies from "../components/LatestMovies";
 import LatestTvSeries from "../components/LatestTvSeries";
@@ -11,7 +10,6 @@ const Home = () =>{
     return(
         <div>
             <CarouselsContainer/>
-            <About/>
             <div className="recommend-movies">
                 <div className="recommend-menu">
                     <h3><span>Recommended</span></h3>
@@ -58,7 +56,7 @@ const Home = () =>{
                         <span>Requested</span>
                     </h3>
                     <p className="link">
-                        <Link to="/latest-tv-series" className="latest-movies-link">
+                        <Link to="/requested" className="latest-movies-link">
                             <span>View all</span>
                             <FaChevronCircleRight className="view-all-link"/>
                         </Link>

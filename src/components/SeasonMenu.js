@@ -6,8 +6,7 @@ const SeasonMenu =  ({ season,index,setIsClicked,setSelectedSeason,tvshowId }) =
     const month = months[seasonReleaseDate.getMonth()];
     const date = seasonReleaseDate.getDate();
     const year = seasonReleaseDate.getFullYear();
-    console.log(season)
-    const seasonNumber = index +1 
+    const seasonNumber = index +1
     
 
     return(

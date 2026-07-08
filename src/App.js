@@ -5,10 +5,17 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
 import { UserAuthContextProvider } from './Context/UserAuthContext';
+import { WatchlistProvider } from './Context/WatchlistContext';
 import PrivateLink from './components/PrivateLink';
+import ErrorBoundary from './components/ErrorBoundary';
+import Watchlist from './pages/Watchlist';
 import Movies from './pages/movies/Movies';
 import TvSeries from './pages/tvSeries/TvSeries';
 import TopImdb from './pages/imdb/TopImdb';
+import SearchResults from './pages/SearchResults';
+import Browse from './pages/Browse';
+import LatestListing from './pages/LatestListing';
+import Placeholder from './pages/Placeholder';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Profile from './pages/Profile';
 import TvShows from './components/TvShows';
@@ -24,11 +31,16 @@ import Season from './components/Season';
 function App() {
   return (
     <UserAuthContextProvider>
+      <WatchlistProvider>
       <Router>
+        <ErrorBoundary>
         <Navbar/>
         <Routes>
           <Route path='/login' element={<Login/>}/>
           <Route path='/register' element={<Register/>}/>
+          <Route path='/terms' element={<Placeholder title="Terms of Service"/>}/>
+          <Route path='/privacy' element={<Placeholder title="Privacy Policy"/>}/>
+          <Route path='/dmca' element={<Placeholder title="DMCA"/>}/>
           <Route path='/' element={<PrivateLink><Home/></PrivateLink>}>
             <Route path='/' element={<RecommendedMovies/>}/>
             <Route path='tvshows' element={<TvShows/>}/>
@@ -37,6 +49,12 @@ function App() {
           <Route path='/movies' element={<PrivateLink><Movies/></PrivateLink>}/>
           <Route path="/tvSeries" element={<PrivateLink><TvSeries/></PrivateLink>}/>
           <Route path='topImdb' element={<PrivateLink><TopImdb/></PrivateLink>}/>
+          <Route path='/search' element={<PrivateLink><SearchResults/></PrivateLink>}/>
+          <Route path='/browse' element={<PrivateLink><Browse/></PrivateLink>}/>
+          <Route path='/latest-movies' element={<PrivateLink><LatestListing kind="movies"/></PrivateLink>}/>
+          <Route path='/latest-tv-series' element={<PrivateLink><LatestListing kind="series"/></PrivateLink>}/>
+          <Route path='/requested' element={<PrivateLink><LatestListing kind="trending"/></PrivateLink>}/>
+          <Route path='/watchlist' element={<PrivateLink><Watchlist/></PrivateLink>}/>
           <Route path='/profile' element={<PrivateLink><Profile/></PrivateLink>}/>
           <Route path='/movie/:movieId' element={<PrivateLink><Movie/></PrivateLink>}/>
           <Route path='/tvshows/:tvshowId' element={<PrivateLink><TvShowVideos/></PrivateLink>}>
@@ -45,7 +63,9 @@ function App() {
           </Route>
         </Routes>
         <Footer/>
+        </ErrorBoundary>
       </Router>
+      </WatchlistProvider>
     </UserAuthContextProvider>
   );
 }

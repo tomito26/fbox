@@ -1,65 +1,72 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import DropdownMenus from "../../components/categorySection/DropdownMenus";
-import Series from "./Series";
-import Series2 from "./Series2";
-import Series3 from "./Series3";
-import Series4 from "./Series4";
-const TvSeries = () =>{
-    const[tvShow,setTvShow] = useState([]);
-    const[tvShow2,setTvShow2] = useState([]);
-    const[tvShow3,setTvShow3] = useState([]);
-    const[tvShow4,setTvShow4] = useState([]);
+import SeriesCard from "../../components/SeriesCard";
+import MovieCard from "../../components/MovieCard";
+import SkeletonGrid from "../../components/SkeletonGrid";
+import { getList, discover } from "../../services/tmdb";
 
-    useEffect(()=>{
-        getTvSeries();
-        getTvSeries2();
-        getTvSeries3();
-        getTvSeries4();
-    },[])
+const TvSeries = () => {
+  const [tvShows, setTvShows] = useState([]);
+  const [status, setStatus] = useState("loading"); // loading | error | ready
+  const [filtered, setFiltered] = useState(false);
+  const [filterType, setFilterType] = useState("tv");
 
-    const getTvSeries = async () => {
-        const res = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=1`);
-        const data = await res.json();
-        setTvShow(data.results);
+  useEffect(() => {
+    let active = true;
+    getList("/tv/popular", { pages: 4 }).then(({ data, error }) => {
+      if (!active) return;
+      if (error) {
+        setStatus("error");
+        return;
+      }
+      setTvShows(data);
+      setStatus("ready");
+    });
+    return () => {
+      active = false;
     };
-    const getTvSeries2 = async () => {
-        const res = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=2`);
-        const data = await res.json();
-        setTvShow2(data.results);
-    };
-    const getTvSeries3 = async () => {
-        const res = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=3`);
-        const data = await res.json();
-        setTvShow3(data.results);
-    };
-    const getTvSeries4 = async () => {
-        const res = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=4`);
-        const data = await res.json();
-        setTvShow4(data.results);
-    };
-    return(
-        <div className="movie-page">
-            <div className="movie-header">
-                <h2>
-                    <span>Tv Series</span>
-                    <hr />
-                </h2>
-                <DropdownMenus/>
-            </div>
-            <div className="movie-wrapper">
-                { tvShow.map(tvShow=> <Series tvShow={tvShow} key={tvShow.id} />) }
-            </div>
-            <div className="movie-wrapper">
-                { tvShow2.map(tvShow=> <Series2 tvShow={tvShow} key={tvShow.id} />) }
-            </div>
-            <div className="movie-wrapper">
-                { tvShow3.map(tvShow=> <Series3 tvShow={tvShow} key={tvShow.id} />) }
-            </div>
-            <div className="movie-wrapper">
-                { tvShow4.map(tvShow=> <Series4 tvShow={tvShow} key={tvShow.id} />) }
-            </div>
-        </div>
+  }, []);
+
+  const handleFilter = (type, params) => {
+    setStatus("loading");
+    setFiltered(true);
+    setFilterType(type);
+    discover(type, params).then(({ data, error }) => {
+      if (error) {
+        setStatus("error");
+        return;
+      }
+      setTvShows(data);
+      setStatus("ready");
+    });
+  };
+
+  const renderCard = (item) =>
+    filtered && filterType === "movie" ? (
+      <MovieCard movie={item} key={item.id} />
+    ) : (
+      <SeriesCard tvShow={item} key={item.id} />
     );
+
+  return (
+    <div className="movie-page">
+      <div className="movie-header">
+        <h2>
+          <span>Tv Series</span>
+          <hr />
+        </h2>
+        <DropdownMenus onFilter={handleFilter} />
+      </div>
+      {status === "loading" && <SkeletonGrid />}
+      {status === "error" && (
+        <p className="fetch-error">Couldn't load TV series. Please try again later.</p>
+      )}
+      {status === "ready" && tvShows.length === 0 && (
+        <p className="fetch-error">No titles match those filters.</p>
+      )}
+      {status === "ready" && <div className="movie-wrapper">{tvShows.map(renderCard)}</div>}
+    </div>
+  );
 };
 
 export default TvSeries;

@@ -1,6 +1,6 @@
-const SortMenu = () =>{
+const SortMenu = ({ onChange }) =>{
     return(
-        <div className="sort-items">
+        <div className="sort-items" onChange={onChange}>
             <div className="form-check">
                 <input type="radio" name="sort" id="default" />
                 <label htmlFor="default">Default</label>

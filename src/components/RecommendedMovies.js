@@ -1,5 +1,5 @@
 import { useEffect,useState } from "react";
-import RecommendedMovie from "./RecommendedMovie";
+import MovieCard from "./MovieCard";
 
 const RecommendedMovies = () =>{
     const [recommendedMovies,setRecommendedMovies] = useState([]);
@@ -16,7 +16,7 @@ const RecommendedMovies = () =>{
 
     return(
         <div className="movie-wrapper">
-            {recommendedMovies.map(movie=><RecommendedMovie key={movie.id} movie={movie}/>)}
+            {recommendedMovies.map(movie=><MovieCard key={movie.id} movie={movie}/>)}
         </div>
     );
 };

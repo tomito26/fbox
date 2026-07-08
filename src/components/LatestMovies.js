@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import LatestMovie from "./LatestMovie";
+import MovieCard from "./MovieCard";
 
 const LatestMovies =  () =>{
     const[latestMovies,setLatestMovies] = useState([]);
@@ -15,7 +15,7 @@ const LatestMovies =  () =>{
     }
     return(
         <div className="movie-wrapper">
-            {latestMovies.map(movie => <LatestMovie key={movie.id} movie={movie}/>)}
+            {latestMovies.map(movie => <MovieCard key={movie.id} movie={movie}/>)}
         </div>
     );
 };
