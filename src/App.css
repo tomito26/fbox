@@ -49,15 +49,17 @@ body{
               backdrop-filter 0.3s ease;
 }
 
-/* Hero pages: the bar overlays the full-bleed backdrop, transparent at rest with
-   a dark scrim so the links stay legible. Fixed (not absolute) so it stays put. */
+/* Hero pages: the bar overlays the full-bleed backdrop, fully transparent at
+   rest. Legibility comes from the hero's own top scrim (.hero-scrim); the bar
+   deliberately paints NO gradient of its own — a second scrim fading out at the
+   bar's bottom edge created a brightness kink there that read as a horizontal
+   line across the hero. Fixed (not absolute) so it stays put. */
 .site-nav--hero{
   position: fixed;
   left: 0;
   right: 0;
   background-color: transparent;
-  background-image: linear-gradient(to bottom,
-    rgba(10,13,20,0.9) 0%, rgba(10,13,20,0.5) 55%, rgba(10,13,20,0) 100%);
+  background-image: none;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   border-bottom-color: transparent;
@@ -681,10 +683,12 @@ form{
 .latest-movies .movie-wrapper .movie-img{
   height: 264px;
 }
-/* Disable the escaping 280px popup on the carousels; the card lift + poster
-   zoom/darken (defined later) is the hover affordance here. */
-.recommend-movies .movie-overview,
-.latest-movies .movie-overview{
+/* The escaping 280px detail popup is disabled on every listing. On the home
+   carousels it couldn't live in a scroll container; on the Movies / TV-Series /
+   Browse (genre & country) grids it overflowed the grid and read as broken.
+   Everywhere the hover affordance is now the in-place card lift + poster
+   zoom/darken (defined later), so cards behave identically across the site. */
+.movie-overview{
   display: none !important;
 }
 .movie-card{
