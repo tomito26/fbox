@@ -1,6 +1,7 @@
 import { useState,useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaPlay,FaCircle,FaRegHeart,FaStar } from "react-icons/fa";
+import { tmdbFetch } from "../../api/tmdb";
 
 const MoviePage = ({ movie }) => {
     const [movieDetails,setMovieDetails] = useState({})
@@ -8,9 +9,12 @@ const MoviePage = ({ movie }) => {
 
     useEffect(()=>{
         const getTopRatedMovieDetails = async ()=>{
-            const res = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
-            const data = await res.json();
-            setMovieDetails(data);
+            try {
+                const data = await tmdbFetch(`/movie/${movie.id}`, { language: "en-US" });
+                setMovieDetails(data);
+            } catch (err) {
+                console.error(err);
+            }
         };
         getTopRatedMovieDetails();
     },[])

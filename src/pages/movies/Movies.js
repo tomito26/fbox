@@ -4,6 +4,8 @@ import MoviePage from "./MoviePage";
 import MoviePage2 from "./MoviePage2";
 import MoviePage4 from "./MoviePage4";
 import MoviesPage3 from "./MoviesPage3";
+import { tmdbFetch } from "../../api/tmdb";
+import ErrorMessage from "../../components/ErrorMessage";
 
 
 const Movies = () =>{
@@ -11,37 +13,50 @@ const Movies = () =>{
     const[moviesPage2,setMoviesPage2] = useState([]);
     const[moviesPage3,setMoviesPage3] = useState([]);
     const[moviesPage4,setMoviesPage4]=useState([]);
+    const [error,setError] = useState(null);
 
     useEffect(()=>{
-        getTopratedMovies(); 
+        getTopratedMovies();
         getTopratedMovies2();
-        getTopratedMovies3();    
-        getTopratedMovies4();  
+        getTopratedMovies3();
+        getTopratedMovies4();
 
     },[])
 
     const getTopratedMovies = async () =>{
-        const res = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=1`);
-        const data = await res.json();
-        setMovies(data.results);
+        try {
+            const data = await tmdbFetch("/movie/now_playing", { language: "en-US", page: 1 });
+            setMovies(data.results);
+        } catch (err) {
+            setError("Couldn't load movies. Please try again later.");
+        }
     }
     const getTopratedMovies2 = async () => {
-        const res = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=2`);
-        const data = await res.json();
-        setMoviesPage2(data.results);
+        try {
+            const data = await tmdbFetch("/movie/now_playing", { language: "en-US", page: 2 });
+            setMoviesPage2(data.results);
+        } catch (err) {
+            setError("Couldn't load movies. Please try again later.");
+        }
     }
     const getTopratedMovies3 = async () =>{
-        const res = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=3`);
-        const data = await res.json();
-        setMoviesPage3(data.results);
+        try {
+            const data = await tmdbFetch("/movie/now_playing", { language: "en-US", page: 3 });
+            setMoviesPage3(data.results);
+        } catch (err) {
+            setError("Couldn't load movies. Please try again later.");
+        }
     }
     const getTopratedMovies4 = async () =>{
-        const res = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=4`);
-        const data = await res.json();
-        setMoviesPage4(data.results);
+        try {
+            const data = await tmdbFetch("/movie/now_playing", { language: "en-US", page: 4 });
+            setMoviesPage4(data.results);
+        } catch (err) {
+            setError("Couldn't load movies. Please try again later.");
+        }
     }
-     
-    
+
+
     return(
         <div className="movie-page">
             <div className="movie-header">
@@ -51,6 +66,7 @@ const Movies = () =>{
                 </h2>
                 <DropdownMenus/>
             </div>
+            {error && <ErrorMessage message={error}/>}
             <div className="movie-wrapper">
                 {
                     movies.map((movie=> <MoviePage movie={movie} key={movie.id}/>))

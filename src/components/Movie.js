@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { FaExclamationCircle, FaStar } from "react-icons/fa";
 import { useParams } from "react-router-dom"
 import SimilarMovies from "./SimilarMovies";
+import { tmdbFetch } from "../api/tmdb";
+import ErrorMessage from "./ErrorMessage";
 
 const Movie = () => {
     const[videos,setVideos] = useState([]);
@@ -9,51 +11,61 @@ const Movie = () => {
     const[casts,setCasts] = useState([]);
     const[directors,setDirectors] = useState([]);
     const[similarMovies,setSimilarMovies] = useState([]);
+    const[error,setError] = useState(null);
     const { movieId } = useParams();
 
     useEffect(()=>{
         const getVideos = async() =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&append_to_response=videos`);
-            const data = await rest.json()
-            console.log(data)
-            const officialTrailer = data.results.filter(trailer=>trailer.type === "Trailer"  || trailer.site === "YouTube");
-            console.log(officialTrailer[0])
-            setVideos(officialTrailer[officialTrailer.length - 1])
-            // console.log(officialTrailer)
+            try {
+                const data = await tmdbFetch(`/movie/${movieId}/videos`, { append_to_response: "videos" });
+                const officialTrailer = data.results.filter(trailer=>trailer.type === "Trailer"  || trailer.site === "YouTube");
+                setVideos(officialTrailer[officialTrailer.length - 1])
+            } catch (err) {
+                setError("Couldn't load this movie. Please try again later.");
+            }
         };
 
         const getMovieDetails = async () =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
-            const data = await rest.json();
-            setMovieDetails(data);
+            try {
+                const data = await tmdbFetch(`/movie/${movieId}`, { language: "en-US" });
+                setMovieDetails(data);
+            } catch (err) {
+                setError("Couldn't load this movie. Please try again later.");
+            }
         };
 
         const getCredits = async () =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
-            const data = await rest.json();
-            setCasts(data.cast);
-            
-            const crewDirecting = data.crew.filter(directors => directors.known_for_department === "Directing");
-            setDirectors(crewDirecting) 
+            try {
+                const data = await tmdbFetch(`/movie/${movieId}/credits`, { language: "en-US" });
+                setCasts(data.cast);
+
+                const crewDirecting = data.crew.filter(directors => directors.known_for_department === "Directing");
+                setDirectors(crewDirecting)
+            } catch (err) {
+                setError("Couldn't load this movie. Please try again later.");
+            }
         };
         const getSimilarMovies = async () => {
-            const rest = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/similar?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=1`);
-            const data = await rest.json();
-            
-            setSimilarMovies(data.results.slice(0,9))
+            try {
+                const data = await tmdbFetch(`/movie/${movieId}/similar`, { language: "en-US", page: 1 });
+                setSimilarMovies(data.results.slice(0,9))
+            } catch (err) {
+                setError("Couldn't load this movie. Please try again later.");
+            }
         }
 
         getCredits();
         getVideos();
         getMovieDetails();
         getSimilarMovies();
-    },[]);
+    },[movieId]);
 
     const baseUrl = "https://image.tmdb.org/t/p/original/";
     
 
     return(
         <div className="movie-video-container">
+            {error && <ErrorMessage message={error}/>}
             <div className="video-wrapper" style={{backgroundImage: `linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url(${baseUrl}/${movieDetails.backdrop_path})`,height:"600px",width:"100%", backgroundPosition:"center",backgroundSize:"cover",margin:"40px 0"}}>
                 <div style={{padding:"0 10px 0 40px",width:"1400px",height:"600px",position:"relative"}}>
                     <iframe 

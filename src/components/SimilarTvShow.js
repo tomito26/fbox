@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaCircle, FaPlay, FaRegHeart, FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { tmdbFetch } from "../api/tmdb";
 
 const SimilarTvShow = ({ similarTvShow }) =>{
     const[isHovering,setIsHovering] = useState(-1);
@@ -8,9 +9,12 @@ const SimilarTvShow = ({ similarTvShow }) =>{
 
     useEffect(()=>{
         const getSimilarTvShowDetails = async () =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/tv/${similarTvShow.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
-            const data = await rest.json();
-            setSimilarTvShowDetails(data);
+            try {
+                const data = await tmdbFetch(`/tv/${similarTvShow.id}`, { language: "en-US" });
+                setSimilarTvShowDetails(data);
+            } catch (err) {
+                console.error(err);
+            }
         }
         getSimilarTvShowDetails();
     },[])

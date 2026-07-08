@@ -1,18 +1,27 @@
 import { useEffect, useState } from "react"
 import MovieShow from "./MovieShow";
+import { tmdbFetch } from "../api/tmdb";
+import ErrorMessage from "./ErrorMessage";
 
 const RequestedMovieShows = () =>{
     const[requestedMovieShows,setRequestedMovieShow] = useState([]);
+    const [error,setError] = useState(null);
 
     useEffect(()=>{
         getRequestedMovieShow();
     },[]);
 
     const getRequestedMovieShow = async () =>{
-        const rest = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=30`);
-        const data = await rest.json(); 
-        setRequestedMovieShow(data.results)
+        try {
+            const data = await tmdbFetch("/trending/all/week", { language: "en-US", page: 30 });
+            setRequestedMovieShow(data.results)
+        } catch (err) {
+            setError("Couldn't load requested titles. Please try again later.");
+        }
     }
+
+    if (error) return <ErrorMessage message={error}/>;
+
     return(
         <div className="movie-wrapper">
             {requestedMovieShows.map(movieShow=> <MovieShow key={movieShow.id} movieShow={movieShow}/>)}

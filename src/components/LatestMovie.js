@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { storage } from '../firebase-config';
 import { ref,uploadBytes  } from 'firebase/storage';
+import { tmdbFetch } from '../api/tmdb';
 
 const LatestMovie = ({ movie }) => {
     const[isHovering,setIsHovering] = useState(-1);
@@ -10,9 +11,12 @@ const LatestMovie = ({ movie }) => {
 
     useEffect(()=>{
         const getMovieDetail = async () =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
-            const data = await rest.json();
-            setMovieDetail(data)
+            try {
+                const data = await tmdbFetch(`/movie/${movie.id}`, { language: "en-US" });
+                setMovieDetail(data)
+            } catch (err) {
+                console.error(err);
+            }
         }
         getMovieDetail()
     },[])

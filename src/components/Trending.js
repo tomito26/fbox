@@ -1,19 +1,21 @@
 import { useEffect, useState } from "react";
 import { FaPlay,FaStar,FaRegHeart, FaCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { tmdbFetch } from "../api/tmdb";
 
 const Trending = ({ trending })=>{
     const[isHovering,setIsHovering] = useState(-1);
     const[trendingDetails,setTrendingDetails] = useState({});
 
     useEffect(()=>{
-        const trenndingDetails = []
         const getTrendingDetails = async () =>{
-          
-            const rest = trending.media_type === "movie" ? await fetch(`https://api.themoviedb.org/3/movie/${trending.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`) : await fetch(`https://api.themoviedb.org/3/tv/${trending.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
-            const data = await rest.json();
-            
-            setTrendingDetails(data)
+            try {
+                const path = trending.media_type === "movie" ? `/movie/${trending.id}` : `/tv/${trending.id}`;
+                const data = await tmdbFetch(path, { language: "en-US" });
+                setTrendingDetails(data)
+            } catch (err) {
+                console.error(err);
+            }
         }
         getTrendingDetails()
     },[])

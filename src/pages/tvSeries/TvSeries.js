@@ -4,11 +4,14 @@ import Series from "./Series";
 import Series2 from "./Series2";
 import Series3 from "./Series3";
 import Series4 from "./Series4";
+import { tmdbFetch } from "../../api/tmdb";
+import ErrorMessage from "../../components/ErrorMessage";
 const TvSeries = () =>{
     const[tvShow,setTvShow] = useState([]);
     const[tvShow2,setTvShow2] = useState([]);
     const[tvShow3,setTvShow3] = useState([]);
     const[tvShow4,setTvShow4] = useState([]);
+    const [error,setError] = useState(null);
 
     useEffect(()=>{
         getTvSeries();
@@ -18,24 +21,36 @@ const TvSeries = () =>{
     },[])
 
     const getTvSeries = async () => {
-        const res = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=1`);
-        const data = await res.json();
-        setTvShow(data.results);
+        try {
+            const data = await tmdbFetch("/tv/popular", { language: "en-US", page: 1 });
+            setTvShow(data.results);
+        } catch (err) {
+            setError("Couldn't load TV series. Please try again later.");
+        }
     };
     const getTvSeries2 = async () => {
-        const res = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=2`);
-        const data = await res.json();
-        setTvShow2(data.results);
+        try {
+            const data = await tmdbFetch("/tv/popular", { language: "en-US", page: 2 });
+            setTvShow2(data.results);
+        } catch (err) {
+            setError("Couldn't load TV series. Please try again later.");
+        }
     };
     const getTvSeries3 = async () => {
-        const res = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=3`);
-        const data = await res.json();
-        setTvShow3(data.results);
+        try {
+            const data = await tmdbFetch("/tv/popular", { language: "en-US", page: 3 });
+            setTvShow3(data.results);
+        } catch (err) {
+            setError("Couldn't load TV series. Please try again later.");
+        }
     };
     const getTvSeries4 = async () => {
-        const res = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=4`);
-        const data = await res.json();
-        setTvShow4(data.results);
+        try {
+            const data = await tmdbFetch("/tv/popular", { language: "en-US", page: 4 });
+            setTvShow4(data.results);
+        } catch (err) {
+            setError("Couldn't load TV series. Please try again later.");
+        }
     };
     return(
         <div className="movie-page">
@@ -46,6 +61,7 @@ const TvSeries = () =>{
                 </h2>
                 <DropdownMenus/>
             </div>
+            {error && <ErrorMessage message={error}/>}
             <div className="movie-wrapper">
                 { tvShow.map(tvShow=> <Series tvShow={tvShow} key={tvShow.id} />) }
             </div>

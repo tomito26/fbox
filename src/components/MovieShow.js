@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaRegHeart,FaPlay,FaCircle,FaStar } from "react-icons/fa"; 
+import { FaRegHeart,FaPlay,FaCircle,FaStar } from "react-icons/fa";
+import { tmdbFetch } from "../api/tmdb";
 
 const MovieShow = ({movieShow}) =>{
     const[movieShowDetails,setMovieShowDetails] = useState({});
@@ -8,13 +9,16 @@ const MovieShow = ({movieShow}) =>{
 
     useEffect(()=>{
         const getMovieShowDetails = async () =>{
-            const rest = movieShow.media_type === "movie" ? await fetch(`https://api.themoviedb.org/3/movie/${movieShow.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`) : await fetch(`https://api.themoviedb.org/3/tv/${movieShow.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
-            const data = await rest.json();
-            setMovieShowDetails(data)
-        };  
+            try {
+                const path = movieShow.media_type === "movie" ? `/movie/${movieShow.id}` : `/tv/${movieShow.id}`;
+                const data = await tmdbFetch(path, { language: "en-US" });
+                setMovieShowDetails(data)
+            } catch (err) {
+                console.error(err);
+            }
+        };
         getMovieShowDetails();
     },[]);
-    // console.log(movieShow)
 
     const baseUrl = "https://image.tmdb.org/t/p/original/";
     const seriesReleaseDate =movieShow.first_air_date;

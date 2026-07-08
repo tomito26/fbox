@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import Imdb from "./Imdb";
 import DropdownMenus from '../../components/categorySection/DropdownMenus'
+import { tmdbFetch } from "../../api/tmdb";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const TopImdb = () =>{
     const[trendings,setTrendings] = useState([]);
     const[trendings2,setTrendings2] = useState([]);
     const[trendings3,setTrendings3] = useState([]);
     const[trendings4,setTrendings4] = useState([]);
+    const [error,setError] = useState(null);
 
     useEffect(()=>{
         getTrendingMovies();
@@ -16,26 +19,38 @@ const TopImdb = () =>{
     },[]);
 
     const getTrendingMovies = async () =>{
-        const rest = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=5`);
-        const data = await rest.json();
-        setTrendings(data.results)
+        try {
+            const data = await tmdbFetch("/trending/all/week", { language: "en-US", page: 5 });
+            setTrendings(data.results)
+        } catch (err) {
+            setError("Couldn't load Top IMDb titles. Please try again later.");
+        }
     }
     const getTrendingMovies2 = async () =>{
-        const rest = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=6`);
-        const data = await rest.json();
-        setTrendings2(data.results)
+        try {
+            const data = await tmdbFetch("/trending/all/week", { language: "en-US", page: 6 });
+            setTrendings2(data.results)
+        } catch (err) {
+            setError("Couldn't load Top IMDb titles. Please try again later.");
+        }
     }
     const getTrendingMovies3 = async () =>{
-        const rest = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=7`);
-        const data = await rest.json();
-        setTrendings3(data.results)
+        try {
+            const data = await tmdbFetch("/trending/all/week", { language: "en-US", page: 7 });
+            setTrendings3(data.results)
+        } catch (err) {
+            setError("Couldn't load Top IMDb titles. Please try again later.");
+        }
     }
     const getTrendingMovies4 = async () =>{
-        const rest = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US&page=8`);
-        const data = await rest.json();
-        setTrendings4(data.results)
+        try {
+            const data = await tmdbFetch("/trending/all/week", { language: "en-US", page: 8 });
+            setTrendings4(data.results)
+        } catch (err) {
+            setError("Couldn't load Top IMDb titles. Please try again later.");
+        }
     }
-    
+
     return(
         <div className="movie-page">
             <div className="movie-header">
@@ -45,6 +60,7 @@ const TopImdb = () =>{
                 </h2>
                 <DropdownMenus/>
             </div>
+            {error && <ErrorMessage message={error}/>}
             <div className="movie-wrapper">
                 {
                     trendings.map(trending=> <Imdb trending={trending} key={trending.id}/>)

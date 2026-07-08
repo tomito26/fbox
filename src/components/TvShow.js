@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaPlay,FaStar,FaRegHeart, FaCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { tmdbFetch } from "../api/tmdb";
 
 const TvShow  = ({ tvShow }) =>{
     const[isHovering,setIsHovering] = useState(-1)
@@ -8,9 +9,12 @@ const TvShow  = ({ tvShow }) =>{
 
     useEffect(()=>{
         const getTvShowDetails = async () =>{
-            const rest = await fetch(`https://api.themoviedb.org/3/tv/${tvShow.id}?api_key=${process.env.REACT_APP_MOVIE_API_KEY}&language=en-US`);
-            const data = await rest.json()
-            setTvShowDetails(data)
+            try {
+                const data = await tmdbFetch(`/tv/${tvShow.id}`, { language: "en-US" });
+                setTvShowDetails(data)
+            } catch (err) {
+                console.error(err);
+            }
         }
         getTvShowDetails();
     },[]);
