@@ -24,8 +24,6 @@ import Trendings from './components/Trendings';
 import Footer from './components/Footer';
 import Movie from './components/Movie';
 import TvShowVideos from './components/TvShowVideos';
-import SeasonOne from './components/SeasonOne';
-import Season from './components/Season';
 
 
 function App() {
@@ -59,10 +57,7 @@ function App() {
           <Route path='/latest-tv-series' element={<LatestListing kind="series"/>}/>
           <Route path='/requested' element={<LatestListing kind="trending"/>}/>
           <Route path='/movie/:movieId' element={<Movie/>}/>
-          <Route path='/tvshows/:tvshowId' element={<TvShowVideos/>}>
-            <Route path='/tvshows/:tvshowId/' element={<SeasonOne/>}/>
-            <Route  path='/tvshows/:tvshowId/:seasonNumber' element={<Season/>}/>
-          </Route>
+          <Route path='/tvshows/:tvshowId' element={<TvShowVideos/>}/>
           {/* Auth-gated: personal to the signed-in user. */}
           <Route path='/watchlist' element={<PrivateLink><Watchlist/></PrivateLink>}/>
           <Route path='/profile' element={<PrivateLink><Profile/></PrivateLink>}/>

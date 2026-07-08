@@ -39,9 +39,6 @@ const MediaDetails = ({
   loading,
   error,
   renderSimilar,
-  extras,
-  streamSeason = 1,
-  streamEpisode = 1,
 }) => {
   const [expanded, setExpanded] = useState(false);
   // Only mount the heavy YouTube iframe once the user actually clicks play
@@ -49,8 +46,9 @@ const MediaDetails = ({
   const [playing, setPlaying] = useState(false);
   // Same facade approach for the full-stream (Vidking) player.
   const [watching, setWatching] = useState(false);
-  // Which episode the TV player is on (movies ignore this).
-  const [currentEpisode, setCurrentEpisode] = useState(streamEpisode);
+  // Selected season + episode for the TV player (movies ignore these).
+  const [streamSeason, setStreamSeason] = useState(1);
+  const [currentEpisode, setCurrentEpisode] = useState(1);
   const { isSaved, toggleWatchlist } = useWatchlist();
   const trailerRef = useRef(null);
   const streamRef = useRef(null);
@@ -60,15 +58,18 @@ const MediaDetails = ({
     setPlaying(false);
   }, [video?.key]);
 
-  // Collapse the stream player when the title changes.
+  // On a new title: collapse the player and seed the season (first real season,
+  // skipping "Specials" / season 0 when possible), back to episode 1.
   useEffect(() => {
     setWatching(false);
-  }, [details.id]);
-
-  // Reset to episode 1 when the title or the selected season changes.
-  useEffect(() => {
+    const seasons = details.seasons || [];
+    const first = seasons.find((s) => s.season_number >= 1) || seasons[0];
+    setStreamSeason(first ? first.season_number : 1);
     setCurrentEpisode(1);
-  }, [details.id, streamSeason]);
+    // details.seasons arrives in the same fetch as details.id, so keying on id
+    // is sufficient (and avoids re-seeding when unrelated fields change).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [details.id]);
 
   if (loading) {
     return (
@@ -128,12 +129,17 @@ const MediaDetails = ({
   const topCast = casts.slice(0, 15);
   const genres = details.genres || [];
 
-  // Episode count for the currently selected season (drives the episode buttons
-  // under the TV player). 0 for movies or when the season data is missing.
-  const seasonEpisodeCount = isMovie
-    ? 0
-    : (details.seasons || []).find((s) => s.season_number === streamSeason)
-        ?.episode_count || 0;
+  // Season list + episode count for the current season, driving the TV controls
+  // under the player. Empty for movies or when the season data is missing.
+  const tvSeasons = isMovie ? [] : details.seasons || [];
+  const seasonEpisodeCount =
+    tvSeasons.find((s) => s.season_number === streamSeason)?.episode_count || 0;
+
+  // Switching season resets to episode 1; the episode grid re-renders below.
+  const changeSeason = (num) => {
+    setStreamSeason(num);
+    setCurrentEpisode(1);
+  };
 
   // Jump straight to a specific episode: switch the player and start it.
   const playEpisode = (ep) => {
@@ -306,36 +312,53 @@ const MediaDetails = ({
             </div>
           </div>
 
-          {/* Episode buttons for the selected season (TV only). */}
-          {seasonEpisodeCount > 0 && (
-            <div className="episode-picker">
-              <div className="episode-picker-head">
-                <span className="episode-picker-title">Season {streamSeason}</span>
-                <span className="episode-picker-count">
-                  {seasonEpisodeCount} episode{seasonEpisodeCount > 1 ? "s" : ""}
-                </span>
+          {/* TV only: season dropdown, with the season's episodes below it. */}
+          {tvSeasons.length > 0 && (
+            <div className="stream-controls">
+              <div className="season-select">
+                <label htmlFor="season-select">Season</label>
+                <select
+                  id="season-select"
+                  value={streamSeason}
+                  onChange={(e) => changeSeason(Number(e.target.value))}
+                >
+                  {tvSeasons.map((s) => (
+                    <option key={s.id} value={s.season_number}>
+                      {s.name || `Season ${s.season_number}`}
+                      {s.episode_count ? ` (${s.episode_count})` : ""}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="episode-grid">
-                {Array.from({ length: seasonEpisodeCount }, (_, i) => i + 1).map((ep) => (
-                  <button
-                    key={ep}
-                    className={`episode-btn${
-                      watching && ep === currentEpisode ? " active" : ""
-                    }`}
-                    onClick={() => playEpisode(ep)}
-                    aria-label={`Play episode ${ep}`}
-                    aria-pressed={watching && ep === currentEpisode}
-                  >
-                    {ep}
-                  </button>
-                ))}
-              </div>
+
+              {seasonEpisodeCount > 0 && (
+                <div className="episode-picker">
+                  <div className="episode-picker-head">
+                    <span className="episode-picker-count">
+                      {seasonEpisodeCount} episode{seasonEpisodeCount > 1 ? "s" : ""}
+                    </span>
+                  </div>
+                  <div className="episode-grid">
+                    {Array.from({ length: seasonEpisodeCount }, (_, i) => i + 1).map((ep) => (
+                      <button
+                        key={ep}
+                        className={`episode-btn${
+                          watching && ep === currentEpisode ? " active" : ""
+                        }`}
+                        onClick={() => playEpisode(ep)}
+                        aria-label={`Play episode ${ep}`}
+                        aria-pressed={watching && ep === currentEpisode}
+                      >
+                        {ep}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </section>
       )}
-
-      {extras}
 
       {/* Trailer moved below the hero into its own section (Play jumps here). */}
       {video && (
