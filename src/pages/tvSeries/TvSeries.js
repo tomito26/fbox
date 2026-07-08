@@ -40,7 +40,10 @@ const TvSeries = () => {
           <span>Tv Series</span>
           <hr />
         </h2>
-        <DropdownMenus onFilter={(type, params) => setFilter({ type, params })} />
+        <DropdownMenus
+          onFilter={(type, params) => setFilter({ type, params })}
+          initialType="tv"
+        />
       </div>
       {status === "loading" && <SkeletonGrid />}
       {status === "error" && (
