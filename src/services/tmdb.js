@@ -59,7 +59,10 @@ export async function getList(path, { pages = 1, startPage = 1, params = {} } = 
 
 // Detail-page getters accept an optional AbortSignal so a component can cancel
 // its in-flight requests when it unmounts or the id changes.
-export const getMovie = (id, signal) => request(`/movie/${id}`, {}, { signal });
+// Append release_dates / content_ratings so we can read the US content
+// certification (PG-13, TV-MA…) without a second round-trip.
+export const getMovie = (id, signal) =>
+  request(`/movie/${id}`, { append_to_response: "release_dates" }, { signal });
 export const getMovieCredits = (id, signal) =>
   request(`/movie/${id}/credits`, {}, { signal });
 export const getMovieVideos = (id, signal) =>
@@ -69,7 +72,8 @@ export const getSimilarMovies = (id, signal) =>
 export const getMovieKeywords = (id, signal) =>
   request(`/movie/${id}/keywords`, {}, { signal });
 
-export const getTvShow = (id, signal) => request(`/tv/${id}`, {}, { signal });
+export const getTvShow = (id, signal) =>
+  request(`/tv/${id}`, { append_to_response: "content_ratings" }, { signal });
 export const getTvCredits = (id, signal) =>
   request(`/tv/${id}/credits`, {}, { signal });
 export const getTvVideos = (id, signal) =>
@@ -93,6 +97,26 @@ export const pickTrailer = (results = []) => {
     trailers[0] ||
     youtube[0]
   );
+};
+
+// Pull the US content certification (e.g. "PG-13", "TV-MA") out of a details
+// object. Movies carry it under release_dates.results[].release_dates[].
+// certification; TV under content_ratings.results[].rating. Returns "" when
+// there's no US rating so the caller can just skip the badge.
+export const pickCertification = (details = {}, mediaType = "movie") => {
+  if (mediaType === "tv") {
+    const us = (details.content_ratings?.results || []).find(
+      (r) => r.iso_3166_1 === "US"
+    );
+    return us?.rating || "";
+  }
+  const us = (details.release_dates?.results || []).find(
+    (r) => r.iso_3166_1 === "US"
+  );
+  const cert = (us?.release_dates || [])
+    .map((d) => d.certification)
+    .find(Boolean);
+  return cert || "";
 };
 
 // Multi search (movies + TV + people). Accepts a page for "Load More" flows and

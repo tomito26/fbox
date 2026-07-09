@@ -1,30 +1,16 @@
 import { useEffect, useRef } from "react";
+import { storageKey, readResume } from "../utils/watchProgress";
 
 // Full-stream player via the Vidking embed (https://www.vidking.net).
 //   movie: /embed/movie/{tmdbId}
 //   tv:    /embed/tv/{tmdbId}/{season}/{episode}
 // The player posts { type: "PLAYER_EVENT", data: {...} } messages; we persist
 // the watch position to localStorage and resume via ?progress= on return.
+// Key scheme + progress readers live in ../utils/watchProgress so the detail
+// page can surface resume/watched state from the same records.
 
 const VIDKING = "https://www.vidking.net/embed";
 const ACCENT = "FFC300"; // site accent, hex without '#'
-
-// Progress is keyed per-episode for TV so each episode resumes independently.
-const storageKey = (mediaType, id, season, episode) =>
-  mediaType === "tv"
-    ? `vidking_progress_tv_${id}_s${season}e${episode}`
-    : `vidking_progress_movie_${id}`;
-
-const readResume = (mediaType, id, season, episode) => {
-  try {
-    const saved = JSON.parse(
-      localStorage.getItem(storageKey(mediaType, id, season, episode)) || "null"
-    );
-    return saved?.currentTime ? Math.floor(saved.currentTime) : 0;
-  } catch {
-    return 0;
-  }
-};
 
 const StreamPlayer = ({ mediaType, id, season = 1, episode = 1, title }) => {
   // Throttle the continuous `timeupdate` writes so we don't hammer localStorage.
