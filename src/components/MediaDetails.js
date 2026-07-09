@@ -7,16 +7,29 @@ import {
   FaRegHeart,
   FaShareAlt,
   FaStar,
+  FaTimes,
   FaUser,
 } from "react-icons/fa";
-import { imageUrl } from "../services/tmdb";
+import { imageUrl, getTvSeason, pickCertification } from "../services/tmdb";
 import { useWatchlist } from "../Context/WatchlistContext";
 import { shareNative } from "../utils/share";
+import {
+  readResume,
+  readProgress,
+  watchedFraction,
+  formatTime,
+} from "../utils/watchProgress";
 import StreamPlayer from "./StreamPlayer";
+import EpisodeList from "./EpisodeList";
 
 // Shared presentational shell for the movie and TV detail pages. Movie.js and
 // TvShowVideos.js fetch + normalize their data, then hand it to this component
 // so the ~90% identical markup (and its bugs) lives in exactly one place.
+//
+// Layout follows streaming-platform convention: the player is the hero at the
+// very top (land -> one click -> playing), with resume/watched state surfaced
+// from the progress StreamPlayer persists. The poster + synopsis + cast become
+// an "About" block below, and the trailer opens in a lightweight modal.
 
 const OVERVIEW_LIMIT = 280;
 
@@ -41,27 +54,23 @@ const MediaDetails = ({
   renderSimilar,
 }) => {
   const [expanded, setExpanded] = useState(false);
-  // Only mount the heavy YouTube iframe once the user actually clicks play
-  // (facade pattern) — avoids loading YouTube's player + cookies on every visit.
-  const [playing, setPlaying] = useState(false);
-  // Same facade approach for the full-stream (Vidking) player.
+  // Trailer plays in a modal; the heavy YouTube iframe only mounts while open.
+  const [showTrailer, setShowTrailer] = useState(false);
+  // Facade for the full-stream (Vidking) player — only mounts on Watch/Resume.
   const [watching, setWatching] = useState(false);
   // Selected season + episode for the TV player (movies ignore these).
   const [streamSeason, setStreamSeason] = useState(1);
   const [currentEpisode, setCurrentEpisode] = useState(1);
+  // Per-season episode data (stills/titles/overviews) for the rich episode list.
+  const [seasonEpisodes, setSeasonEpisodes] = useState({ loading: false, list: [] });
   const { isSaved, toggleWatchlist } = useWatchlist();
-  const trailerRef = useRef(null);
   const streamRef = useRef(null);
-
-  // Reset back to the facade when navigating to a different title's trailer.
-  useEffect(() => {
-    setPlaying(false);
-  }, [video?.key]);
 
   // On a new title: collapse the player and seed the season (first real season,
   // skipping "Specials" / season 0 when possible), back to episode 1.
   useEffect(() => {
     setWatching(false);
+    setShowTrailer(false);
     const seasons = details.seasons || [];
     const first = seasons.find((s) => s.season_number >= 1) || seasons[0];
     setStreamSeason(first ? first.season_number : 1);
@@ -70,6 +79,33 @@ const MediaDetails = ({
     // is sufficient (and avoids re-seeding when unrelated fields change).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [details.id]);
+
+  // Fetch the selected season's episodes (TV only) for the rich episode list.
+  useEffect(() => {
+    if (mediaType !== "tv" || !details.id) return;
+    let cancelled = false;
+    setSeasonEpisodes({ loading: true, list: [] });
+    getTvSeason(details.id, streamSeason).then((res) => {
+      if (cancelled) return;
+      setSeasonEpisodes({ loading: false, list: res.data?.episodes || [] });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [mediaType, details.id, streamSeason]);
+
+  // Close the trailer modal on Escape and lock body scroll while it's open.
+  useEffect(() => {
+    if (!showTrailer) return;
+    const onKey = (e) => e.key === "Escape" && setShowTrailer(false);
+    window.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [showTrailer]);
 
   if (loading) {
     return (
@@ -104,6 +140,7 @@ const MediaDetails = ({
   const year = releaseDate ? releaseDate.split("-")[0] : "";
   const rating =
     details.vote_average != null ? Number(details.vote_average).toFixed(1) : "";
+  const certification = pickCertification(details, mediaType);
 
   // Movies have a single runtime; shows expose per-episode runtime plus a
   // season/episode count (replaces the old hardcoded "na min").
@@ -129,13 +166,31 @@ const MediaDetails = ({
   const topCast = casts.slice(0, 15);
   const genres = details.genres || [];
 
-  // Season list + episode count for the current season, driving the TV controls
-  // under the player. Empty for movies or when the season data is missing.
+  // Season list for the dropdown, and episode count for the current season as a
+  // fallback when detailed episode data hasn't loaded.
   const tvSeasons = isMovie ? [] : details.seasons || [];
   const seasonEpisodeCount =
     tvSeasons.find((s) => s.season_number === streamSeason)?.episode_count || 0;
 
-  // Switching season resets to episode 1; the episode grid re-renders below.
+  // Resume state for the current selection (movie, or current TV episode), read
+  // from the same localStorage records StreamPlayer writes.
+  const savedProgress = details.id
+    ? readProgress(mediaType, details.id, streamSeason, currentEpisode)
+    : null;
+  const resumeSeconds = savedProgress?.currentTime
+    ? Math.floor(savedProgress.currentTime)
+    : readResume(mediaType, details.id, streamSeason, currentEpisode);
+  const resumeFraction = watchedFraction(savedProgress);
+  const primaryLabel = resumeSeconds
+    ? `Resume ${formatTime(resumeSeconds)}`
+    : "Watch Now";
+
+  // Label the currently-selected TV episode for the player header.
+  const currentEpTitle = seasonEpisodes.list.find(
+    (ep) => ep.episode_number === currentEpisode
+  )?.name;
+
+  // Switching season resets to episode 1; the episode list re-renders below.
   const changeSeason = (num) => {
     setStreamSeason(num);
     setCurrentEpisode(1);
@@ -148,17 +203,10 @@ const MediaDetails = ({
     streamRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // Play jumps to and starts the trailer (the site only carries trailers, not
-  // full streams). Guarded so it's a no-op when there's no trailer to show.
-  const handlePlay = () => {
-    setPlaying(true);
-    trailerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
-
-  // Watch Now reveals + scrolls to the full-stream (Vidking) player.
+  // Watch/Resume reveals + scrolls to the full-stream (Vidking) player.
   const handleWatch = () => {
     setWatching(true);
-    streamRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    streamRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const handleShare = () =>
@@ -172,9 +220,153 @@ const MediaDetails = ({
       </div>
     ) : null;
 
+  // Shared meta badges (cert / HD / rating / year / runtime), used in the player
+  // header and the About hero.
+  const metaBadges = (
+    <>
+      <span className="meta-badge">HD</span>
+      {certification && <span className="meta-cert">{certification}</span>}
+      {rating && (
+        <span className="meta-rating">
+          <FaStar className="star-icon" /> {rating}
+        </span>
+      )}
+      {year && <span>{year}</span>}
+      {runtimeText && <span>{runtimeText}</span>}
+    </>
+  );
+
   return (
     <div className="movie-video-container">
-      {/* Cinematic hero: darkened backdrop art behind poster + title + actions. */}
+      {/* ---- Player as hero: first thing on the page --------------------- */}
+      {details.id && (
+        <section className="stream-hero" ref={streamRef}>
+          <div className="stream-topbar">
+            <div className="stream-topbar-title">
+              <h1>{title}</h1>
+              {!isMovie && (
+                <span className="stream-now-playing">
+                  S{streamSeason} · E{currentEpisode}
+                  {currentEpTitle ? ` · ${currentEpTitle}` : ""}
+                </span>
+              )}
+            </div>
+            <div className="detail-meta stream-topbar-meta">{metaBadges}</div>
+          </div>
+
+          <div
+            className="video-wrapper"
+            style={{
+              backgroundImage: `linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url(${imageUrl(
+                details.backdrop_path,
+                "w1280"
+              )})`,
+            }}
+          >
+            <div className="trailer">
+              {watching ? (
+                <StreamPlayer
+                  mediaType={mediaType}
+                  id={details.id}
+                  season={streamSeason}
+                  episode={currentEpisode}
+                  title={title}
+                />
+              ) : (
+                <button
+                  className="trailer-facade"
+                  onClick={handleWatch}
+                  aria-label={`${primaryLabel} — ${title || "now"}`}
+                  style={
+                    details.backdrop_path
+                      ? {
+                          backgroundImage: `url(${imageUrl(details.backdrop_path, "w1280")})`,
+                        }
+                      : undefined
+                  }
+                >
+                  <span className="trailer-play-btn">
+                    <FaPlay />
+                  </span>
+                  <span className="trailer-label">{primaryLabel}</span>
+                  {resumeFraction > 0 && (
+                    <span className="facade-progress">
+                      <span style={{ width: `${Math.round(resumeFraction * 100)}%` }} />
+                    </span>
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="stream-underbar">
+            <p className="stream-source-note">
+              Plays via an external source (Vidking). If a link is down, try another
+              server from the player.
+            </p>
+            <div className="stream-quick-actions">
+              {video && (
+                <button
+                  className="detail-trailer-btn"
+                  onClick={() => setShowTrailer(true)}
+                >
+                  <FaPlay /> Trailer
+                </button>
+              )}
+              <button
+                className={`detail-heart${saved ? " saved" : ""}`}
+                aria-label={saved ? "Remove from watchlist" : "Add to watchlist"}
+                aria-pressed={saved}
+                onClick={() => toggleWatchlist({ ...details, media_type: mediaType })}
+              >
+                {saved ? <FaHeart /> : <FaRegHeart />}
+                <span>{saved ? "In your list" : "Add to list"}</span>
+              </button>
+              <button
+                className="detail-share-btn"
+                onClick={handleShare}
+                aria-label="Share"
+              >
+                <FaShareAlt /> <span>Share</span>
+              </button>
+            </div>
+          </div>
+
+          {/* TV only: season dropdown + rich episode list. */}
+          {tvSeasons.length > 0 && (
+            <div className="stream-controls">
+              <div className="season-select">
+                <label htmlFor="season-select">Season</label>
+                <select
+                  id="season-select"
+                  value={streamSeason}
+                  onChange={(e) => changeSeason(Number(e.target.value))}
+                >
+                  {tvSeasons.map((s) => (
+                    <option key={s.id} value={s.season_number}>
+                      {s.name || `Season ${s.season_number}`}
+                      {s.episode_count ? ` (${s.episode_count})` : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <EpisodeList
+                tvId={details.id}
+                seasonNumber={streamSeason}
+                episodes={seasonEpisodes.list}
+                loading={seasonEpisodes.loading}
+                episodeCount={seasonEpisodeCount}
+                currentEpisode={currentEpisode}
+                watchingActive={watching}
+                onPlay={playEpisode}
+              />
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* ---- About: poster + synopsis + primary actions ----------------- */}
       <section
         className="detail-hero"
         style={
@@ -197,17 +389,8 @@ const MediaDetails = ({
             )}
           </div>
           <div className="detail-hero-content">
-            <h1 className="detail-title">{title}</h1>
-            <div className="detail-meta">
-              <span className="meta-badge">HD</span>
-              {rating && (
-                <span className="meta-rating">
-                  <FaStar className="star-icon" /> {rating}
-                </span>
-              )}
-              {year && <span>{year}</span>}
-              {runtimeText && <span>{runtimeText}</span>}
-            </div>
+            <h2 className="detail-title">{title}</h2>
+            <div className="detail-meta">{metaBadges}</div>
             {genres.length > 0 && (
               <div className="detail-genres">
                 {genres.map((g) => (
@@ -239,11 +422,14 @@ const MediaDetails = ({
             <div className="detail-actions">
               {details.id && (
                 <button className="detail-play-btn" onClick={handleWatch}>
-                  <FaPlay /> Watch Now
+                  <FaPlay /> {primaryLabel}
                 </button>
               )}
               {video && (
-                <button className="detail-trailer-btn" onClick={handlePlay}>
+                <button
+                  className="detail-trailer-btn"
+                  onClick={() => setShowTrailer(true)}
+                >
                   <FaPlay /> Trailer
                 </button>
               )}
@@ -260,149 +446,10 @@ const MediaDetails = ({
                   <span>{saved ? "In your list" : "Add to list"}</span>
                 </button>
               )}
-              <button
-                className="detail-share-btn"
-                onClick={handleShare}
-                aria-label="Share"
-              >
-                <FaShareAlt /> <span>Share</span>
-              </button>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Full-stream player (Vidking). Facade until the user clicks Watch Now so
-          the embed isn't loaded on every visit. */}
-      {details.id && (
-        <section className="trailer-section stream-section" ref={streamRef}>
-          <h4 className="section-heading">
-            <span>{isMovie ? "Watch Movie" : "Watch Episode"}</span>
-          </h4>
-          <div
-            className="video-wrapper"
-            style={{
-              backgroundImage: `linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url(${imageUrl(
-                details.backdrop_path,
-                "w1280"
-              )})`,
-            }}
-          >
-            <div className="trailer">
-              {watching ? (
-                <StreamPlayer
-                  mediaType={mediaType}
-                  id={details.id}
-                  season={streamSeason}
-                  episode={currentEpisode}
-                  title={title}
-                />
-              ) : (
-                <button
-                  className="trailer-facade"
-                  onClick={handleWatch}
-                  aria-label={`Watch ${title || "now"}`}
-                >
-                  <span className="trailer-play-btn">
-                    <FaPlay />
-                  </span>
-                  <span className="trailer-label">Watch Now</span>
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* TV only: season dropdown, with the season's episodes below it. */}
-          {tvSeasons.length > 0 && (
-            <div className="stream-controls">
-              <div className="season-select">
-                <label htmlFor="season-select">Season</label>
-                <select
-                  id="season-select"
-                  value={streamSeason}
-                  onChange={(e) => changeSeason(Number(e.target.value))}
-                >
-                  {tvSeasons.map((s) => (
-                    <option key={s.id} value={s.season_number}>
-                      {s.name || `Season ${s.season_number}`}
-                      {s.episode_count ? ` (${s.episode_count})` : ""}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {seasonEpisodeCount > 0 && (
-                <div className="episode-picker">
-                  <div className="episode-picker-head">
-                    <span className="episode-picker-count">
-                      {seasonEpisodeCount} episode{seasonEpisodeCount > 1 ? "s" : ""}
-                    </span>
-                  </div>
-                  <div className="episode-grid">
-                    {Array.from({ length: seasonEpisodeCount }, (_, i) => i + 1).map((ep) => (
-                      <button
-                        key={ep}
-                        className={`episode-btn${
-                          watching && ep === currentEpisode ? " active" : ""
-                        }`}
-                        onClick={() => playEpisode(ep)}
-                        aria-label={`Play episode ${ep}`}
-                        aria-pressed={watching && ep === currentEpisode}
-                      >
-                        {ep}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* Trailer moved below the hero into its own section (Play jumps here). */}
-      {video && (
-        <section className="trailer-section" ref={trailerRef}>
-          <h4 className="section-heading">
-            <span>Trailer</span>
-          </h4>
-          <div
-            className="video-wrapper"
-            style={{
-              backgroundImage: `linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url(${imageUrl(
-                details.backdrop_path,
-                "w1280"
-              )})`,
-            }}
-          >
-            <div className="trailer">
-              {playing ? (
-                <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${video.key}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
-                  title={`${title || "Title"} trailer`}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : (
-                <button
-                  className="trailer-facade"
-                  onClick={() => setPlaying(true)}
-                  aria-label={`Play ${title || "trailer"}`}
-                  style={{
-                    backgroundImage: `url(https://i.ytimg.com/vi/${video.key}/hqdefault.jpg)`,
-                  }}
-                >
-                  <span className="trailer-play-btn">
-                    <FaPlay />
-                  </span>
-                  <span className="trailer-label">Play trailer</span>
-                </button>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
 
       <div className="movie-items-wrapper">
         <div className="detail-main">
@@ -466,6 +513,36 @@ const MediaDetails = ({
           <div className="similar-movies">{similar.map(renderSimilar)}</div>
         </div>
       </div>
+
+      {/* ---- Trailer modal --------------------------------------------- */}
+      {video && showTrailer && (
+        <div
+          className="trailer-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${title || "Title"} trailer`}
+          onClick={() => setShowTrailer(false)}
+        >
+          <div className="trailer-modal-inner" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="trailer-modal-close"
+              onClick={() => setShowTrailer(false)}
+              aria-label="Close trailer"
+            >
+              <FaTimes />
+            </button>
+            <div className="trailer-modal-frame">
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${video.key}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
+                title={`${title || "Title"} trailer`}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
