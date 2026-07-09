@@ -1507,7 +1507,9 @@ form{
 .stream-hero{
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px 40px 0;
+  /* Bottom padding separates the player / episode list from the About block
+     below (player -> overview for movies, last episode -> overview for TV). */
+  padding: 24px 40px 44px;
 }
 .stream-topbar{
   display: flex;
@@ -3403,7 +3405,7 @@ button.menu-link{
     margin-top: 32px;
   }
   .stream-hero{
-    padding: 16px 16px 0;
+    padding: 16px 16px 32px;
   }
   .stream-topbar{
     align-items: flex-start;
