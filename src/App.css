@@ -2849,6 +2849,21 @@ button.menu-link{
   height: 44px;
   padding: 0;
 }
+/* Mobile search icon — hidden on desktop (the SearchBox already sits in the nav
+   row there), shown at <=768px beside the hamburger. Without this reset it would
+   render as a raw bordered <button>, leaving a stray icon + line in the bar. */
+.nav-search-toggle{
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--accent);
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+}
 /* Desktop: wrapper is transparent so its children lay out in the nav flex row
    exactly as before (logo / links / search / register spaced apart). */
 .nav-collapse{
@@ -3023,8 +3038,11 @@ button.menu-link{
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
-  /* Show the hamburger, keep the top row to just logo + toggle */
+  /* Show the hamburger + search icon in the top row (logo / search / toggle) */
   .nav-toggle{
+    display: inline-flex;
+  }
+  .nav-search-toggle{
     display: inline-flex;
   }
   /* Collapsible panel: full-width vertical stack, hidden until .open */
