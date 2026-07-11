@@ -4,6 +4,10 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { setDoc, Timestamp,doc } from "firebase/firestore"
 import { auth,database } from "../firebase-config"
 import { Alert } from "react-bootstrap";
+import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
+import AuthLayout from "../components/AuthLayout";
+import { signInWithGoogle } from "../utils/googleAuth";
+
 const Register = () =>{
 
     const[userData,setUserData] = useState({
@@ -13,6 +17,7 @@ const Register = () =>{
         error:null
     });
     const [submitting,setSubmitting] = useState(false);
+    const [showPassword,setShowPassword] = useState(false);
     const navigate = useNavigate()
 
     const { username,email,password,error } = userData;
@@ -44,58 +49,88 @@ const Register = () =>{
        }
 
     }
-    
+
+    const handleGoogle = async () =>{
+        if(submitting) return
+        setSubmitting(true)
+        try{
+            await signInWithGoogle();
+            navigate("/");
+        }catch(err){
+            setUserData({...userData,error:err.message})
+            setSubmitting(false)
+        }
+    }
+
 
     return(
-        <section className="sectionForm">
-            <div className="formInput">
-                <h2>Create Account</h2>
-                <p className="features">Create an account to enjoy features</p>
-                { error ? <Alert variant="danger">{error}</Alert> :null
-                }
-                <form onSubmit={register}>
-                    <div className="form-group">
-                        <label htmlFor="username">Username</label>
-                        <input 
-                            type="text" 
-                            name="username" 
-                            className="form-control" 
-                            placeholder="Your username"
-                            onChange={(e)=>setUserData({...userData,[e.target.name]:e.target.value})}
-                        />
-                    </div>
+        <AuthLayout title="Create Account" subtitle="Create an account to build your watchlist and pick up on any device.">
+            { error ? <Alert variant="danger">{error}</Alert> :null }
 
-                    <div className="form-group">
-                        <label htmlFor="email">Your Account</label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            className="form-control" 
-                            placeholder="Your Email"
-                            onChange={(e)=>setUserData({...userData,[e.target.name]:e.target.value})}
-                        />
-                    </div>
+            <button type="button" className="auth-google" onClick={handleGoogle} disabled={submitting}>
+                <FaGoogle className="auth-google-icon"/> Continue with Google
+            </button>
 
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input 
-                            type="password" 
-                            name="password" 
-                            className="form-control" 
+            <div className="auth-divider"><span>or</span></div>
+
+            <form onSubmit={register}>
+                <div className="form-group">
+                    <label htmlFor="username">Username</label>
+                    <input
+                        id="username"
+                        type="text"
+                        name="username"
+                        className="form-control"
+                        placeholder="Your username"
+                        autoComplete="username"
+                        onChange={(e)=>setUserData({...userData,[e.target.name]:e.target.value})}
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="email">Your Account</label>
+                    <input
+                        id="email"
+                        type="email"
+                        name="email"
+                        className="form-control"
+                        placeholder="Your Email"
+                        autoComplete="email"
+                        onChange={(e)=>setUserData({...userData,[e.target.name]:e.target.value})}
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="password">Password</label>
+                    <div className="auth-password">
+                        <input
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            className="form-control"
                             placeholder="Password"
+                            autoComplete="new-password"
                             onChange={(e)=>setUserData({...userData,[e.target.name]:e.target.value})}
                         />
+                        <button
+                            type="button"
+                            className="auth-password-toggle"
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                            onClick={()=>setShowPassword(v=>!v)}
+                        >
+                            {showPassword ? <FaEyeSlash/> : <FaEye/>}
+                        </button>
                     </div>
+                </div>
 
-                    <div className="button">
-                        <button className="btn" onClick={register} disabled={submitting}>{submitting ? "Creating account..." : "Register"}</button>
-                    </div>
-                    <div className="form-link">
-                        <p>Already have an account?<NavLink className="form-reg-link" to="/login">Sign in</NavLink></p>
-                    </div>
-                </form>
-            </div>
-        </section>
+                <div className="button">
+                    <button className="btn" type="submit" disabled={submitting}>{submitting ? "Creating account..." : "Register"}</button>
+                </div>
+                <div className="form-link">
+                    <p>Already have an account?<NavLink className="form-reg-link" to="/login">Sign in</NavLink></p>
+                </div>
+            </form>
+        </AuthLayout>
     );
 };
 

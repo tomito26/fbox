@@ -2,8 +2,11 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, updateDoc } from "firebase/firestore";
 import { useState } from "react";
 import { Alert } from "react-bootstrap";
+import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { auth, database } from "../firebase-config";
+import AuthLayout from "../components/AuthLayout";
+import { signInWithGoogle } from "../utils/googleAuth";
 
 const Login = () =>{
     const[loginData,setLoginData] = useState({
@@ -12,6 +15,7 @@ const Login = () =>{
         error:null
     });
     const [submitting,setSubmitting] = useState(false);
+    const [showPassword,setShowPassword] = useState(false);
     const navigate = useNavigate()
 
     const{email,password,error} = loginData;
@@ -39,42 +43,75 @@ const Login = () =>{
         }
 
     }
+
+    const handleGoogle = async () =>{
+        if(submitting) return
+        setSubmitting(true)
+        try{
+            await signInWithGoogle();
+            navigate("/");
+        }catch(err){
+            setLoginData({...loginData,error:err.message})
+            setSubmitting(false)
+        }
+    }
+
     return(
-        <section className="sectionForm">
-            <div className="formInput">
-                <h2>Sign In</h2>
-                {error ? <Alert variant="danger">{loginData.error}</Alert> : null}
-                <form onSubmit={handleLogin}>
-                    <div className="form-group">
-                        <label htmlFor="email">Your Account</label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            className="form-control" 
-                            placeholder="Your Email"
-                            onChange={(e)=>setLoginData({...loginData,[e.target.name]:e.target.value})}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input 
-                            type="password" 
-                            name="password" 
-                            className="form-control" 
+        <AuthLayout title="Sign In" subtitle="Welcome back — pick up where you left off.">
+            {error ? <Alert variant="danger">{loginData.error}</Alert> : null}
+
+            <button type="button" className="auth-google" onClick={handleGoogle} disabled={submitting}>
+                <FaGoogle className="auth-google-icon"/> Continue with Google
+            </button>
+
+            <div className="auth-divider"><span>or</span></div>
+
+            <form onSubmit={handleLogin}>
+                <div className="form-group">
+                    <label htmlFor="email">Your Account</label>
+                    <input
+                        id="email"
+                        type="email"
+                        name="email"
+                        className="form-control"
+                        placeholder="Your Email"
+                        autoComplete="email"
+                        onChange={(e)=>setLoginData({...loginData,[e.target.name]:e.target.value})}
+                    />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="password">Password</label>
+                    <div className="auth-password">
+                        <input
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            className="form-control"
                             placeholder="Password"
+                            autoComplete="current-password"
                             onChange={e=>setLoginData({...loginData,[e.target.name]:e.target.value})}
                         />
-                        <span className="forgot"><button type="button" className="link-button">forgot your password?</button></span>
+                        <button
+                            type="button"
+                            className="auth-password-toggle"
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                            onClick={()=>setShowPassword(v=>!v)}
+                        >
+                            {showPassword ? <FaEyeSlash/> : <FaEye/>}
+                        </button>
                     </div>
-                    <div className="button">
-                        <button className="btn" onClick={handleLogin} disabled={submitting}>{submitting ? "Signing in..." : "Login"}</button>
-                    </div>
-                    <div className="form-link">
-                        <p>Don't have an Account?<NavLink className="form-reg-link" to="/register">Register</NavLink></p>
-                    </div>
-                </form>
-            </div>
-        </section>
+                    <span className="forgot">
+                        <NavLink className="link-button" to="/forgot-password">forgot your password?</NavLink>
+                    </span>
+                </div>
+                <div className="button">
+                    <button className="btn" type="submit" disabled={submitting}>{submitting ? "Signing in..." : "Login"}</button>
+                </div>
+                <div className="form-link">
+                    <p>Don't have an Account?<NavLink className="form-reg-link" to="/register">Register</NavLink></p>
+                </div>
+            </form>
+        </AuthLayout>
     );
 };
 
