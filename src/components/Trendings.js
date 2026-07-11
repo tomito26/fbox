@@ -16,11 +16,13 @@ const Trendings = () =>{
     
     return(
         <div className="movie-wrapper">
-            {trendings.map(trending =>
-                trending.media_type === "movie"
-                    ? <MovieCard key={trending.id} movie={trending}/>
-                    : <SeriesCard key={trending.id} tvShow={trending}/>
-            )}
+            {trendings
+                .filter(trending => trending.media_type === "movie" || trending.media_type === "tv")
+                .map(trending =>
+                    trending.media_type === "movie"
+                        ? <MovieCard key={trending.id} movie={trending}/>
+                        : <SeriesCard key={trending.id} tvShow={trending}/>
+                )}
         </div>
     );
 };
