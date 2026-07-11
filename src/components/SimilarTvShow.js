@@ -8,6 +8,7 @@ const SimilarTvShow = ({ similarTvShow }) =>{
     const [similarTvShowDetails,setSimilarTvShowDetails] = useState({});
     const { isSaved, toggleWatchlist } = useWatchlist();
     const saved = isSaved(similarTvShow.id);
+    const name = similarTvShow.name || "";
 
     useEffect(()=>{
         const abortCont = new AbortController();
@@ -31,12 +32,12 @@ const SimilarTvShow = ({ similarTvShow }) =>{
                 <div className="similar-movie-poster">
                     <img
                         src={imageUrl(similarTvShow.poster_path, "w342")}
-                        alt={similarTvShow.name}
+                        alt={name}
                         loading="lazy"
                     />
                 </div>
                 <div className="similar-movie-footer">
-                    <p className="movie-title">{similarTvShow.name.length > 10  ? `${similarTvShow.name.substring(0,13)}...` : similarTvShow.name}</p>
+                    <p className="movie-title">{name.length > 10  ? `${name.substring(0,13)}...` : name}</p>
                     <div className="movie-footer-details">
                         <p className="movie-time">
                             <span>
