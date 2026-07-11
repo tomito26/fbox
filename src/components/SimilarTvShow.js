@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
-import { FaCircle, FaHeart, FaPlay, FaRegHeart, FaStar } from "react-icons/fa";
+import { FaCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { getTvShow, imageUrl } from "../services/tmdb";
-import { useWatchlist } from "../Context/WatchlistContext";
 
 const SimilarTvShow = ({ similarTvShow }) =>{
-    const[isHovering,setIsHovering] = useState(-1);
     const [similarTvShowDetails,setSimilarTvShowDetails] = useState({});
-    const { isSaved, toggleWatchlist } = useWatchlist();
-    const saved = isSaved(similarTvShow.id);
 
     useEffect(()=>{
         const abortCont = new AbortController();
@@ -19,14 +15,13 @@ const SimilarTvShow = ({ similarTvShow }) =>{
     },[similarTvShow.id])
 
     return(
-        <div className="similar-movie-container" onMouseOver={e =>setIsHovering(similarTvShowDetails.id)} onMouseOut={()=>setIsHovering(-1)}>
+        <div className="similar-movie-container">
             <Link className="similar-movie-link" to={`/tvshows/${similarTvShow.id}`}>
                 <div className="similar-movie-poster">
                     <img
                         src={imageUrl(similarTvShow.poster_path, "w342")}
                         alt={similarTvShow.name}
                         loading="lazy"
-                        style={{filter:isHovering < 0 ? "brightness(100%)" : "brightness(50%)"}}
                     />
                 </div>
                 <div className="similar-movie-footer">
@@ -45,41 +40,6 @@ const SimilarTvShow = ({ similarTvShow }) =>{
                     </div>
                 </div>
             </Link>
-            <div className={isHovering > 0 ?  `similar-movie-overview` : "no-hover"}>
-                <Link to={`/tvshows/${similarTvShow.id}`} className="similar-movie-play">
-                    <FaPlay/>
-                </Link>
-                <div className="similar-movie-overview-info">
-                    <div className="similar-movie-overview-header">
-                        <h4>{similarTvShow.name}</h4>
-                        <p className="similar-movie-rate"><FaStar className="star-rate"/>{similarTvShow.vote_average}</p>
-                        <p className="similar-movie-runtime">{`na min`}</p>
-                        <p className="similar-movie-tag">HD</p>
-                    </div>
-                    <div className="similar-movie-overview-details">
-                        <p>{similarTvShow.overview.length > 150 ? `${similarTvShow.overview.substring(0,150)}...`: similarTvShow.overview}</p>
-                    </div>
-                    <div className="category-section">
-                        <h4>Country:</h4>
-                        <p>{!similarTvShowDetails.production_countries ? "" : similarTvShowDetails.production_countries.map((country,index) => <span key={index} style={{marginRight:"3px"}}>{country.name}</span>)}</p>
-                    </div>
-                    <div className="category-section">
-                        <h4>Genre:</h4>
-                        <p>{!similarTvShowDetails.genres ? "" : similarTvShowDetails.genres.map((genre,index) => <span key={genre.id} style={{marginRight:"3px"}}>{`${genre.name},`}</span>)}</p>
-                    </div>
-                    <div className="similar-button">
-                        <Link to={`/tvshows/${similarTvShow.id}`} style={{textDecoration:"none",color:""}} className="watchnow-btn"><FaPlay className="similar-movies-play"/>Watch Now</Link>
-                        <button
-                            className={`add-to-list${saved ? " saved" : ""}`}
-                            aria-label={saved ? "Remove from watchlist" : "Add to watchlist"}
-                            aria-pressed={saved}
-                            onClick={() => toggleWatchlist({ ...similarTvShow, media_type: "tv" })}
-                        >
-                            {saved ? <FaHeart className="heart"/> : <FaRegHeart className="heart"/>}
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 

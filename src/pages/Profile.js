@@ -11,6 +11,7 @@ import {
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FaCamera } from 'react-icons/fa';
 import { useUserAuth } from '../Context/UserAuthContext';
 import { useWatchlist } from '../Context/WatchlistContext';
 import { imageUrl } from '../services/tmdb';
@@ -262,12 +263,24 @@ const Profile = () => {
           <span>My Account</span>
         </h2>
       </div>
+      <p className="profile-subtitle">Manage your account, security and saved titles.</p>
 
       {/* --- Account overview --- */}
       <section className="profile-overview">
         <div className="overview-identity">
           <div className="avatar-block">
-            <Avatar name={displayName || email} src={photoURL} size={80} />
+            <button
+              type="button"
+              className="avatar-edit"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              aria-label={photoURL ? 'Change photo' : 'Add photo'}
+            >
+              <Avatar name={displayName || email} src={photoURL} size={80} />
+              <span className="avatar-cam" aria-hidden="true">
+                <FaCamera />
+              </span>
+            </button>
             <div className="avatar-actions">
               <button
                 type="button"
@@ -363,7 +376,7 @@ const Profile = () => {
       </section>
 
       {/* --- Edit profile --- */}
-      <section className="profile-section">
+      <section className="profile-section profile-card">
         <h3 className="section-title">
           <span>Edit Profile</span>
         </h3>
@@ -464,7 +477,7 @@ const Profile = () => {
       </section>
 
       {/* --- Danger zone --- */}
-      <section className="profile-section danger-zone">
+      <section className="profile-section danger-zone profile-card">
         <h3 className="section-title">
           <span>Danger Zone</span>
         </h3>

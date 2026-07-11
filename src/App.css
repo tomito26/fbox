@@ -105,7 +105,9 @@ nav .logo .text{
 
 }
 
-nav ul {
+/* Scoped to .site-nav so these bar-layout rules don't leak into the footer's
+   <nav className="footer-nav"> (which would flatten its stacked link lists). */
+.site-nav ul {
   display: flex !important;
   align-items: center;
   /* Comfortable, even spacing between the primary links (was a cramped 6px
@@ -113,11 +115,11 @@ nav ul {
   gap: 22px;
   list-style: none;
 }
-nav ul li{
+.site-nav ul li{
   display: inline-block !important;
   margin-left: 0 !important;
 }
-nav ul li .site-nav-link{
+.site-nav ul li .site-nav-link{
   text-decoration: none;
   font-weight: 400;
   font-family: "Lato",sans-serif;
@@ -125,15 +127,15 @@ nav ul li .site-nav-link{
   cursor: pointer;
   line-height: 20px;
 }
-nav ul li span{
+.site-nav ul li span{
   color: #ccc;
 }
-nav ul li .site-nav-link:hover{
+.site-nav ul li .site-nav-link:hover{
   color: #FFC300;
 }
 /* Genres / Country toggles are <button>s; the plain links set #ccc via inline
    style, so match that here (grey at rest, gold on hover via the rule above). */
-nav ul li .nav-dropdown-toggle{
+.site-nav ul li .nav-dropdown-toggle{
   color: #ccc;
 }
 
@@ -1023,7 +1025,7 @@ form{
   background-color: #0c1017;
   border-top: 1px solid rgba(255,255,255,0.06);
   margin-top: 80px;
-  padding: 48px 40px 24px;
+  padding: 48px clamp(16px, 5vw, 40px) 24px;
   color: #8b929c;
 }
 .footer-inner{
@@ -1082,10 +1084,11 @@ form{
   border-color: #FFC300;
   transform: translateY(-2px);
 }
-/* Link columns */
+/* Link columns. auto-fit lets the three groups hold at wide widths and reflow to
+   fewer columns as space shrinks — phones force a single column (see media q). */
 .footer-nav{
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 32px;
 }
 .footer-col h4{
@@ -2039,6 +2042,10 @@ form{
 }
 .similar-movie-container{
   position: relative;
+  transition: transform 0.2s ease;
+}
+.similar-movie-container:hover{
+  transform: translateY(-4px);
 }
 
 .similar-movie-container .similar-movie-link{
@@ -2047,17 +2054,19 @@ form{
 .similar-movie-poster{
   height: 180px;
   width: 120px;
-
+  overflow: hidden;
+  border-radius: 5px;
 }
 .similar-movie-poster img{
   height: 100%;
   width: 100%;
   border-radius: 5px;
-
+  transition: transform 0.2s ease;
 }
-/* .similar-movie-poster img:hover{
-  filter: brightness(50%);
-} */
+.similar-movie-container:hover .similar-movie-poster img{
+  transform: scale(1.04);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+}
 .similar-movie-footer .movie-title{
   margin-bottom: 2px;
   color: #ccc;
@@ -2085,105 +2094,6 @@ form{
   padding: 0 2px;
   margin-top: 6px;
 }
-.similar-movie-play{
-  border: 3px solid #FFC300;
-  height: 50px;
-  width: 50px;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  color: #F0A500;
-  position: absolute;
-  top: 60px;
-  left: 40px;
-  cursor: pointer;
-}
-.similar-movie-overview-info{
-  background-color: #2C394B;
-  width: 250px;
-  border-radius: 5px;
-  padding: 10px;
-  position: absolute;
-  top: 40px;
-  left: 110%;
-  /* right: 0; */
-  z-index: 1;
-
-}
-.similar-movie-container:nth-child(2) .similar-movie-overview-info{
-  left: -215%;
-  /* right: 110%; */
-}
-.similar-movie-container:nth-child(3) .similar-movie-overview-info{
-  left: -215%;
-}
-.similar-movie-container:nth-child(5) .similar-movie-overview-info{
-  left: -215%;
-}
-.similar-movie-container:nth-child(6) .similar-movie-overview-info{
-  left: -215%;
-}
-.similar-movie-container:nth-child(8) .similar-movie-overview-info{
-  left: -215%;
-}
-.similar-movie-container:nth-child(9) .similar-movie-overview-info{
-  left: -215%;
-}
-/* .similar-movie-overview-header{
-  /* display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr; */
-  /* justify-content: space-between;
-} */
-
-
-.similar-movie-overview-header h4{
-  font-size: 13px;
-}
-.similar-movie-overview-header p{
-  display: inline-block;
-  margin-bottom: 5px;
-}
-.similar-movie-overview-header .similar-movie-tag{
-  background-color: #FFC300;
-  padding: 0 10px;
-  font-size: 11px;
-  color: #333;
-  text-align: center;
-  border-radius: 30px;
-  float: right;
-  margin-top: 5px;
-}
-.similar-movie-rate{
-  color: #ccc;
-  font-size: 14px;
-
-}
-.star-rate{
-  color: #FFC300;
-  margin-bottom: 4px;
-  font-size: 14px;
-  margin-right: 3px;
-}
-.similar-movie-runtime{
-   margin-left: 50px;
-   font-size: 14px;
-   color: rgb(128, 125, 125);
-}
-.similar-movie-overview-details{
-  padding:0;
-
-  margin: 0;
-}
-.similar-movie-overview-details p{
-  padding: 0;
-  margin: 0 0 10px;
-  font-size: 13px;
-  color: rgb(128, 125, 125);
-  
-}
-
 .category-section{
   display: flex;
   margin-top: 0;
@@ -2219,42 +2129,6 @@ form{
   margin-top: 0;
   margin-bottom: 0;
   padding: 0;
-}
-.watchnow-btn,.add-to-list{
-  border: none;
-}
-.watchnow-btn{
-  background-color: #041C32;
-  padding: 5px 20px;
-  border-radius: 20px;
-  text-decoration: none;
-  color: #ccc;
-  font-size: 13px;
-  margin-top: 5px;
-  text-align: center;
-}
-.similar-movies-play{
-  color: #FFC300;
-  margin-right: 3px;
-  margin-bottom: 2px;
-}
-.similar-movie-play:hover{
-  color: #FFC300;
-
-}
-.add-to-list {
-  float: right;
-  margin-top: 5px;
-  padding: 0 4px;
-  border-radius: 2px;
-  color: #eee;
-  background-color: #F473B9;
-  cursor: pointer;
-  border: none;
-}
-.add-to-list.saved{
-  background-color: #FFC300;
-  color: #041C32;
 }
 /* // seasons dropdown menu  */
 .video-links{
@@ -2329,7 +2203,13 @@ form{
 .profile-page{
   min-height: 50vh;
   padding: 40px;
-  max-width: 720px;
+  max-width: 760px;
+  margin: 0 auto;
+  animation: profileFade 0.4s ease both;
+}
+@keyframes profileFade{
+  from{ opacity: 0; transform: translateY(8px); }
+  to{ opacity: 1; transform: translateY(0); }
 }
 .profile-heading{
   display: flex;
@@ -2471,6 +2351,47 @@ img.profile-avatar{
   align-items: center;
   gap: 8px;
 }
+/* Avatar acts as the primary "change photo" control, with a camera badge. */
+.avatar-edit{
+  position: relative;
+  display: block;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  line-height: 0;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.avatar-edit:hover:not(:disabled){
+  box-shadow: 0 0 0 2px rgba(255, 195, 0, 0.55);
+  transform: translateY(-1px);
+}
+.avatar-edit:disabled{
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.avatar-cam{
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #FFC300;
+  color: #1a1d24;
+  font-size: 12px;
+  border: 2px solid #0a0d14;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition: background-color 0.15s ease;
+}
+.avatar-edit:hover:not(:disabled) .avatar-cam{
+  background-color: #F0A500;
+}
 .avatar-actions{
   display: flex;
   gap: 10px;
@@ -2565,6 +2486,14 @@ img.profile-avatar{
 .profile-section{
   margin-top: 34px;
 }
+/* Shared elevated panel — matches .profile-overview so all three blocks read
+   as consistent cards. */
+.profile-card{
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 22px;
+}
 .section-title{
   font-size: 18px;
   font-weight: 600;
@@ -2576,9 +2505,8 @@ img.profile-avatar{
 }
 
 /* --- Danger zone --- */
-.danger-zone{
-  border-top: 1px solid rgba(214, 66, 66, 0.25);
-  padding-top: 26px;
+.danger-zone.profile-card{
+  border-color: rgba(214, 66, 66, 0.3);
 }
 .danger-zone .section-title span{
   border-bottom-color: #d64242;
@@ -3237,10 +3165,10 @@ button.menu-link{
     padding: 8px 16px;
     gap: 10px;
   }
-  nav ul{
+  .site-nav ul{
     gap: 14px;
   }
-  nav ul li .site-nav-link{
+  .site-nav ul li .site-nav-link{
     font-size: 15px;
   }
   .search-form .form-control{
@@ -3364,6 +3292,15 @@ button.menu-link{
     line-height: normal;
     padding: 6px 0;
   }
+  /* Footer: on tablets the desktop 1.4fr/2.6fr split gets tight. Give the brand
+     and links equal room and trim the oversized desktop gap. */
+  .footer-inner{
+    grid-template-columns: 1fr 1.6fr;
+    gap: 36px;
+  }
+  .footer-brand{
+    max-width: none;
+  }
 }
 
 @media (max-width: 768px){
@@ -3478,6 +3415,30 @@ button.menu-link{
   .footer-bottom{
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 600px){
+  /* Phones: stack the three link groups into one full-width column and add a
+     little breathing room so Browse → Genres → Support read top-to-bottom. */
+  .footer-nav{
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  /* Larger vertical rhythm gives comfortable touch targets for the links. */
+  .footer-col li{
+    margin-bottom: 12px;
+  }
+  .footer-about{
+    margin-top: 32px;
+  }
+  /* Copyright + legal links each get their own row; keep legal links wrapping. */
+  .footer-bottom{
+    gap: 14px;
+  }
+  .footer-legal{
+    flex-wrap: wrap;
+    row-gap: 8px;
   }
 }
 
