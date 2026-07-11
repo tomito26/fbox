@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import Trending from './Trending'
+import MovieCard from "./MovieCard";
+import SeriesCard from "./SeriesCard";
 
 const Trendings = () =>{
     const[trendings,setTrendings] = useState([]);
@@ -15,7 +16,13 @@ const Trendings = () =>{
     
     return(
         <div className="movie-wrapper">
-            {trendings.map(trending => <Trending key={trending.id} trending={trending}/>)}
+            {trendings
+                .filter(trending => trending.media_type === "movie" || trending.media_type === "tv")
+                .map(trending =>
+                    trending.media_type === "movie"
+                        ? <MovieCard key={trending.id} movie={trending}/>
+                        : <SeriesCard key={trending.id} tvShow={trending}/>
+                )}
         </div>
     );
 };
