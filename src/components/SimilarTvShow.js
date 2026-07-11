@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
-import { FaCircle } from "react-icons/fa";
+import { FaCircle, FaHeart, FaRegHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { getTvShow, imageUrl } from "../services/tmdb";
+import { useWatchlist } from "../Context/WatchlistContext";
 
 const SimilarTvShow = ({ similarTvShow }) =>{
     const [similarTvShowDetails,setSimilarTvShowDetails] = useState({});
+    const { isSaved, toggleWatchlist } = useWatchlist();
+    const saved = isSaved(similarTvShow.id);
 
     useEffect(()=>{
         const abortCont = new AbortController();
@@ -16,6 +19,14 @@ const SimilarTvShow = ({ similarTvShow }) =>{
 
     return(
         <div className="similar-movie-container">
+            <button
+                className={`card-heart${saved ? " saved" : ""}`}
+                aria-label={saved ? "Remove from watchlist" : "Add to watchlist"}
+                aria-pressed={saved}
+                onClick={() => toggleWatchlist({ ...similarTvShow, media_type: "tv" })}
+            >
+                {saved ? <FaHeart /> : <FaRegHeart />}
+            </button>
             <Link className="similar-movie-link" to={`/tvshows/${similarTvShow.id}`}>
                 <div className="similar-movie-poster">
                     <img

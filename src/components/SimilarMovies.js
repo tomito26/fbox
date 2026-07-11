@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaCircle } from "react-icons/fa";
+import { FaCircle, FaHeart, FaRegHeart } from "react-icons/fa";
 import { getMovie, imageUrl } from "../services/tmdb";
+import { useWatchlist } from "../Context/WatchlistContext";
 
 const SimilarMovies = ({ similarMovie }) =>{
     const [similarMovieDetail,setSimilarMovieDetail] = useState({});
+    const { isSaved, toggleWatchlist } = useWatchlist();
+    const saved = isSaved(similarMovie.id);
     useEffect(()=>{
         const abortCont = new AbortController();
         getMovie(similarMovie.id, abortCont.signal).then(({ data }) => {
@@ -18,6 +21,14 @@ const SimilarMovies = ({ similarMovie }) =>{
    
     return(
         <div className="similar-movie-container">
+            <button
+                className={`card-heart${saved ? " saved" : ""}`}
+                aria-label={saved ? "Remove from watchlist" : "Add to watchlist"}
+                aria-pressed={saved}
+                onClick={() => toggleWatchlist({ ...similarMovie, media_type: "movie" })}
+            >
+                {saved ? <FaHeart /> : <FaRegHeart />}
+            </button>
             <Link className="similar-movie-link" to={`/movie/${similarMovie.id}`}>
                 <div className="similar-movie-poster">
                     <img
