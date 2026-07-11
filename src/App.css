@@ -49,17 +49,15 @@ body{
               backdrop-filter 0.3s ease;
 }
 
-/* Hero pages: the bar overlays the full-bleed backdrop, fully transparent at
-   rest. Legibility comes from the hero's own top scrim (.hero-scrim); the bar
-   deliberately paints NO gradient of its own — a second scrim fading out at the
-   bar's bottom edge created a brightness kink there that read as a horizontal
-   line across the hero. Fixed (not absolute) so it stays put. */
+/* Hero pages: the bar overlays the full-bleed backdrop, transparent at rest with
+   a dark scrim so the links stay legible. Fixed (not absolute) so it stays put. */
 .site-nav--hero{
   position: fixed;
   left: 0;
   right: 0;
   background-color: transparent;
-  background-image: none;
+  background-image: linear-gradient(to bottom,
+    rgba(10,13,20,0.9) 0%, rgba(10,13,20,0.5) 55%, rgba(10,13,20,0) 100%);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   border-bottom-color: transparent;
@@ -105,21 +103,16 @@ nav .logo .text{
 
 }
 
-/* Scoped to .site-nav so these bar-layout rules don't leak into the footer's
-   <nav className="footer-nav"> (which would flatten its stacked link lists). */
-.site-nav ul {
-  display: flex !important;
-  align-items: center;
-  /* Comfortable, even spacing between the primary links (was a cramped 6px
-     inline-block margin). Netflix/Max sit around 18–24px. */
-  gap: 22px;
+nav ul {
+  display: block !important;
   list-style: none;
 }
-.site-nav ul li{
+nav ul li{
   display: inline-block !important;
-  margin-left: 0 !important;
+  
+  margin-left: 6px !important;
 }
-.site-nav ul li .site-nav-link{
+nav ul li .site-nav-link{
   text-decoration: none;
   font-weight: 400;
   font-family: "Lato",sans-serif;
@@ -127,15 +120,15 @@ nav .logo .text{
   cursor: pointer;
   line-height: 20px;
 }
-.site-nav ul li span{
+nav ul li span{
   color: #ccc;
 }
-.site-nav ul li .site-nav-link:hover{
+nav ul li .site-nav-link:hover{
   color: #FFC300;
 }
 /* Genres / Country toggles are <button>s; the plain links set #ccc via inline
    style, so match that here (grey at rest, gold on hover via the rule above). */
-.site-nav ul li .nav-dropdown-toggle{
+nav ul li .nav-dropdown-toggle{
   color: #ccc;
 }
 
@@ -480,115 +473,233 @@ nav .logo .text{
 }
 
 
-.sectionForm{
-  height: calc(120vh - 90px);
+/* ============================================================
+   Cinematic auth pages (Login / Register / ForgotPassword)
+   Split-screen: full-bleed TMDB artwork + scrim on the left,
+   dark on-brand form panel on the right. Built on :root tokens.
+   ============================================================ */
+.auth-page{
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  min-height: 100vh;
+  background-color: var(--bg);
+}
+/* Left: cinematic artwork panel */
+.auth-art{
+  position: relative;
+  overflow: hidden;
+}
+.auth-art-img{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.auth-art-scrim{
+  position: absolute;
+  inset: 0;
+  /* Mirrors the homepage hero scrim so the panel reads as the same product. */
+  background:
+    linear-gradient(to top, #0a0d14 0%, rgba(10,13,20,0.82) 18%, rgba(10,13,20,0.35) 45%, rgba(10,13,20,0) 70%),
+    linear-gradient(to right, rgba(10,13,20,0.4) 0%, rgba(10,13,20,0.05) 40%, rgba(10,13,20,0.55) 100%);
+}
+.auth-art-content{
+  position: absolute;
+  left: clamp(24px, 4vw, 56px);
+  bottom: clamp(28px, 6vh, 64px);
+  right: clamp(24px, 4vw, 56px);
+  z-index: 1;
+}
+.auth-brand{
+  display: inline-block;
+  font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  text-decoration: none;
+}
+.auth-brand:hover{ color: var(--accent-2); }
+.auth-tagline{
+  margin-top: 14px;
+  max-width: 30ch;
+  font-size: clamp(1.05rem, 1.4vw, 1.5rem);
+  line-height: 1.4;
+  font-weight: 600;
+  color: #f4f4f4;
+}
+/* Right: form panel */
+.auth-panel{
   display: flex;
-  justify-content: center;
   align-items: center;
-  align-content: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background: linear-gradient(180deg, var(--bg-elev) 0%, var(--bg) 100%);
 }
-.formInput{
-  background-color: #2C394B;
-  width: 500px;
-  padding: 20px;
+.auth-panel-inner{
+  width: 100%;
+  max-width: 400px;
+}
+.auth-brand--mobile{
+  display: none;
+  margin-bottom: 24px;
+}
+.auth-title{
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+.auth-subtitle{
+  margin-top: 8px;
+  margin-bottom: 22px;
+  color: #9aa3b2;
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+.auth-panel .alert{
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+/* Google / OAuth button */
+.auth-google{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
   border-radius: 10px;
-  /* margin: 30px 0; */
-  box-shadow: 0 3px 4px rgba(79, 87, 129, 0.3);
- 
+  border: 1px solid rgba(255,255,255,0.16);
+  background-color: var(--surface);
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
-.formInput h2{
-  font-size: 26px;
-  font-weight: 400;
-  text-transform: capitalize;
-  margin-left: 30px;
-  color: #9D9D9D;
+.auth-google:hover{
+  background-color: #232c3d;
+  border-color: rgba(255,255,255,0.28);
 }
-.formInput .alert {
-  margin-left: 30px;
-  margin-top: 10px;
-  padding: 10px 20px;
-  background-color: rgb(224, 197, 197);
-  color: rgb(228, 88, 88);
-  width: 400px;
-  border-radius: 5px;
+.auth-google:disabled{ opacity: 0.6; cursor: default; }
+.auth-google-icon{ color: var(--accent); font-size: 1.05rem; }
+/* "or" divider */
+.auth-divider{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 20px 0;
+  color: #6b7386;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
-.formInput .features{
-  margin:10px  30px;
-  color: #9D9D9D;
+.auth-divider::before,
+.auth-divider::after{
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: rgba(255,255,255,0.1);
 }
+/* Form fields (auth-scoped) */
 form{
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
 }
 .form-group{
   display: flex;
   flex-direction: column;
-  margin-top: 20px;
+  margin-top: 16px;
 }
 .form-group label{
-  font-size: 17px;
+  font-size: 0.85rem;
   font-family: "Lato",sans-serif;
-  font-weight: 400;
-  margin-bottom: 10px;
-  color: #9D9D9D;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #b7bfce;
 }
 .form-group .form-control{
-  height: 45px;
-  width: 400px;
-  border-radius: 40px;
+  height: 48px;
+  width: 100%;
+  border-radius: 10px;
   outline: none;
-  border: none;
-  padding: 10px 10px 10px 20px;
-  font-size: 15px;
+  border: 1px solid rgba(255,255,255,0.14);
+  padding: 10px 16px;
+  font-size: 0.95rem;
   font-family: "Lato",sans-serif;
-  background-color: #ddd;
+  color: var(--text);
+  background-color: var(--surface);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
-/* .form-group{
+.form-group .form-control::placeholder{ color: #6b7386; }
+.form-group .form-control:focus{
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(255,195,0,0.18);
+}
+/* Password field with show/hide toggle */
+.auth-password{ position: relative; }
+.auth-password .form-control{ padding-right: 46px; }
+.auth-password-toggle{
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  color: #8b93a4;
+  font-size: 1.05rem;
+  display: flex;
+  padding: 4px;
+}
+.auth-password-toggle:hover{ color: var(--accent); }
+.forgot{ text-align: right; }
+.forgot .link-button{
   display: inline-block;
   margin-top: 10px;
-} */
-.form-group .forgot a{
-  text-decoration: none;
-  color: #F0A500;
-  font-size: 14px;
-  font-family: "Lato",sans-serif;
-  float: right;
-  margin-top: 10px;
-  
-}
-.formCheck input{
-  margin-top: 20px;
-  float: left;
-}
-.button{
-  margin-top: 30px;
-}
-.button .btn{
-  padding: 15px 180px;
-  border-radius: 30px;
+  padding: 0;
+  background: none;
   border: none;
-  outline: none;
-  background-color: #FFC300;
-  font-size: 15px;
+  text-decoration: none;
+  color: var(--accent-2);
+  font-size: 0.85rem;
+  font-family: "Lato",sans-serif;
   cursor: pointer;
 }
-.button .btn:hover{
-  background-color: #F0A500;
+.forgot .link-button:hover{ color: var(--accent); }
+.button{ margin-top: 26px; }
+.button .btn{
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  background-color: var(--accent);
+  color: #1a1300;
+  font-size: 0.98rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
+.button .btn:hover{ background-color: var(--accent-2); }
+.button .btn:disabled{ opacity: 0.7; cursor: default; }
 .form-link{
-  color: rgb(128, 125, 125);
+  color: #8b93a4;
   margin-top: 20px;
+  text-align: center;
+  font-size: 0.92rem;
 }
 .form-link a{
-  margin-left: 10px;
+  margin-left: 8px;
   text-decoration: none;
-  color: #FFC300;
+  color: var(--accent);
+  font-weight: 600;
 }
-.form-reg-link:hover{
-  color: #F0A500;
-}
+.form-reg-link:hover{ color: var(--accent-2); }
 
 /* recommend movies section  */
 .recommend-movies{
@@ -685,12 +796,10 @@ form{
 .latest-movies .movie-wrapper .movie-img{
   height: 264px;
 }
-/* The escaping 280px detail popup is disabled on every listing. On the home
-   carousels it couldn't live in a scroll container; on the Movies / TV-Series /
-   Browse (genre & country) grids it overflowed the grid and read as broken.
-   Everywhere the hover affordance is now the in-place card lift + poster
-   zoom/darken (defined later), so cards behave identically across the site. */
-.movie-overview{
+/* Disable the escaping 280px popup on the carousels; the card lift + poster
+   zoom/darken (defined later) is the hover affordance here. */
+.recommend-movies .movie-overview,
+.latest-movies .movie-overview{
   display: none !important;
 }
 .movie-card{
@@ -1025,7 +1134,7 @@ form{
   background-color: #0c1017;
   border-top: 1px solid rgba(255,255,255,0.06);
   margin-top: 80px;
-  padding: 48px clamp(16px, 5vw, 40px) 24px;
+  padding: 48px 40px 24px;
   color: #8b929c;
 }
 .footer-inner{
@@ -1084,11 +1193,10 @@ form{
   border-color: #FFC300;
   transform: translateY(-2px);
 }
-/* Link columns. auto-fit lets the three groups hold at wide widths and reflow to
-   fewer columns as space shrinks — phones force a single column (see media q). */
+/* Link columns */
 .footer-nav{
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 32px;
 }
 .footer-col h4{
@@ -1404,374 +1512,6 @@ form{
   background-color: rgba(255,255,255,0.1);
   border-color: rgba(255,255,255,0.4);
 }
-/* Secondary "Trailer" button — outline style, sits next to the gold Watch Now. */
-.detail-trailer-btn{
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 11px 22px;
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 30px;
-  background: transparent;
-  color: #e6e6e6;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.18s ease, border-color 0.18s ease;
-}
-.detail-trailer-btn:hover{
-  background-color: rgba(255,255,255,0.1);
-  border-color: rgba(255,255,255,0.4);
-}
-
-/* Season selector + episode buttons under the TV stream player. */
-.stream-controls{
-  max-width: 1100px;
-  margin: 16px auto 0;
-}
-.season-select{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-.season-select label{
-  font-weight: 700;
-  color: #f4f4f4;
-  font-size: 15px;
-}
-.season-select select{
-  appearance: none;
-  -webkit-appearance: none;
-  background-color: #1a2130;
-  color: #e6e6e6;
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 8px;
-  padding: 9px 34px 9px 12px;
-  font-size: 14px;
-  font-family: "Lato", sans-serif;
-  cursor: pointer;
-  min-width: 180px;
-  /* caret */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23cbd2dc' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-}
-.season-select select:focus-visible{
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-.episode-picker{
-  max-width: 1100px;
-}
-.episode-picker-head{
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-.episode-picker-title{
-  font-weight: 700;
-  color: #f4f4f4;
-  font-size: 15px;
-}
-.episode-picker-count{
-  font-size: 13px;
-  color: var(--muted);
-}
-.episode-grid{
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
-  gap: 8px;
-}
-.episode-btn{
-  height: 42px;
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 8px;
-  background-color: #1a2130;
-  color: #cbd2dc;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-.episode-btn:hover{
-  background-color: #222b3d;
-  color: #fff;
-  border-color: rgba(255,255,255,0.28);
-}
-.episode-btn.active{
-  background-color: var(--accent);
-  border-color: var(--accent);
-  color: #12161f;
-}
-
-/* ---- Player-as-hero (streaming-standard: player first) ------------------ */
-.stream-hero{
-  max-width: 1200px;
-  margin: 0 auto;
-  /* Bottom padding separates the player / episode list from the About block
-     below (player -> overview for movies, last episode -> overview for TV). */
-  padding: 24px 40px 44px;
-}
-.stream-topbar{
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px 24px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-.stream-topbar-title h1{
-  color: #f4f4f4;
-  font-family: 'Poppins', sans-serif;
-  font-size: clamp(1.4rem, 2.6vw, 2.1rem);
-  font-weight: 700;
-  line-height: 1.15;
-  margin: 0;
-}
-.stream-now-playing{
-  display: inline-block;
-  margin-top: 6px;
-  color: #c7ccd4;
-  font-size: 14px;
-}
-.stream-topbar-meta{
-  margin-bottom: 4px;
-}
-/* Content-certification badge (PG-13, TV-MA…) next to the rating. */
-.meta-cert{
-  padding: 2px 9px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #e6e6e6;
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 5px;
-  letter-spacing: 0.3px;
-}
-/* Suppress the dot separator immediately after the cert badge. */
-.detail-meta > .meta-cert + span::before{ content: none; margin: 0; }
-.stream-hero .video-wrapper{
-  margin: 0;
-  padding: 0;
-  border-radius: 10px;
-  overflow: hidden;
-}
-/* Resume progress bar pinned to the bottom of the play facade. */
-.facade-progress{
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 4px;
-  background: rgba(255,255,255,0.25);
-}
-.facade-progress span{
-  display: block;
-  height: 100%;
-  background: var(--accent);
-}
-.stream-underbar{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px 20px;
-  flex-wrap: wrap;
-  margin-top: 14px;
-}
-.stream-source-note{
-  margin: 0;
-  color: #8b93a1;
-  font-size: 12.5px;
-  max-width: 620px;
-}
-.stream-quick-actions{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-/* ---- Rich episode list -------------------------------------------------- */
-.episode-list{
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.episode-row{
-  display: flex;
-  gap: 14px;
-  text-align: left;
-  padding: 10px;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 10px;
-  background-color: #141a26;
-  color: #d8dce3;
-  cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-.episode-row:hover{
-  background-color: #1b2230;
-  border-color: rgba(255,255,255,0.2);
-}
-.episode-row.active{
-  border-color: var(--accent);
-  background-color: #1c2536;
-}
-.episode-still{
-  position: relative;
-  flex: 0 0 152px;
-  width: 152px;
-  aspect-ratio: 16 / 9;
-  border-radius: 7px;
-  overflow: hidden;
-  background-color: #0c111a;
-}
-.episode-still img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.episode-still-fallback{
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #5b6472;
-  font-size: 20px;
-  font-weight: 700;
-}
-.episode-still-play{
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 20px;
-  background: rgba(0,0,0,0.35);
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-.episode-row:hover .episode-still-play{ opacity: 1; }
-.episode-watched{
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 22px;
-  height: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--accent);
-  color: #12161f;
-  font-size: 11px;
-}
-.episode-progress{
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 4px;
-  background: rgba(255,255,255,0.25);
-}
-.episode-progress span{
-  display: block;
-  height: 100%;
-  background: var(--accent);
-}
-.episode-body{
-  min-width: 0;
-  flex: 1;
-}
-.episode-head{
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.episode-num{
-  color: var(--accent);
-  font-weight: 700;
-  font-size: 14px;
-}
-.episode-name{
-  color: #f4f4f4;
-  font-weight: 600;
-  font-size: 15px;
-}
-.episode-runtime{
-  color: #8b93a1;
-  font-size: 12.5px;
-}
-.episode-air{
-  display: block;
-  color: #8b93a1;
-  font-size: 12.5px;
-  margin-top: 2px;
-}
-.episode-overview{
-  margin: 6px 0 0;
-  color: #aeb6c2;
-  font-size: 13px;
-  line-height: 1.45;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.episode-row-skeleton{ cursor: default; }
-.episode-row-lines{ flex: 1; padding-top: 6px; }
-
-/* ---- Trailer modal ------------------------------------------------------ */
-.trailer-modal{
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: rgba(0,0,0,0.82);
-}
-.trailer-modal-inner{
-  position: relative;
-  width: 100%;
-  max-width: 960px;
-}
-.trailer-modal-frame{
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #000;
-  border-radius: 8px;
-  overflow: hidden;
-}
-.trailer-modal-frame iframe{
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-.trailer-modal-close{
-  position: absolute;
-  top: -44px;
-  right: 0;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.14);
-  color: #fff;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-.trailer-modal-close:hover{ background: rgba(255,255,255,0.28); }
 
 /* Shared section heading: bold near-white title with a gold underline. */
 .section-heading{
@@ -2042,10 +1782,6 @@ form{
 }
 .similar-movie-container{
   position: relative;
-  transition: transform 0.2s ease;
-}
-.similar-movie-container:hover{
-  transform: translateY(-4px);
 }
 
 .similar-movie-container .similar-movie-link{
@@ -2054,19 +1790,17 @@ form{
 .similar-movie-poster{
   height: 180px;
   width: 120px;
-  overflow: hidden;
-  border-radius: 5px;
+
 }
 .similar-movie-poster img{
   height: 100%;
   width: 100%;
   border-radius: 5px;
-  transition: transform 0.2s ease;
+
 }
-.similar-movie-container:hover .similar-movie-poster img{
-  transform: scale(1.04);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
-}
+/* .similar-movie-poster img:hover{
+  filter: brightness(50%);
+} */
 .similar-movie-footer .movie-title{
   margin-bottom: 2px;
   color: #ccc;
@@ -2094,6 +1828,105 @@ form{
   padding: 0 2px;
   margin-top: 6px;
 }
+.similar-movie-play{
+  border: 3px solid #FFC300;
+  height: 50px;
+  width: 50px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  color: #F0A500;
+  position: absolute;
+  top: 60px;
+  left: 40px;
+  cursor: pointer;
+}
+.similar-movie-overview-info{
+  background-color: #2C394B;
+  width: 250px;
+  border-radius: 5px;
+  padding: 10px;
+  position: absolute;
+  top: 40px;
+  left: 110%;
+  /* right: 0; */
+  z-index: 1;
+
+}
+.similar-movie-container:nth-child(2) .similar-movie-overview-info{
+  left: -215%;
+  /* right: 110%; */
+}
+.similar-movie-container:nth-child(3) .similar-movie-overview-info{
+  left: -215%;
+}
+.similar-movie-container:nth-child(5) .similar-movie-overview-info{
+  left: -215%;
+}
+.similar-movie-container:nth-child(6) .similar-movie-overview-info{
+  left: -215%;
+}
+.similar-movie-container:nth-child(8) .similar-movie-overview-info{
+  left: -215%;
+}
+.similar-movie-container:nth-child(9) .similar-movie-overview-info{
+  left: -215%;
+}
+/* .similar-movie-overview-header{
+  /* display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr; */
+  /* justify-content: space-between;
+} */
+
+
+.similar-movie-overview-header h4{
+  font-size: 13px;
+}
+.similar-movie-overview-header p{
+  display: inline-block;
+  margin-bottom: 5px;
+}
+.similar-movie-overview-header .similar-movie-tag{
+  background-color: #FFC300;
+  padding: 0 10px;
+  font-size: 11px;
+  color: #333;
+  text-align: center;
+  border-radius: 30px;
+  float: right;
+  margin-top: 5px;
+}
+.similar-movie-rate{
+  color: #ccc;
+  font-size: 14px;
+
+}
+.star-rate{
+  color: #FFC300;
+  margin-bottom: 4px;
+  font-size: 14px;
+  margin-right: 3px;
+}
+.similar-movie-runtime{
+   margin-left: 50px;
+   font-size: 14px;
+   color: rgb(128, 125, 125);
+}
+.similar-movie-overview-details{
+  padding:0;
+
+  margin: 0;
+}
+.similar-movie-overview-details p{
+  padding: 0;
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: rgb(128, 125, 125);
+  
+}
+
 .category-section{
   display: flex;
   margin-top: 0;
@@ -2129,6 +1962,42 @@ form{
   margin-top: 0;
   margin-bottom: 0;
   padding: 0;
+}
+.watchnow-btn,.add-to-list{
+  border: none;
+}
+.watchnow-btn{
+  background-color: #041C32;
+  padding: 5px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  color: #ccc;
+  font-size: 13px;
+  margin-top: 5px;
+  text-align: center;
+}
+.similar-movies-play{
+  color: #FFC300;
+  margin-right: 3px;
+  margin-bottom: 2px;
+}
+.similar-movie-play:hover{
+  color: #FFC300;
+
+}
+.add-to-list {
+  float: right;
+  margin-top: 5px;
+  padding: 0 4px;
+  border-radius: 2px;
+  color: #eee;
+  background-color: #F473B9;
+  cursor: pointer;
+  border: none;
+}
+.add-to-list.saved{
+  background-color: #FFC300;
+  color: #041C32;
 }
 /* // seasons dropdown menu  */
 .video-links{
@@ -2203,13 +2072,7 @@ form{
 .profile-page{
   min-height: 50vh;
   padding: 40px;
-  max-width: 760px;
-  margin: 0 auto;
-  animation: profileFade 0.4s ease both;
-}
-@keyframes profileFade{
-  from{ opacity: 0; transform: translateY(8px); }
-  to{ opacity: 1; transform: translateY(0); }
+  max-width: 720px;
 }
 .profile-heading{
   display: flex;
@@ -2351,47 +2214,6 @@ img.profile-avatar{
   align-items: center;
   gap: 8px;
 }
-/* Avatar acts as the primary "change photo" control, with a camera badge. */
-.avatar-edit{
-  position: relative;
-  display: block;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: none;
-  cursor: pointer;
-  line-height: 0;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08);
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
-}
-.avatar-edit:hover:not(:disabled){
-  box-shadow: 0 0 0 2px rgba(255, 195, 0, 0.55);
-  transform: translateY(-1px);
-}
-.avatar-edit:disabled{
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-.avatar-cam{
-  position: absolute;
-  right: -2px;
-  bottom: -2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background-color: #FFC300;
-  color: #1a1d24;
-  font-size: 12px;
-  border: 2px solid #0a0d14;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-  transition: background-color 0.15s ease;
-}
-.avatar-edit:hover:not(:disabled) .avatar-cam{
-  background-color: #F0A500;
-}
 .avatar-actions{
   display: flex;
   gap: 10px;
@@ -2486,14 +2308,6 @@ img.profile-avatar{
 .profile-section{
   margin-top: 34px;
 }
-/* Shared elevated panel — matches .profile-overview so all three blocks read
-   as consistent cards. */
-.profile-card{
-  background-color: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 14px;
-  padding: 22px;
-}
 .section-title{
   font-size: 18px;
   font-weight: 600;
@@ -2505,8 +2319,9 @@ img.profile-avatar{
 }
 
 /* --- Danger zone --- */
-.danger-zone.profile-card{
-  border-color: rgba(214, 66, 66, 0.3);
+.danger-zone{
+  border-top: 1px solid rgba(214, 66, 66, 0.25);
+  padding-top: 26px;
 }
 .danger-zone .section-title span{
   border-bottom-color: #d64242;
@@ -2585,177 +2400,270 @@ img.profile-avatar{
 .movie-page .category-section{
   margin-bottom: 30px;
 }
-.movie-page .category-section .filterBtn{
-  display: inline-flex;
-  align-items: center;
-  background-color: #FFC300;
-  color: #12161f;
-  font-family: "Lato",sans-serif;
-  font-weight: 700;
-  outline: none;
-  border: none;
-  margin-left: 4px;
-  padding: 7px 16px;
-  border-radius: 40px;
-  font-size: 13px;
-  text-align: center;
-  cursor: pointer;
-}
-
-/* ---- Discover filter bar (data-driven DropdownMenus) ---- */
-.movie-page .category-section{
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.filter-dropdown{
+.movie-page .category-section .dropdown-category{
   position: relative;
 }
-.filter-btn{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background-color: #1a2130;
-  color: #cbd2dc;
-  border: 1px solid rgba(255,255,255,0.08);
-  padding: 7px 14px;
+.movie-page .category-section .dropdown-category .category-dropdownBtn{
+  background-color: #314458;
+  padding: 5px 10px;
   border-radius: 40px;
-  font-size: 13px;
-  font-family: "Lato", sans-serif;
+  text-align: center;
+  color: #a1a5ac;
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  font-size: 14px;
 }
-.filter-btn svg{
-  font-size: 12px;
-  opacity: 0.8;
-}
-.filter-btn:hover{
-  background-color: #222b3d;
-  color: #fff;
-}
-.filter-btn.open{
-  border-color: var(--accent);
-  color: #fff;
-}
-.filter-btn.has-value{
-  border-color: var(--accent);
-  color: var(--accent);
-}
-.filter-btn.has-value svg{
-  opacity: 1;
-}
-/* Dark glass dropdown panel, matching the navbar dropdowns. */
-.filter-panel{
+
+
+.movie-page .category-section .dropdown-category .menu-items{
   position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  /* Above the poster grid (cards sit at z-index 1, hover 5, heart 6). */
-  z-index: 90;
-  min-width: 300px;
-  max-width: min(94vw, 460px);
-  max-height: 320px;
-  overflow-y: auto;
-  padding: 10px;
-  background-color: rgba(16, 20, 28, 0.98);
-  border: 1px solid rgba(255,255,255,0.08);
+  top: 120%;
   border-radius: 10px;
-  box-shadow: 0 14px 34px rgba(0,0,0,0.55);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-}
-.filter-panel-grid{
+  z-index: 1;
+  width: 600px;
+  padding: 15px;
+  background-color: #314458;
   display: grid;
-  /* Columns sized to the longest label (e.g. "United Kingdom", "Documentary")
-     so options never spill out of their cell; 2–3 columns depending on width. */
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 4px;
+  grid-template-columns: 2fr 2.6fr 2fr 2.5fr;
+  color: #d5d9e4;
+
+  
 }
-.filter-panel-list{
+.form-check{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5px;
+}
+
+.form-check input[type="checkbox"]{
+  cursor: pointer;
+  opacity: 0;
+  position: absolute;
+
+}
+.form-check label{
+  cursor: pointer;
+  display: flex;
+  font-size: 14px;
+}
+.form-check label:hover{
+  color: #fff;
+}
+.form-check label::before{
+  content: "";
+  width: 1em;
+  height: 1em;
+  border-radius: .15em;
+  margin-right: .5em;
+  background-color: #475e7e;
+  margin-top: 4px;
+
+}
+.form-check input[type='checkbox']:checked + label::before{
+  content: '\002714';
+  background-color: transparent;
+  color: #F0A500;
+  /* font-size: 16px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.includeall label{
+  color: #707e8d;
+}
+
+.menu-type{
+  position: relative;
+}
+.menu-type-btn{
+  background-color: #314458;
+  padding: 5px 10px;
+  border-radius: 40px;
+  text-align: center;
+  color: #a1a5ac;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 14px
+}
+.menu-type-items{
+  width: 150px;
+  background-color: #314458;
+  position: absolute;
+  top: 120%;
+  left: 10%;
+  border-radius: 10px;
+  z-index: 1;
+  padding: 15px;
+  background-color: #314458;
+  color: #d5d9e4;
+}
+.country-dropdown-menu{
+  position: relative;
+}
+.country-btn{
+  background-color: #314458;
+  padding: 5px 10px;
+  border-radius: 40px;
+  text-align: center;
+  color: #a1a5ac;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 14px
+
+}
+.countries-menu{
+  position: absolute;
+  top: 120%;
+  left: 4%;
+  border-radius: 10px;
+  z-index: 1;
+  width: 620px;
+  padding:20px;
+  background-color: #314458;
+  display: grid;
+  grid-template-columns: 2.6fr 2.6fr 2.6fr 2.5fr;
+  color: #d5d9e4;
+}
+.yearDropdownMenu{
+  position: relative;
+}
+.yearDropdownBtn{
+  background-color: #314458;
+  padding: 5px 10px;
+  border-radius: 40px;
+  text-align: center;
+  color: #a1a5ac;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 14px
+}
+.yearDropdownItems{
+  position: absolute;
+  top: 120%;
+  left: 4%;
+  border-radius: 10px;
+  z-index: 1;
+  width: 300px;
+  padding:20px;
+  background-color: #314458;
+  display: grid;
+  grid-template-columns: 2fr 2fr 2fr 2fr;
+  grid-column-gap: .5em;
+  justify-content: center;
+  color: #d5d9e4;
+}
+.quality{
+  position: relative;
+}
+.qualityBtn{
+  background-color: #314458;
+  padding: 5px 10px;
+  border-radius: 40px;
+  text-align: center;
+  color: #a1a5ac;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 14px
+}
+
+.qualityMenu{
+  width: 150px;
+  background-color: #314458;
+  position: absolute;
+  top: 120%;
+  left: 10%;
+  border-radius: 10px;
+  z-index: 1;
+  padding: 15px;
+  background-color: #314458;
+  color: #d5d9e4;
+}
+.sortMenu{
+  position: relative;
+}
+.sortBtn{
+  background-color: #314458;
+  padding: 2px 10px;
+  border-radius: 40px;
+  text-align: center;
+  color: #a1a5ac;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  
+
+}
+.sortBtn span{
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
-.filter-option{
-  background: none;
-  border: 1px solid transparent;
-  color: #cbd2dc;
-  text-align: left;
-  padding: 7px 10px;
-  border-radius: 7px;
-  font-size: 13px;
-  font-family: "Lato", sans-serif;
+.sortBtn span:last-child{
+  margin-top: 3px;
+}
+.sort-items{
+  width: 200px;
+  background-color: #314458;
+  position: absolute;
+  top: 120%;
+  left: 10%;
+  border-radius: 10px;
+  z-index: 1;
+  padding: 15px;
+  background-color: #314458;
+  color: #d5d9e4;
+}
+
+
+.form-check input[type="radio"]{
   cursor: pointer;
-  /* Clip to the cell as a safety net so an over-long label ellipsizes instead
-     of overflowing (min-width:0 lets the button shrink inside the grid track). */
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: background-color 0.12s ease, color 0.12s ease;
+  opacity: 0;
+  position: absolute;
+
 }
-.filter-option:hover{
-  background-color: rgba(255,255,255,0.07);
+.form-check label{
+  cursor: pointer;
+  display: flex;
+  font-size: 14px;
+}
+.form-check label:hover{
   color: #fff;
 }
-.filter-option.selected{
-  background-color: var(--accent);
-  color: #12161f;
-  font-weight: 700;
+.sort-items .form-check label::before{
+  content: "";
+  width: 1em;
+  height: 1em;
+  border-radius: 100%;
+  margin-right: .5em;
+  background-color: #475e7e;
+  margin-top: 4px;
+
 }
-.filter-includeall{
+.form-check input[type='radio']:checked + label::before{
+  content: '\002714';
+  background-color: #F0A500;
+  color: #314458;
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  padding: 8px 4px 2px;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  font-size: 12px;
-  color: var(--muted);
-  cursor: pointer;
 }
-.filter-includeall input{
-  accent-color: var(--accent);
-  cursor: pointer;
-}
-/* Active-filter chips */
-.filter-chips{
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-.filter-chip{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background-color: rgba(255, 195, 0, 0.14);
-  color: var(--accent);
-  border: 1px solid rgba(255, 195, 0, 0.4);
-  padding: 4px 10px;
-  border-radius: 40px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background-color 0.12s ease;
-}
-.filter-chip:hover{
-  background-color: rgba(255, 195, 0, 0.24);
-}
-.filter-chip-x{
-  font-size: 10px;
-}
-.filter-clear{
-  background: none;
+
+
+.movie-page .category-section .filterBtn{
+  background-color: #FFC300;
+  color: #333;
+  font-family: "Lato",sans-serif;
+  font-weight: 400;
+  outline: none;
   border: none;
-  color: var(--muted);
-  font-size: 12px;
-  text-decoration: underline;
-  cursor: pointer;
-  padding: 4px 6px;
-}
-.filter-clear:hover{
-  color: #fff;
+  margin-left: 10px;
+  padding: 3px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-align: center;
+
 }
 
 /* ---- Shared utilities & states ---- */
@@ -2941,57 +2849,10 @@ button.menu-link{
   height: 44px;
   padding: 0;
 }
-/* Persistent mobile search entry point — hidden on desktop (the full search box
-   lives inline in the bar there), shown next to the hamburger at <=992px. */
-.nav-search-toggle{
-  display: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--accent);
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  margin-left: auto;
-}
 /* Desktop: wrapper is transparent so its children lay out in the nav flex row
    exactly as before (logo / links / search / register spaced apart). */
 .nav-collapse{
   display: contents;
-}
-
-/* Keyboard focus: a single accent ring across every interactive nav control.
-   :focus-visible keeps it off mouse clicks, so it never fights the hover styles. */
-.site-nav-link:focus-visible,
-.nav-dropdown-toggle:focus-visible,
-.nav-toggle:focus-visible,
-.nav-search-toggle:focus-visible,
-.nav-media-toggle button:focus-visible,
-.nav-dropdown-menu a:focus-visible,
-.search-form .form-control:focus-visible,
-.search-btn:focus-visible,
-.search-clear:focus-visible,
-.search-suggestion:focus-visible,
-.register a:focus-visible{
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* Hero pages: the bar sits over bright artwork before it condenses, so the grey
-   links can brush the low-opacity tail of the scrim. A soft shadow guarantees
-   legibility until the solid/scrolled bar takes over (then it's redundant). */
-.site-nav--hero .site-nav-link,
-.site-nav--hero .nav-dropdown-toggle,
-.site-nav--hero .logo .text{
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
-}
-.site-nav--hero.site-nav--scrolled .site-nav-link,
-.site-nav--hero.site-nav--scrolled .nav-dropdown-toggle,
-.site-nav--hero.site-nav--scrolled .logo .text{
-  text-shadow: none;
 }
 
 /* Navbar Genres / Country dropdowns */
@@ -3010,28 +2871,11 @@ button.menu-link{
   padding: 0;
 }
 .nav-dropdown-toggle:hover,
-.nav-dropdown-toggle[aria-expanded="true"],
-.nav-dropdown-toggle.active{
+.nav-dropdown-toggle[aria-expanded="true"]{
   color: var(--accent);
 }
 .nav-caret{
   font-size: 12px;
-}
-
-/* Desktop/tablet: anchor logo + primary links together on the left and push
-   search + account to the right (streaming-standard grouping), instead of
-   spreading all four groups evenly across the bar with a dead gap after the
-   logo. margin-left:auto collapses gracefully to 0 if the row gets tight. */
-@media (min-width: 993px){
-  .site-nav{
-    justify-content: flex-start;
-  }
-  .site-nav ul{
-    margin-left: 26px;
-  }
-  .search-form{
-    margin-left: auto;
-  }
 }
 .nav-dropdown-menu{
   position: absolute;
@@ -3041,14 +2885,11 @@ button.menu-link{
   max-width: calc(100vw - 32px);
   max-height: 320px;
   overflow-y: auto;
-  /* Match the cinematic near-black chrome (was a leftover bright navy #2C394B). */
-  background-color: rgba(16, 20, 28, 0.97);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  background-color: #2C394B;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 6px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 }
 /* Two-column list of genre/country links (the panel itself is a flow container
    so the Movies/TV toggle can sit above the grid). */
@@ -3141,19 +2982,6 @@ button.menu-link{
   100% { background-position: -200% 0; }
 }
 
-/* Respect users who ask for less motion: neutralise the scroll-linked nav
-   transition, card zooms, shimmer loaders and spinners. */
-@media (prefers-reduced-motion: reduce){
-  *,
-  *::before,
-  *::after{
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
 /* ---- Responsive breakpoints ---- */
 
 /* Mid-range (≈993–1200px): keep the full horizontal bar but condense it — a
@@ -3165,26 +2993,15 @@ button.menu-link{
     padding: 8px 16px;
     gap: 10px;
   }
-  .site-nav ul{
-    gap: 14px;
+  nav ul li{
+    margin-left: 2px !important;
   }
-  .site-nav ul li .site-nav-link{
+  nav ul li .site-nav-link{
     font-size: 15px;
   }
   .search-form .form-control{
     width: 200px !important;
     margin-left: 12px !important;
-  }
-  /* Keep the autocomplete panel flush with the narrowed input (defaults are
-     tuned to the 300px/30px desktop field). */
-  .search-suggestions{
-    left: 12px;
-    width: 200px;
-  }
-  /* Re-seat the magnifier for the reduced margin so it doesn't creep over the
-     placeholder text (input margin-left drops 30px -> 12px here). */
-  .search-btn{
-    left: 16px;
   }
 }
 
@@ -3206,11 +3023,8 @@ button.menu-link{
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
-  /* Show the hamburger + persistent search icon in the top row */
+  /* Show the hamburger, keep the top row to just logo + toggle */
   .nav-toggle{
-    display: inline-flex;
-  }
-  .nav-search-toggle{
     display: inline-flex;
   }
   /* Collapsible panel: full-width vertical stack, hidden until .open */
@@ -3267,23 +3081,15 @@ button.menu-link{
     max-width: 100%;
     margin: 0;
     box-sizing: border-box;
-    /* Float to the top of the collapsed menu so the top-bar search icon lands
-       the user right on it instead of below every link. */
-    order: -1;
   }
   .search-form .form-control{
     width: 100% !important;
     margin-left: 0 !important;
     box-sizing: border-box;
   }
-  /* Full-width input on mobile (margin-left drops to 0): move the magnifier and
-     stretch the autocomplete panel to match. */
+  /* Full-width input on mobile (margin-left drops to 0): move the magnifier. */
   .search-btn{
     left: 8px;
-  }
-  .search-suggestions{
-    left: 0;
-    width: 100%;
   }
   .register{
     width: 100%;
@@ -3291,15 +3097,6 @@ button.menu-link{
   .register a{
     line-height: normal;
     padding: 6px 0;
-  }
-  /* Footer: on tablets the desktop 1.4fr/2.6fr split gets tight. Give the brand
-     and links equal room and trim the oversized desktop gap. */
-  .footer-inner{
-    grid-template-columns: 1fr 1.6fr;
-    gap: 36px;
-  }
-  .footer-brand{
-    max-width: none;
   }
 }
 
@@ -3316,12 +3113,16 @@ button.menu-link{
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     margin-right: 0;
   }
-  .sectionForm .formInput,
-  .formInput,
-  .formInput .form-control,
-  .form-group .form-control{
-    width: 100% !important;
-    max-width: 420px;
+  /* Auth split-screen collapses to a single column: artwork becomes a short
+     banner up top, form fills the width below it. */
+  .auth-page{
+    grid-template-columns: 1fr;
+  }
+  .auth-art{
+    min-height: 34vh;
+  }
+  .auth-brand--mobile{
+    display: inline-block;
   }
   /* Hero stacks: poster above the title/actions on narrow screens. */
   .detail-hero-inner{
@@ -3340,28 +3141,6 @@ button.menu-link{
   .trailer-section{
     padding: 0 16px;
     margin-top: 32px;
-  }
-  .stream-hero{
-    padding: 16px 16px 32px;
-  }
-  .stream-topbar{
-    align-items: flex-start;
-  }
-  /* Compact episode rows: smaller still, hide the overview on narrow screens. */
-  .episode-still{
-    flex-basis: 116px;
-    width: 116px;
-  }
-  .episode-overview{
-    display: none;
-  }
-  .trailer-modal{
-    padding: 16px;
-  }
-  .trailer-modal-close{
-    top: 0;
-    right: 0;
-    background: rgba(0,0,0,0.55);
   }
   /* Stack details above the "You may also like" grid (was a no-op grid rule
      on a flex container). */
@@ -3415,30 +3194,6 @@ button.menu-link{
   .footer-bottom{
     flex-direction: column;
     align-items: flex-start;
-  }
-}
-
-@media (max-width: 600px){
-  /* Phones: stack the three link groups into one full-width column and add a
-     little breathing room so Browse → Genres → Support read top-to-bottom. */
-  .footer-nav{
-    grid-template-columns: 1fr;
-    gap: 28px;
-  }
-  /* Larger vertical rhythm gives comfortable touch targets for the links. */
-  .footer-col li{
-    margin-bottom: 12px;
-  }
-  .footer-about{
-    margin-top: 32px;
-  }
-  /* Copyright + legal links each get their own row; keep legal links wrapping. */
-  .footer-bottom{
-    gap: 14px;
-  }
-  .footer-legal{
-    flex-wrap: wrap;
-    row-gap: 8px;
   }
 }
 
