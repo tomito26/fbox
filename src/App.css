@@ -77,6 +77,16 @@ nav .logo{
   text-decoration: none;
   color: inherit;
 }
+/* Brand behaves like a logo, not a text link: stay white on hover/focus
+   instead of falling through to Bootstrap's blue a:hover. Redirect to home
+   comes from the <Link to="/"> in Navbar.js. */
+nav .logo:hover,
+nav .logo:focus,
+nav .logo:hover .text,
+nav .logo:focus .text{
+  color: #fff;
+  text-decoration: none;
+}
 
 nav .logo .image{
   height: 30px;
@@ -100,7 +110,9 @@ nav .logo .text{
 
 }
 
-nav ul {
+/* Scoped to .site-nav (not bare `nav`) so these list rules don't leak into the
+   footer, which is also a <nav> (.footer-nav) and needs its own column layout. */
+.site-nav ul {
   display: block !important;
   list-style: none;
   /* Auto margin eats the free space to the right of the links so the logo and
@@ -109,7 +121,7 @@ nav ul {
      ≤992px column below. */
   margin-right: auto;
 }
-nav ul li{
+.site-nav ul li{
   display: inline-block !important;
   margin-left: 18px !important;
 }
@@ -3063,10 +3075,10 @@ button.menu-link{
     padding: 8px 16px;
     gap: 10px;
   }
-  nav ul li{
+  .site-nav ul li{
     margin-left: 9px !important;
   }
-  nav ul li .site-nav-link{
+  .site-nav ul li .site-nav-link{
     font-size: 15px;
   }
   .search-form .form-control{
