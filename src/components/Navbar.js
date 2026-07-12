@@ -206,7 +206,9 @@ const Navbar = () =>{
             </button>
             <div className={`nav-collapse${menuOpen ? ' open' : ''}`}>
             <ul>
-                <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }}  className="site-nav-link" to="/">Home</NavLink></li>
+                {/* Home stays lit across its own sub-tabs (/, /tvshows, /trendings) —
+                    exactly the HERO_PATHS set — rather than only the exact "/" match. */}
+                <li><NavLink onClick={()=>setMenuOpen(false)} className={()=>`site-nav-link${isHero ? ' active' : ''}`} to="/">Home</NavLink></li>
                 <li className='nav-dropdown'>
                     <button
                         type='button'
@@ -257,9 +259,9 @@ const Navbar = () =>{
                         </div>
                     }
                 </li>
-                <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="site-nav-link" to="/movies">Movies</NavLink></li>
-                <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="site-nav-link" to="/tvSeries">TV-Series</NavLink></li>
-                <li><NavLink onClick={()=>setMenuOpen(false)} style={({isActive})=>{ return {color: isActive ?  "#FFC300" :"#ccc" } }} className="site-nav-link" to="/topImdb">Top IMDb</NavLink></li>
+                <li><NavLink onClick={()=>setMenuOpen(false)} className="site-nav-link" to="/movies">Movies</NavLink></li>
+                <li><NavLink onClick={()=>setMenuOpen(false)} className="site-nav-link" to="/tvSeries">TV-Series</NavLink></li>
+                <li><NavLink onClick={()=>setMenuOpen(false)} className="site-nav-link" to="/topImdb">Top IMDb</NavLink></li>
             </ul>
             <SearchBox/>
             <div className="register">

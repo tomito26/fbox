@@ -103,27 +103,66 @@ nav .logo .text{
 nav ul {
   display: block !important;
   list-style: none;
+  /* Auto margin eats the free space to the right of the links so the logo and
+     nav read as one left cluster, with search + account pushed flush right
+     (streaming-nav zoning). Overrides the row's space-between; reset in the
+     ≤992px column below. */
+  margin-right: auto;
 }
 nav ul li{
   display: inline-block !important;
   margin-left: 18px !important;
 }
+/* Grey at rest, accent on hover/active. NavLink adds the `active` class itself,
+   so the "you are here" state is data-driven here rather than inline-styled. The
+   ::after is a cinematic underline that grows in from the centre on hover/active. */
 nav ul li .site-nav-link{
+  position: relative;
   text-decoration: none;
   font-weight: 400;
   font-family: "Lato",sans-serif;
   font-size: 16px;
   cursor: pointer;
   line-height: 20px;
-}
-nav ul li span{
   color: #ccc;
 }
-nav ul li .site-nav-link:hover{
-  color: #FFC300;
+nav ul li .site-nav-link::after{
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 2px;
+  background-color: var(--accent);
+  transform: scaleX(0);
+  transform-origin: center;
 }
-/* Genres / Country toggles are <button>s; the plain links set #ccc via inline
-   style, so match that here (grey at rest, gold on hover via the rule above). */
+@media (prefers-reduced-motion: no-preference){
+  nav ul li .site-nav-link,
+  nav ul li .site-nav-link::after{
+    transition: color 0.18s ease, transform 0.2s ease;
+  }
+}
+nav ul li .site-nav-link:hover,
+nav ul li .site-nav-link.active{
+  color: var(--accent);
+}
+nav ul li .site-nav-link:hover::after,
+nav ul li .site-nav-link.active::after{
+  transform: scaleX(1);
+}
+/* Keyboard focus was invisible on the main nav (only the account pill had a ring).
+   Give links + dropdown toggles the same visible affordance for WCAG 2.4.7. */
+nav ul li .site-nav-link:focus-visible{
+  outline: none;
+  color: var(--accent);
+}
+nav ul li .site-nav-link:focus-visible::after{
+  transform: scaleX(1);
+}
+/* Genres / Country toggles are <button>s sharing .site-nav-link, so they inherit
+   the colour + underline above; nothing extra needed here beyond the reset. */
 nav ul li .nav-dropdown-toggle{
   color: #ccc;
 }
@@ -2394,7 +2433,11 @@ img.profile-avatar{
   display: none;
 }
 .movie-page .category-section{
-  margin-bottom: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 .movie-page .category-section .dropdown-category{
   position: relative;
@@ -2888,6 +2931,8 @@ button.menu-link{
 .nav-caret{
   font-size: 12px;
 }
+/* Dark-glass panel matching .user-dropdown-panel so every nav dropdown reads as
+   one design language (this used to be an off-theme blue-grey #2C394B). */
 .nav-dropdown-menu{
   position: absolute;
   top: 150%;
@@ -2896,11 +2941,25 @@ button.menu-link{
   max-width: calc(100vw - 32px);
   max-height: 320px;
   overflow-y: auto;
-  background-color: #2C394B;
+  background-color: rgba(16, 20, 28, 0.97);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 6px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+/* Cinematic entrance: fade + rise, matched by .user-dropdown-panel. Guarded so
+   reduced-motion users get the panel instantly. */
+@media (prefers-reduced-motion: no-preference){
+  .nav-dropdown-menu,
+  .user-dropdown-panel{
+    animation: navPanelIn 0.16s ease-out both;
+  }
+}
+@keyframes navPanelIn{
+  from{ opacity: 0; transform: translateY(-6px); }
+  to{ opacity: 1; transform: translateY(0); }
 }
 /* Two-column list of genre/country links (the panel itself is a flow container
    so the Movies/TV toggle can sit above the grid). */
@@ -3005,7 +3064,7 @@ button.menu-link{
     gap: 10px;
   }
   nav ul li{
-    margin-left: 2px !important;
+    margin-left: 9px !important;
   }
   nav ul li .site-nav-link{
     font-size: 15px;
@@ -3061,6 +3120,8 @@ button.menu-link{
     align-items: flex-start;
     gap: 4px;
     width: 100%;
+    /* Reset the desktop left-cluster auto margin inside the stacked mobile menu. */
+    margin-right: 0;
   }
   .nav-collapse ul li{
     display: block !important;
@@ -3074,6 +3135,11 @@ button.menu-link{
     padding: 10px 4px !important;
     line-height: 24px !important;
     text-align: left;
+  }
+  /* The sliding underline is a desktop affordance; on the stacked mobile menu a
+     full-row underline reads as a divider, so drop it and keep the colour cue. */
+  .nav-collapse ul li .site-nav-link::after{
+    display: none;
   }
   /* Keep the dropdown toggle a left-aligned flex row so its label + caret
      line up with the plain links (a <button> defaults to centered text). */
@@ -3451,5 +3517,557 @@ button.menu-link{
     left: 0;
     width: 100%;
     max-height: 50vh;
+  }
+}
+
+/* ============================================================================
+   RESTORED: component CSS silently deleted by commit 086ec05 ("Redesign auth
+   pages"), which rewrote App.css and dropped these unrelated blocks. Lifted
+   verbatim from 086ec05^. Covers the discover filter bar, the detail-page
+   streaming layout, the TV episode list, and the trailer modal.
+   ============================================================================ */
+
+/* ---- Detail streaming layout + TV episodes + trailer modal ---- */
+/* Secondary "Trailer" button — outline style, sits next to the gold Watch Now. */
+.detail-trailer-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 22px;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 30px;
+  background: transparent;
+  color: #e6e6e6;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+.detail-trailer-btn:hover{
+  background-color: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.4);
+}
+
+/* Season selector + episode buttons under the TV stream player. */
+.stream-controls{
+  max-width: 1100px;
+  margin: 16px auto 0;
+}
+.season-select{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.season-select label{
+  font-weight: 700;
+  color: #f4f4f4;
+  font-size: 15px;
+}
+.season-select select{
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #1a2130;
+  color: #e6e6e6;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 9px 34px 9px 12px;
+  font-size: 14px;
+  font-family: "Lato", sans-serif;
+  cursor: pointer;
+  min-width: 180px;
+  /* caret */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23cbd2dc' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+.season-select select:focus-visible{
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.episode-picker{
+  max-width: 1100px;
+}
+.episode-picker-head{
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.episode-picker-title{
+  font-weight: 700;
+  color: #f4f4f4;
+  font-size: 15px;
+}
+.episode-picker-count{
+  font-size: 13px;
+  color: var(--muted);
+}
+.episode-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+  gap: 8px;
+}
+.episode-btn{
+  height: 42px;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  background-color: #1a2130;
+  color: #cbd2dc;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.episode-btn:hover{
+  background-color: #222b3d;
+  color: #fff;
+  border-color: rgba(255,255,255,0.28);
+}
+.episode-btn.active{
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #12161f;
+}
+
+/* ---- Player-as-hero (streaming-standard: player first) ------------------ */
+.stream-hero{
+  max-width: 1200px;
+  margin: 0 auto;
+  /* Bottom padding separates the player / episode list from the About block
+     below (player -> overview for movies, last episode -> overview for TV). */
+  padding: 24px 40px 44px;
+}
+.stream-topbar{
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.stream-topbar-title h1{
+  color: #f4f4f4;
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0;
+}
+.stream-now-playing{
+  display: inline-block;
+  margin-top: 6px;
+  color: #c7ccd4;
+  font-size: 14px;
+}
+.stream-topbar-meta{
+  margin-bottom: 4px;
+}
+/* Content-certification badge (PG-13, TV-MA…) next to the rating. */
+.meta-cert{
+  padding: 2px 9px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #e6e6e6;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 5px;
+  letter-spacing: 0.3px;
+}
+/* Suppress the dot separator immediately after the cert badge. */
+.detail-meta > .meta-cert + span::before{ content: none; margin: 0; }
+.stream-hero .video-wrapper{
+  margin: 0;
+  padding: 0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+/* Resume progress bar pinned to the bottom of the play facade. */
+.facade-progress{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: rgba(255,255,255,0.25);
+}
+.facade-progress span{
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+.stream-underbar{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.stream-source-note{
+  margin: 0;
+  color: #8b93a1;
+  font-size: 12.5px;
+  max-width: 620px;
+}
+.stream-quick-actions{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ---- Rich episode list -------------------------------------------------- */
+.episode-list{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.episode-row{
+  display: flex;
+  gap: 14px;
+  text-align: left;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  background-color: #141a26;
+  color: #d8dce3;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.episode-row:hover{
+  background-color: #1b2230;
+  border-color: rgba(255,255,255,0.2);
+}
+.episode-row.active{
+  border-color: var(--accent);
+  background-color: #1c2536;
+}
+.episode-still{
+  position: relative;
+  flex: 0 0 152px;
+  width: 152px;
+  aspect-ratio: 16 / 9;
+  border-radius: 7px;
+  overflow: hidden;
+  background-color: #0c111a;
+}
+.episode-still img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.episode-still-fallback{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5b6472;
+  font-size: 20px;
+  font-weight: 700;
+}
+.episode-still-play{
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  background: rgba(0,0,0,0.35);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.episode-row:hover .episode-still-play{ opacity: 1; }
+.episode-watched{
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #12161f;
+  font-size: 11px;
+}
+.episode-progress{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: rgba(255,255,255,0.25);
+}
+.episode-progress span{
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+.episode-body{
+  min-width: 0;
+  flex: 1;
+}
+.episode-head{
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.episode-num{
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+}
+.episode-name{
+  color: #f4f4f4;
+  font-weight: 600;
+  font-size: 15px;
+}
+.episode-runtime{
+  color: #8b93a1;
+  font-size: 12.5px;
+}
+.episode-air{
+  display: block;
+  color: #8b93a1;
+  font-size: 12.5px;
+  margin-top: 2px;
+}
+.episode-overview{
+  margin: 6px 0 0;
+  color: #aeb6c2;
+  font-size: 13px;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.episode-row-skeleton{ cursor: default; }
+.episode-row-lines{ flex: 1; padding-top: 6px; }
+
+/* ---- Trailer modal ------------------------------------------------------ */
+.trailer-modal{
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0,0,0,0.82);
+}
+.trailer-modal-inner{
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+}
+.trailer-modal-frame{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.trailer-modal-frame iframe{
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.trailer-modal-close{
+  position: absolute;
+  top: -44px;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.14);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.trailer-modal-close:hover{ background: rgba(255,255,255,0.28); }
+
+/* ---- Discover filter bar (data-driven DropdownMenus) ---- */
+.filter-dropdown{
+  position: relative;
+}
+.filter-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #1a2130;
+  color: #cbd2dc;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 7px 14px;
+  border-radius: 40px;
+  font-size: 13px;
+  font-family: "Lato", sans-serif;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.filter-btn svg{
+  font-size: 12px;
+  opacity: 0.8;
+}
+.filter-btn:hover{
+  background-color: #222b3d;
+  color: #fff;
+}
+.filter-btn.open{
+  border-color: var(--accent);
+  color: #fff;
+}
+.filter-btn.has-value{
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.filter-btn.has-value svg{
+  opacity: 1;
+}
+/* Dark glass dropdown panel, matching the navbar dropdowns. */
+.filter-panel{
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  /* Above the poster grid (cards sit at z-index 1, hover 5, heart 6). */
+  z-index: 90;
+  min-width: 300px;
+  max-width: min(94vw, 460px);
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 10px;
+  background-color: rgba(16, 20, 28, 0.98);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(0,0,0,0.55);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.filter-panel-grid{
+  display: grid;
+  /* Columns sized to the longest label (e.g. "United Kingdom", "Documentary")
+     so options never spill out of their cell; 2–3 columns depending on width. */
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 4px;
+}
+.filter-panel-list{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.filter-option{
+  background: none;
+  border: 1px solid transparent;
+  color: #cbd2dc;
+  text-align: left;
+  padding: 7px 10px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-family: "Lato", sans-serif;
+  cursor: pointer;
+  /* Clip to the cell as a safety net so an over-long label ellipsizes instead
+     of overflowing (min-width:0 lets the button shrink inside the grid track). */
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+.filter-option:hover{
+  background-color: rgba(255,255,255,0.07);
+  color: #fff;
+}
+.filter-option.selected{
+  background-color: var(--accent);
+  color: #12161f;
+  font-weight: 700;
+}
+.filter-includeall{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px 4px 2px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.filter-includeall input{
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+/* Active-filter chips */
+.filter-chips{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.filter-chip{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(255, 195, 0, 0.14);
+  color: var(--accent);
+  border: 1px solid rgba(255, 195, 0, 0.4);
+  padding: 4px 10px;
+  border-radius: 40px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+.filter-chip:hover{
+  background-color: rgba(255, 195, 0, 0.24);
+}
+.filter-chip-x{
+  font-size: 10px;
+}
+.filter-clear{
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+.filter-clear:hover{
+  color: #fff;
+}
+
+/* ---- Responsive overrides for the restored detail layout ---- */
+@media (max-width: 768px){
+  .stream-hero{
+    padding: 16px 16px 32px;
+  }
+  .stream-topbar{
+    align-items: flex-start;
+  }
+  /* Compact episode rows: smaller still, hide the overview on narrow screens. */
+  .episode-still{
+    flex-basis: 116px;
+    width: 116px;
+  }
+  .episode-overview{
+    display: none;
+  }
+  .trailer-modal{
+    padding: 16px;
+  }
+  .trailer-modal-close{
+    top: 0;
+    right: 0;
+    background: rgba(0,0,0,0.55);
   }
 }

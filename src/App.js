@@ -52,7 +52,7 @@ function AppShell() {
         </Route>
         <Route path='/movies' element={<Movies/>}/>
         <Route path="/tvSeries" element={<TvSeries/>}/>
-        <Route path='topImdb' element={<TopImdb/>}/>
+        <Route path='/topImdb' element={<TopImdb/>}/>
         <Route path='/search' element={<SearchResults/>}/>
         <Route path='/browse' element={<Browse/>}/>
         <Route path='/latest-movies' element={<LatestListing kind="movies"/>}/>
