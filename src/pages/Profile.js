@@ -16,6 +16,7 @@ import { useUserAuth } from '../Context/UserAuthContext';
 import { useWatchlist } from '../Context/WatchlistContext';
 import { imageUrl } from '../services/tmdb';
 import { database, auth, storage } from '../firebase-config';
+import { watchStats } from '../utils/watchProgress';
 import Avatar from '../components/Avatar';
 
 // Map the Firebase error codes we're most likely to hit to friendly copy.
@@ -69,6 +70,13 @@ const Profile = () => {
   const [deletePassword, setDeletePassword] = useState('');
   const [deleting, setDeleting] = useState(false);
   const [deleteMsg, setDeleteMsg] = useState(null);
+
+  // Aggregate viewing stats from the player's localStorage progress (read once
+  // on mount — the keys are written by the embedded player, not React state).
+  const [stats, setStats] = useState({ watched: 0, inProgress: 0 });
+  useEffect(() => {
+    setStats(watchStats());
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -256,18 +264,20 @@ const Profile = () => {
     }
   };
 
+  const savedCount = watchlist.length;
+
   return (
     <div className="profile-page">
-      <div className="profile-heading">
-        <h2>
-          <span>My Account</span>
-        </h2>
-      </div>
-      <p className="profile-subtitle">Manage your account, security and saved titles.</p>
+      <header className="profile-heading">
+        <h2>My Account</h2>
+        <p className="profile-subtitle">Manage your account, security and saved titles.</p>
+      </header>
 
-      {/* --- Account overview --- */}
-      <section className="profile-overview">
-        <div className="overview-identity">
+      <div className="profile-grid">
+        {/* --- Identity rail --- */}
+        <aside className="profile-card identity-rail">
+          <div className="identity-banner" aria-hidden="true" />
+
           <div className="avatar-block">
             <button
               type="button"
@@ -276,7 +286,7 @@ const Profile = () => {
               disabled={uploading}
               aria-label={photoURL ? 'Change photo' : 'Add photo'}
             >
-              <Avatar name={displayName || email} src={photoURL} size={80} />
+              <Avatar name={displayName || email} src={photoURL} size={112} />
               <span className="avatar-cam" aria-hidden="true">
                 <FaCamera />
               </span>
@@ -310,7 +320,7 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="overview-meta">
+          <div className="identity-meta">
             <h3>{displayName}</h3>
             <p className="overview-email">
               {email}
@@ -332,55 +342,31 @@ const Profile = () => {
             )}
             {memberSince && <p className="overview-member">Member since {memberSince}</p>}
           </div>
-        </div>
 
-        {overviewMsg && (
-          <div className={`profile-message ${overviewMsg.type}`} role="status">
-            {overviewMsg.text}
+          <div className="profile-stats">
+            <div className="stat-chip">
+              <span className="stat-num">{savedCount}</span>
+              <span className="stat-label">Saved</span>
+            </div>
+            <div className="stat-chip">
+              <span className="stat-num">{stats.watched}</span>
+              <span className="stat-label">Watched</span>
+            </div>
+            <div className="stat-chip">
+              <span className="stat-num">{stats.inProgress}</span>
+              <span className="stat-label">In progress</span>
+            </div>
           </div>
-        )}
 
-        <div className="watchlist-summary">
-          <div className="watchlist-summary-head">
-            <h4>My Watchlist</h4>
-            {watchlist.length > 0 && (
-              <Link to="/watchlist" className="link-btn">
-                View all
-              </Link>
-            )}
-          </div>
-          {watchlist.length === 0 ? (
-            <p className="watchlist-empty">
-              Your watchlist is empty. Tap the heart on any title to save it here.
-            </p>
-          ) : (
-            <>
-              <p className="watchlist-count">
-                {watchlist.length} {watchlist.length === 1 ? 'title' : 'titles'} saved
-              </p>
-              <div className="watchlist-thumbs">
-                {watchlist.slice(0, 6).map((item) => (
-                  <Link
-                    key={`${item.media_type}-${item.id}`}
-                    to={detailPath(item)}
-                    className="watchlist-thumb"
-                    title={item.title || item.name}
-                  >
-                    <img src={imageUrl(item.poster_path, 'w185')} alt={item.title || item.name} />
-                  </Link>
-                ))}
-              </div>
-            </>
+          {overviewMsg && (
+            <div className={`profile-message ${overviewMsg.type}`} role="status">
+              {overviewMsg.text}
+            </div>
           )}
-        </div>
-      </section>
+        </aside>
 
-      {/* --- Edit profile --- */}
-      <section className="profile-section profile-card">
-        <h3 className="section-title">
-          <span>Edit Profile</span>
-        </h3>
-        <div className="profile-form">
+        {/* --- Settings column --- */}
+        <div className="profile-settings">
           <form onSubmit={handleProfileUpdate}>
             {message && (
               <div className={`profile-message ${message.type}`} role="status">
@@ -388,142 +374,186 @@ const Profile = () => {
               </div>
             )}
 
-            <div className="form-group-profile">
-              <label htmlFor="username">
-                Username
-                {userData.username && (
-                  <span className="current-value">Current: {userData.username}</span>
-                )}
-              </label>
-              <input
-                type="text"
-                className="form-input"
-                name="newUsername"
-                id="username"
-                placeholder="New username"
-                value={newProfile.newUsername}
-                onChange={handleChange}
-              />
-            </div>
+            <section className="profile-card">
+              <h3 className="section-title">Profile</h3>
 
-            <div className="form-group-profile">
-              <label htmlFor="email">
-                Email
-                {email && <span className="current-value">Current: {email}</span>}
-              </label>
-              <input
-                type="email"
-                className="form-input"
-                name="newEmail"
-                id="email"
-                placeholder="New email"
-                value={newProfile.newEmail}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group-profile">
-              <label htmlFor="currentPassword">
-                Current Password
-                <span className="current-value">Required to change email or password</span>
-              </label>
-              <input
-                type="password"
-                className="form-input"
-                name="currentPassword"
-                id="currentPassword"
-                placeholder="Current password"
-                autoComplete="current-password"
-                value={newProfile.currentPassword}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group-profile">
-              <label htmlFor="password">New Password</label>
-              <input
-                type="password"
-                className="form-input"
-                name="newPassword"
-                id="password"
-                placeholder="New password"
-                autoComplete="new-password"
-                value={newProfile.newPassword}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group-profile">
-              <label htmlFor="passwordConfirmation">Password Confirmation</label>
-              <input
-                type="password"
-                className="form-input"
-                name="confirmPassword"
-                id="passwordConfirmation"
-                placeholder="Repeat new password"
-                autoComplete="new-password"
-                value={newProfile.confirmPassword}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="save-button">
-              <button className="saveBtn" type="submit" disabled={saving}>
-                {saving ? 'Saving…' : 'Save Changes'}
-              </button>
-            </div>
-          </form>
-        </div>
-      </section>
-
-      {/* --- Danger zone --- */}
-      <section className="profile-section danger-zone profile-card">
-        <h3 className="section-title">
-          <span>Danger Zone</span>
-        </h3>
-        <p className="danger-desc">
-          Permanently delete your account, watchlist and profile. This cannot be undone.
-        </p>
-        {!showDelete ? (
-          <button type="button" className="danger-btn" onClick={() => setShowDelete(true)}>
-            Delete my account
-          </button>
-        ) : (
-          <form className="delete-form" onSubmit={handleDeleteAccount}>
-            {deleteMsg && (
-              <div className={`profile-message ${deleteMsg.type}`} role="status">
-                {deleteMsg.text}
+              <div className="form-group-profile">
+                <label htmlFor="username">
+                  Username
+                  {userData.username && (
+                    <span className="current-value">Current: {userData.username}</span>
+                  )}
+                </label>
+                <input
+                  type="text"
+                  className="form-input"
+                  name="newUsername"
+                  id="username"
+                  placeholder="New username"
+                  value={newProfile.newUsername}
+                  onChange={handleChange}
+                />
               </div>
-            )}
-            <label htmlFor="deletePassword">Enter your password to confirm</label>
-            <input
-              id="deletePassword"
-              type="password"
-              className="form-input"
-              autoComplete="current-password"
-              placeholder="Your password"
-              value={deletePassword}
-              onChange={(e) => setDeletePassword(e.target.value)}
-            />
-            <div className="delete-actions">
-              <button
-                type="button"
-                className="link-btn"
-                onClick={() => {
-                  setShowDelete(false);
-                  setDeletePassword('');
-                  setDeleteMsg(null);
-                }}
-              >
-                Cancel
-              </button>
-              <button type="submit" className="danger-btn" disabled={deleting}>
-                {deleting ? 'Deleting…' : 'Permanently delete'}
-              </button>
-            </div>
+
+              <div className="form-group-profile">
+                <label htmlFor="email">
+                  Email
+                  {email && <span className="current-value">Current: {email}</span>}
+                </label>
+                <input
+                  type="email"
+                  className="form-input"
+                  name="newEmail"
+                  id="email"
+                  placeholder="New email"
+                  value={newProfile.newEmail}
+                  onChange={handleChange}
+                />
+              </div>
+            </section>
+
+            <section className="profile-card">
+              <h3 className="section-title">Security</h3>
+
+              <div className="form-group-profile">
+                <label htmlFor="currentPassword">
+                  Current Password
+                  <span className="current-value">Required to change email or password</span>
+                </label>
+                <input
+                  type="password"
+                  className="form-input"
+                  name="currentPassword"
+                  id="currentPassword"
+                  placeholder="Current password"
+                  autoComplete="current-password"
+                  value={newProfile.currentPassword}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group-profile">
+                <label htmlFor="password">New Password</label>
+                <input
+                  type="password"
+                  className="form-input"
+                  name="newPassword"
+                  id="password"
+                  placeholder="New password"
+                  autoComplete="new-password"
+                  value={newProfile.newPassword}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group-profile">
+                <label htmlFor="passwordConfirmation">Password Confirmation</label>
+                <input
+                  type="password"
+                  className="form-input"
+                  name="confirmPassword"
+                  id="passwordConfirmation"
+                  placeholder="Repeat new password"
+                  autoComplete="new-password"
+                  value={newProfile.confirmPassword}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="save-button">
+                <button className="saveBtn" type="submit" disabled={saving}>
+                  {saving ? 'Saving…' : 'Save Changes'}
+                </button>
+              </div>
+            </section>
           </form>
-        )}
-      </section>
+
+          {/* --- Watchlist --- */}
+          <section className="profile-card">
+            <div className="watchlist-summary-head">
+              <h3 className="section-title">My Watchlist</h3>
+              {savedCount > 0 && (
+                <Link to="/watchlist" className="link-btn">
+                  View all
+                </Link>
+              )}
+            </div>
+            {savedCount === 0 ? (
+              <p className="watchlist-empty">
+                Your watchlist is empty. Tap the heart on any title to save it here.
+              </p>
+            ) : (
+              <>
+                <p className="watchlist-count">
+                  {savedCount} {savedCount === 1 ? 'title' : 'titles'} saved
+                </p>
+                <div className="watchlist-thumbs">
+                  {watchlist.slice(0, 6).map((item) => (
+                    <Link
+                      key={`${item.media_type}-${item.id}`}
+                      to={detailPath(item)}
+                      className="watchlist-thumb"
+                      title={item.title || item.name}
+                    >
+                      <img
+                        src={imageUrl(item.poster_path, 'w185')}
+                        alt={item.title || item.name}
+                      />
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+          </section>
+
+          {/* --- Danger zone --- */}
+          <section className="profile-card danger-zone">
+            <h3 className="section-title">Danger Zone</h3>
+            <p className="danger-desc">
+              Permanently delete your account, watchlist and profile. This cannot be undone.
+            </p>
+            {!showDelete ? (
+              <button type="button" className="danger-btn" onClick={() => setShowDelete(true)}>
+                Delete my account
+              </button>
+            ) : (
+              <form className="delete-form" onSubmit={handleDeleteAccount}>
+                {deleteMsg && (
+                  <div className={`profile-message ${deleteMsg.type}`} role="status">
+                    {deleteMsg.text}
+                  </div>
+                )}
+                <label htmlFor="deletePassword">Enter your password to confirm</label>
+                <input
+                  id="deletePassword"
+                  type="password"
+                  className="form-input"
+                  autoComplete="current-password"
+                  placeholder="Your password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                />
+                <div className="delete-actions">
+                  <button
+                    type="button"
+                    className="link-btn"
+                    onClick={() => {
+                      setShowDelete(false);
+                      setDeletePassword('');
+                      setDeleteMsg(null);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="danger-btn" disabled={deleting}>
+                    {deleting ? 'Deleting…' : 'Permanently delete'}
+                  </button>
+                </div>
+              </form>
+            )}
+          </section>
+        </div>
+      </div>
     </div>
   );
 };
