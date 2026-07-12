@@ -40,6 +40,32 @@ export const watchedFraction = (saved) => {
   return 0;
 };
 
+// Aggregate counts across everything the player has saved to localStorage.
+// Movies are one entry each; TV is per-episode (matching how progress is keyed),
+// so these are counts of titles/episodes, not distinct shows.
+export const watchStats = () => {
+  let watched = 0;
+  let inProgress = 0;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key?.startsWith("vidking_progress_")) continue;
+      let saved;
+      try {
+        saved = JSON.parse(localStorage.getItem(key));
+      } catch {
+        continue;
+      }
+      if (!saved) continue;
+      if (isWatched(saved)) watched++;
+      else if (watchedFraction(saved) > 0.02) inProgress++;
+    }
+  } catch {
+    // localStorage unavailable (e.g. privacy mode) — fall back to zeroes.
+  }
+  return { watched, inProgress };
+};
+
 // Seconds -> "M:SS" or "H:MM:SS".
 export const formatTime = (totalSeconds) => {
   const s = Math.max(0, Math.floor(totalSeconds || 0));
